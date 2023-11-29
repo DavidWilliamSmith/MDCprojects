@@ -1,0 +1,110 @@
+---
+title: "Handout_Last"
+output: html_notebook
+---
+
+Good afternoon all! First let us find out what our working directory is.
+
+```{r}
+getwd()
+```
+
+Today we are going to query the table quiz2 by using Transact-SQL inside the R chunks. First, we are going to need to install the package **sqldf**.
+
+```{r}
+install.packages("sqldf")
+```
+
+
+```{r}
+library(sqldf)
+```
+
+
+```{r}
+data1<-read.csv("quiz2.csv",header = TRUE,sep = ",")
+```
+
+
+```{r}
+summary(data1)
+```
+
+Let us run a query that returns every single record from the table data1.
+
+```{r}
+sqldf("SELECT * FROM data1")
+```
+
+Now I would like you to create a query that returns every single record (row) for the fields region and population.
+
+Let us now create a query that returns the first 10 records of the data1 table.
+
+```{r}
+sqldf('SELECT * FROM data1 LIMIT 10')
+```
+
+
+```{r}
+sqldf("SELECT * FROM data1 ORDER BY infections DESC  LIMIT 5")
+```
+
+Interpret the output of the query ran above and run a similar query (limit 7) including the attributes **ipadddr** , **ufo2010** ,and **infections**.
+
+```{r}
+sqldf('SELECT region,infections FROM data1 WHERE infections > 1000 order by 2 desc')
+```
+
+Now I would like you to inspect (create a query) income,region and population when the condition is income>=50,000. Make comments.
+
+```{r}
+sqldf('SELECT * FROM data1 WHERE (income > 50000 AND infections > 2000) OR pop > 100000')
+```
+
+Interpret the query ran above and create a query that recreates a similar case scenario (one that is critical for the success of this mini-project).
+
+Let us run a query that returns every region and population with a number of infections between 1000 and 7000. 
+
+```{r}
+sqldf('SELECT region,pop FROM data1 WHERE infections between  1000 and 7000')
+```
+
+Interpret the query below and list a hypothetical case scenario in which this query would be useful.
+
+```{r}
+sqldf('SELECT * FROM data1 WHERE subregion LIKE "A%"')
+```
+
+Last,let us find the average number of infections in our table.
+
+```{r}
+sqldf("SELECT AVG(infections) FROM data1")
+```
+
+Let us inspect the new table defined below data2.
+
+```{r}
+data2<-read.csv("finalexam.csv",header = TRUE,sep = ",")
+```
+
+Let us apply summary to data2 and examine the output.
+```{r}
+summary(data2)
+```
+
+Next, I would like you to complete the following steps:
+
+1-Run a query that returns full details for every record from the west region.
+
+2-Run a query that returns full details for every record from the east region where the number of infections is greater than 1500.
+
+3-Run a few queries that can potentially help us to make the point that:
+   a.Region affects the number of infections
+   b.Population affects the number of infections
+   c.Income affects the number of infections
+   d.ufo2010 affects the number of infections
+   e. The different interactions of region and income, and income and population affects the number of infections.
+   
+Explain every single query you include in this part of the handout.
+
+

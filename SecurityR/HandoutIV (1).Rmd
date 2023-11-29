@@ -1,0 +1,342 @@
+---
+title: "Handout IV (Chapter II)"
+output:
+  html_document:
+    df_print: paged
+---
+
+###Welcome to Lecture IV (Chapter II)
+
+I would like you to start this handout by defining the following parameters:
+
+hosts = A host (also known as "network host") is a computer or other device that communicates with other hosts on a network. Hosts on a network include clients and servers -- that send or receive data, services or applications.
+
+Hosts typically do not include intermediary network devices like switches and routers, which are instead often categorized as nodes. A node is also a broader term that includes anything connected to a network, while a host requires an IP address. In other words, all hosts are nodes, but network nodes are not hosts unless they require an IP address to function.
+
+On a TCP/IP network, each host has a host number that, together with a network identity, forms its own unique IP address. In the Open Systems Interconnection (OSI) model, protocols in the transport layer, also known as Layer 4, are responsible for communication between hosts. Hosts use various protocols to communicate, including transmission control protocol (TCP) and User Datagram Protocol (UDP).
+
+Types of IT hosts
+The term host is used in several other areas within information technology (IT), carrying a slightly different meaning depending on the context.
+
+Web host. For companies or individuals with a website, a host is a web server that stores and transmits the data for one or more websites. Host can also refer to the service provider that leases this infrastructure, which is known as hosting.
+
+Cloud host. A cloud host is based on cloud computing technologies that allow a number of servers to act as one system in which website performance can be guaranteed by multiple machines. It often includes a network of servers pulling from different data centers in different locations. Cloud hosts operate as a service that allows clients to buy as much of the service as they need. Cloud hosting is an alternative to hosting a website on a single server. Cloud hosting can be considered both infrastructure as a service (IaaS) and platform as a service (PaaS). Using a public cloud model, a public network transmits data that is physically stored on virtual servers and uses public networks to transmit the data that is physically stored on shared servers that make up the cloud resource.
+
+Virtual host. The term virtual host has two uses. One refers to the technology used to run multiple domains or applications on a single physical server, and the second refers to companies that sell virtual infrastructure services.
+
+Remote host. In this context, a remote host is in a different physical location than the user accessed using a private network or the internet, which provides users with remote access. Examples include servers that can be logged into remotely or a host computer for a remote desktop.
+
+Host virtual machine. This refers to the hardware -- that is, the physical server -- that provides the computing resources to support virtual machines (also known as server virtualization).
+
+Mainframe computer environments. In this context, a mainframe computer can be the host provider of services for the workstations attached to it. This does not mean that the host only has "servers" and that the workstations only have "clients." The server-client relationship is a programming model independent of this contextual usage of "host."
+
+Hostname. A hostname is a plaintext name identifying a host in a given domain. On a local area network (LAN), a server's hostname might be a nickname like mailserver1. On the internet, a hostname makes up part of a web address and has three parts: the subdomain, domain name and top-level domain. For example, the hostname whatis.techtarget.com consists of the subdomain whatis, the domain techtarget and the top-level domain .com.
+
+In other contexts, a host can also be a device or program that provides services to some smaller or less-capable device or program.
+
+vulnerability = A flaw or weakness in a computer system, its security procedures, internal controls, or design and implementation, which could be exploited to violate the system security policy
+
+data frame = A DataFrame is a data structure that organizes data into a 2-dimensional table of rows and columns, much like a spreadsheet. DataFrames are one of the most common data structures used in modern data analytics because they are a flexible and intuitive way of storing and working with data
+ 
+list = a list or sequence is an abstract data type that represents a finite number of ordered values, where the same value may occur more than once
+
+array = an array data structure, or simply an array, is a data structure consisting of a collection of elements (values or variables), each identified by at least one array index or key. An array is stored such that the position of each element can be computed from its index tuple by a mathematical formula. The simplest type of data structure is a linear array, also called one-dimensional array.
+
+matrix = a set of numbers arranged in rows and columns so as to form a rectangular array. The numbers are called the elements, or entries, of the matrix. Matrices have wide applications in engineering, physics, economics, and statistics as well as in various branches of mathematics.
+
+categorical data = Categorical data is the statistical data type consisting of categorical variables or of data that has been converted into that form, for example as grouped data
+
+operating systems = An operating system (OS) is the program that, after being initially loaded into the computer by a boot program, manages all of the other application programs in a computer. The application programs make use of the operating system by making requests for services through a defined application program interface (API)
+
+nodes = nodes are devices or data points on a large network, devices such a PC, phone, or printer are considers nodes. In general, a node has a programmed or engineered capability that enables it to recognise, process, or forward transmissions to other nodes.
+ 
+zones = Zoning is used to mitigate the risk of an open network by segmenting infrastructure services into logical groupings that have the same communication security policies and security requirements. The zones are separated by perimeters (Zone Interface Points) implemented through security and network devices
+
+IP = An IP address, or Internet Protocol address, is a series of numbers that identifies any device on a network. Computers use IP addresses to communicate with each other both over the internet as well as on other networks
+
+```{r}
+
+# create a new data frame of hosts & high vuln counts
+assets.df <- data.frame(
+  name=c("danube","gander","ganges","mekong","orinoco"),
+  os=c("W2K8","RHEL5","W2K8","RHEL5","RHEL5"),
+  highvulns=c(1,0,2,0,0))
+#Let us now take a look at the data frame assets.df
+View(assets.df)
+#Describe our data frame in a few words
+```
+After viewing the DF I saw the name of the columns (name, os, highvulns) and I saw their values ("character", "character", "integer")
+
+```{r}
+# take a look at the data frame structure & contents
+str(assets.df)
+head(assets.df)
+assets.df[,2]
+# show a "slice" just the operating systems 
+
+```
+str() function in R Language is used for compactly displaying the internal structure of a R object. It can display even the internal structure of large lists which are nested. It provides one liner output for the basic R objects letting the user know about the object and its constituents
+
+head() function in R Language is used to get the first parts of a vector, matrix, table, data frame or function
+
+Once you have a dataset stored as a matrix or dataframe in R, you’ll want to start accessing specific parts of the data based on some criteria. For example, if your dataset contains the result of an experiment comparing different experimental groups, you’ll want to calculate statistics for each experimental group separately. The process of selecting specific rows and columns of data based on some criteria is commonly known as slicing.
+
+Just like vectors, you can access specific data in dataframes using brackets. But now, instead of just using one indexing vector, we use two indexing vectors: one for the rows and one for the columns. To do this, use the notation data[rows, columns], where rows and columns are vectors of integers.
+
+use the df with [] claiming the second column
+Explain the output as well as the syntax of the R-code used for this acitivity (above).
+
+```{r}
+# by default R creates "factors" for categorical data so
+# we use as.character() to expand the factors out
+head(assets.df$os)
+#Explain the output
+
+```
+Looks like we sliced the os column with another function
+
+```{r}
+# add a new column
+assets.df$ip <- c("192.168.1.5","10.2.7.5","192.168.1.7",
+                     "10.2.7.6", "10.2.7.7")
+
+```
+
+Describe what we have just accomplished in the chunk above. In addition, explain the syntax used to complete this task.
+
+We added a new column ip to the df and its "string" values
+```{r}
+# extract only nodes with more than one high vulnerabilty
+head(assets.df[assets.df$highvulns>1,])
+
+```
+
+Explain the syntax as well as the output of the task executed above
+
+We are asking to show us the device that highvulns value is higher than 1
+```{r}
+# create a 'zones' column based on prefix IP value
+assets.df$zones <- ifelse(grepl("^192",assets.df$ip),"Zone1","Zone2")
+```
+
+Explain the syntax as well as the output of the chunk ran above
+?grepl
+grep, grepl, regexpr, gregexpr, regexec and gregexec search for matches to argument pattern within each element of a character vector: they differ in the format of and amount of detail in the results.
+
+sub and gsub perform replacement of the first and all matches respectively.
+
+grepl(pattern, x, ignore.case = FALSE, perl = FALSE,
+      fixed = FALSE, useBytes = FALSE)
+
+ifelse returns a value with the same shape as test which is filled with elements selected from either yes or no depending on whether the element of test is TRUE or FALSE     
+
+so if the ip address is 192 add it to zone1 and everything else zone2
+
+
+```{r}
+
+head(assets.df)
+```
+
+Take a final look at the dataframe and explain your findings on this activity.
+
+2 news columns were added for ip and zones and their respectable values
+IP address with 192 (nodes 1 and 2) are allocated to zone 1 and have the same os W2K8
+IP address with 10 (nodes 2,3,4) are allocated to zone 2 and have the same os RHELS
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+
+```
+I'm guessing it got installed but i got warning
+Warning: package ‘ggplot2’ was built under R version 4.2.1
+?ggplot2
+```{r}
+assets.df$highvulns<-as.factor(assets.df$highvulns)
+p<-ggplot(data=assets.df,aes())+geom_bar(aes(zones,fill=zones))+labs(title="IP counts by Zone")
+p
+```
+?geom_bar
+There are two types of bar charts: geom_bar() and geom_col(). geom_bar() makes the height of the bar proportional to the number of cases in each group (or if the weight aesthetic is supplied, the sum of the weights). If you want the heights of the bars to represent values in the data, use geom_col() instead. geom_bar() uses stat_count() by default: it counts the number of cases at each x position. geom_col() uses stat_identity(): it leaves the data as is.
+
+Usage
+geom_bar(
+  mapping = NULL,
+  data = NULL,
+  stat = "count",
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  orientation = NA,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+
+geom_col(
+  mapping = NULL,
+  data = NULL,
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+
+stat_count(
+  mapping = NULL,
+  data = NULL,
+  geom = "bar",
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  orientation = NA,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+?labs
+Modify axis, legend, and plot labels
+Description
+Good labels are critical for making your plots accessible to a wider audience. Always ensure the axis and legend labels display the full variable name. Use the plot title and subtitle to explain the main findings. It's common to use the caption to provide information about the data source. tag can be used for adding identification tags to differentiate between multiple plots.
+
+Usage
+labs(
+  ...,
+  title = waiver(),
+  subtitle = waiver(),
+  caption = waiver(),
+  tag = waiver(),
+  alt = waiver(),
+  alt_insight = waiver()
+)
+
+xlab(label)
+
+ylab(label)
+
+ggtitle(label, subtitle = waiver())
+Arguments
+...	
+A list of new name-value pairs. The name should be an aesthetic.
+
+title	
+The text for the title.
+
+subtitle	
+The text for the subtitle for the plot which will be displayed below the title.
+
+caption	
+The text for the caption which will be displayed in the bottom-right of the plot by default.
+
+tag	
+The text for the tag label which will be displayed at the top-left of the plot by default.
+
+alt, alt_insight	
+Text used for the generation of alt-text for the plot. See get_alt_text for examples.
+
+label	
+The title of the respective axis (for xlab() or ylab()) or of the plot (for ggtitle()).
+
+Details
+You can also set axis and legend labels in the individual scales (using the first argument, the name). If you're changing other scale options, this is recommended.
+
+If a plot already has a title, subtitle, caption, etc., and you want to remove it, you can do so by setting the respective argument to NULL. For example, if plot p has a subtitle, then p + labs(subtitle = NULL) will remove the subtitle from the plot.
+
+Here we see a bar chart that shows the value count for zone1 and zone2
+```{r}
+assets.df$highvulns<-as.factor(assets.df$highvulns)
+p<-ggplot(data=assets.df,aes())+geom_bar(aes(os,fill=zones))+labs(title="IP counts by Zone")#Nice graph
+p
+```
+Here we the bar chart arranged so we see the name of the os that are in zone 1 and zone 2 with the count
+
+
+```{r}
+assets.df$highvulns<-as.factor(assets.df$highvulns)
+p<-ggplot(data=assets.df,aes())+geom_bar(aes(highvulns,fill=highvulns))+facet_grid(~zones)+labs(title="High vulnerability counts by Zone")
+p
+```
+
+?facet_grid
+Lay out panels in a grid
+Description
+facet_grid() forms a matrix of panels defined by row and column faceting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data. If you have only one variable with many levels, try facet_wrap().
+
+Usage
+facet_grid(
+  rows = NULL,
+  cols = NULL,
+  scales = "fixed",
+  space = "fixed",
+  shrink = TRUE,
+  labeller = "label_value",
+  as.table = TRUE,
+  switch = NULL,
+  drop = TRUE,
+  margins = FALSE,
+  facets = NULL
+)
+Arguments
+rows, cols	
+A set of variables or expressions quoted by vars() and defining faceting groups on the rows or columns dimension. The variables can be named (the names are passed to labeller).
+
+For compatibility with the classic interface, rows can also be a formula with the rows (of the tabular display) on the LHS and the columns (of the tabular display) on the RHS; the dot in the formula is used to indicate there should be no faceting on this dimension (either row or column).
+
+scales	
+Are scales shared across all facets (the default, "fixed"), or do they vary across rows ("free_x"), columns ("free_y"), or both rows and columns ("free")?
+
+space	
+If "fixed", the default, all panels have the same size. If "free_y" their height will be proportional to the length of the y scale; if "free_x" their width will be proportional to the length of the x scale; or if "free" both height and width will vary. This setting has no effect unless the appropriate scales also vary.
+
+shrink	
+If TRUE, will shrink scales to fit output of statistics, not raw data. If FALSE, will be range of raw data before statistical summary.
+
+labeller	
+A function that takes one data frame of labels and returns a list or data frame of character vectors. Each input column corresponds to one factor. Thus there will be more than one with vars(cyl, am). Each output column gets displayed as one separate line in the strip label. This function should inherit from the "labeller" S3 class for compatibility with labeller(). You can use different labeling functions for different kind of labels, for example use label_parsed() for formatting facet labels. label_value() is used by default, check it for more details and pointers to other options.
+
+as.table	
+If TRUE, the default, the facets are laid out like a table with highest values at the bottom-right. If FALSE, the facets are laid out like a plot with the highest value at the top-right.
+
+switch	
+By default, the labels are displayed on the top and right of the plot. If "x", the top labels will be displayed to the bottom. If "y", the right-hand side labels will be displayed to the left. Can also be set to "both".
+
+drop	
+If TRUE, the default, all factor levels not used in the data will automatically be dropped. If FALSE, all factor levels will be shown, regardless of whether or not they appear in the data.
+
+margins	
+Either a logical value or a character vector. Margins are additional facets which contain all the data for each of the possible values of the faceting variables. If FALSE, no additional facets are included (the default). If TRUE, margins are included for all faceting variables. If specified as a character vector, it is the names of variables for which margins are to be created.
+
+facets	
+This argument is soft-deprecated, please use rows and cols instead.
+
+Here we separate the zones with 2 discrete variables like the vulnerability rate and count
+
+```{r}
+log(10)
+log10(10)
+log(2.72)
+log10(2.72)
+ln(1)
+log(5)
+ln(5)
+
+log10(216)
+
+sqrt(pi)
+
+survey <-c("Yes", "No", "Yes", "Yes", "Yes", "Yes", "No", "No", "No", "Yes", "No", "Yes", "No", "No", "Yes")
+table(survey)
+inf<-c(120,70,65,105,134,34,45,98,12,56,23,46,76,59,54)
+summary(inf)
+sd(inf)
+exam1 <-data.frame(name=c("america","australia","africa","europe","asia"),os=c("W2K8","RHEL5","W2K8","RHEL5","RHEL5"),highvulns=c(1,0,2,0,0),ip=c("192.168.1.5","10.2.7.5","192.168.1.7","10.2.7.6", "10.2.7.7"))
+View(exam1)
+# extract only nodes with more than one high vulnerabilty
+head(assets.df[assets.df$highvulns>1,])
+# create a 'zones' column based on prefix IP value
+exam1$zones <- ifelse(grepl("^192",exam1$ip),"Zone1","Zone2")
+```
+

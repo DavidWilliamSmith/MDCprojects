@@ -1,0 +1,249 @@
+---
+title: "Final_Project_Logistic"
+output:
+  html_document:
+    df_print: paged
+---
+The idea of this handout is to develop a logistic regression model to discuss the odds of the presence of a bening or a spam URL_type. In this mini tutorial you have the steps we need to follow in order to complete this activity. This is just the starting point, during the remaining two weeks we are going to continue working on this document.
+
+```{r}
+getwd()
+```
+Here we got into the appropriate directory
+
+```{r}
+final1<-read.csv("group5.csv",sep = ",",header = TRUE)
+```
+
+To get group5 csv file
+With headers
+assigned to final1
+
+```{r}
+mydata1<-na.omit(final1)
+```
+
+omit any missing data
+assign to mydata1
+
+```{r}
+summary(mydata1)
+```
+
+Got a summary read out
+
+```{r}
+str(mydata1)
+```
+
+Str read out
+12 var = num
+1 var = char
+
+```{r}
+mydata1$class<-as.factor(mydata1$class)
+```
+
+Convert class to a factor
+Add it to mydata1
+
+
+```{r}
+str(mydata1)
+```
+
+str read out shows class has been changed to factor
+
+```{r}
+mydata1$class <- ifelse(mydata1$class == "Defacement", 1, 0)
+```
+
+if defacement is the original value add a 1 to the new factor class
+else add a 0
+```{r}
+View(mydata1)
+```
+
+After viewing with View() we can see that dataset has changed
+
+## Train and Test Data
+
+The purpose of creating two different datasets from the original one is to improve our ability so as to accurately predict the previously unused or **unseen data**.
+
+There are a number of ways to proportionally split our data into `train` and `test` sets: 50/50, 60/40, 70/30, 80/20, and so forth. The data split that you select should be based on your experience and judgment. For this exercise, we will use a 70/30 split, as follows:
+
+```{r}
+set.seed(123)  # random number generator
+ind <- sample(2, nrow(mydata1), replace = TRUE, prob = c(0.9, 0.1))
+```
+
+Splitting the data gives us different datasets to work against
+
+Partitioning the data:
+
+```{r}
+train1 <- mydata1[ind==1, ]  #the training set
+
+test1 <- mydata1[ind==2, ]   # the testing set 
+```
+
+
+Create a training dataset and a testing dataset
+
+You can confirm the dimensions of both sets as follows:
+
+
+```{r}
+dim(train1)
+dim(test1)
+```
+training has 13 columns with 9699 rows
+test has 13 columns with 1008 rows
+
+To ensure that we have a well-balanced outcome variable between the two datasets, we will perform the following check:
+
+
+```{r}
+table(train1$class)
+table(test1$class)
+```
+
+Looking for balance
+
+This is an acceptable ratio of our outcomes in the two datasets; with this, we can begin the modeling and evaluation.
+
+# Modeling and Evaluation
+
+We will use the function `glm()` (from base R) for the logistic regression model.
+
+An R installation comes with the `glm()` function fitting the **generalized linear models**, which are a class of models that includes logistic regression. The code syntax is similar to the `lm()` function that we used for linear regression. One difference is that we must use the `family = binomial` argument in the function, which tells R to run a logistic regression method instead of the other versions of the generalized linear models. We will start by creating a model that includes all of the features on the train set and see how it performs on the test set:
+
+
+```{r}
+attach(train1)
+```
+
+?attach
+
+Attach Set of R Objects to Search Path
+Description
+The database is attached to the R search path. This means that the database is searched by R when evaluating a variable, so objects in the database can be accessed by simply giving their names.
+
+
+```{r}
+full.fit <- glm(class ~ ., family = binomial, data = train1)
+```
+
+
+
+Create a summary of the model:
+
+```{r}
+summary(full.fit)
+```
+
+
+You cannot translate the coefficients in logistic regression as "the change in Y is based on one-unit change in X". 
+
+This is where the odds ratio can be quite helpful. The beta coefficients from the log function can be converted to odds ratios with an exponent (beta).
+
+In order to produce the odds ratios in R, we will use the following `exp(coef())` syntax:
+
+```{r}
+exp(coef(full.fit))
+```
+?exp
+
+exp computes the exponential function
+
+?coef
+
+coef is a generic function which extracts model coefficients from objects returned by modeling functions
+
+The interpretation of an odds ratio is the change in the outcome odds resulting from a unit change in the feature. If the value is greater than 1, it indicates that, as the feature increases, the odds of the outcome increase. Conversely, a value less than 1 would mean that, as the feature increases, the odds of the outcome decrease.
+
+Let us now run a model with the coefficients with the lowest p-values.
+
+## Testing the model
+
+You will first have to create a vector of the predicted probabilities, as follows:
+
+```{r}
+train.probs <- predict(full.fit, type = "response")
+# inspect the first 5 probabilities
+# train.probs[1:5]
+```
+created a vector for predicting with probabilities
+
+Next, we need to evaluate how well the model performed in training and then evaluate how it fits on the test set. A quick way to do this is to produce a confusion matrix. The default value by which the function selects either benign or malignant is 0.50, which is to say that any probability at or above 0.50 is classified as malignant:
+
+
+```{r}
+
+trainY1<-mydata1$class[ind==1]
+testY1<-mydata1$class[ind==2]
+
+```
+
+Use a confusion matrix to compare the test to train
+
+```{r}
+install.packages("caret")
+library(caret)
+```
+
+
+
+```{r}
+install.packages("InformationValue")
+```
+
+
+```{r}
+library(InformationValue)
+```
+
+
+```{r}
+confusionMatrix(trainY1,train.probs)
+```
+
+read out of the confusion matrix
+
+```{r}
+misClassError(trainY1, train.probs)
+```
+?misClassError
+
+Calculate the percentage misclassification error for the given actuals and probaility scores
+
+16% chance of classification error in probability score in training
+
+```{r}
+test.probs <- predict(full.fit, newdata = test1, type = "response")
+```
+
+create a fit for testing prediction 
+assign to test.probs
+
+```{r}
+#misclassification error
+misClassError(testY1, test.probs)
+```
+18% chance of classification error in probability score in testing
+
+
+```{r}
+# confusion matrix
+confusionMatrix(testY1, test.probs)
+```
+Higher chance of error
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,203 @@
+--
+title: "Handout_10_reg"
+output: html_notebook
+---
+
+ctrl + alt + r = run all
+no errors
+
+```{r}
+getwd()
+```
+got my directory ready and available 
+
+```{r}
+# make sure the packages for this chapter
+# are installed, install if necessary
+pkg <- c("ggplot2", "scales", "maptools",
+              "sp", "maps", "grid", "car" )
+new.pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)  
+}
+```
+
+here i'm making sure the packages are installed for this handout
+
+```{r}
+# read the CSV with headers
+regression1<-read.csv("incidents.csv", header=T,sep =",")
+```
+
+i need to read the incidents csv file into r with its headers
+assign it to regression1            
+      
+```{r}
+#View(regression1)
+View(regression1)
+```
+
+i can use the View() to see a spreadsheet in r on another tab
+
+```{r}
+summary(regression1)
+```
+
+here i got a summary report of regression1
+area, zone, population and incidents
+area, zone and population are characters
+incidents has a quantitative read out
+
+```{r}
+str(regression1)
+```
+
+str() will give me a str read out
+16 obs of 4 vars
+area, zone and population are characters
+incidents has a quantitative read out
+
+```{r}
+regression1$population <- as.numeric(gsub(",","",regression1$population))
+regression1$population
+```
+
+i got convert population into a num using as.numeric()
+
+
+```{r}
+str(regression1$population)
+```
+
+i confirm that population is changed into a num with str()
+
+```{r}
+regression2<-regression1[,-1]#new data frame with the deletion of column 1 
+```
+
+now i assign the df with the deletion of area with regression2
+
+
+```{r}
+head(regression2)
+```
+
+i can confirm that the column has been deleted with head()
+
+```{r}
+reg.fit1<-lm(regression1$incidents ~ regression1$population)
+```
+
+lm() will carry out analysis of chosen columns and fit a linear model
+assign to reg.fit1
+
+```{r}
+summary(reg.fit1)
+```
+
+use the summary() for reg.fit1 and it calls the lm()
+summary after using the lm is much more valuable 
+Residuals:
+   Min     1Q Median     3Q    Max 
+-684.5 -363.5 -156.2  133.9 1164.7 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(>|t|)  
+(Intercept)            4.749e+02  2.018e+02   2.353   0.0337 *
+regression1$population 8.462e-05  5.804e-05   1.458   0.1669  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 534.9 on 14 degrees of freedom
+Multiple R-squared:  0.1318,	Adjusted R-squared:  0.0698 
+F-statistic: 2.126 on 1 and 14 DF,  p-value: 0.1669
+
+from the read out i can see the intercepts p-value is less than alpha
+
+```{r}
+reg.fit2<-lm(incidents ~ zone+population, data = regression1)
+```
+
+lets add zone and population to the mix 
+anova 2 way
+assign to reg.fit2
+
+```{r}
+summary(reg.fit2)
+```
+
+after adding zone and population to se if their relationship with incidents 
+i get a report and i see all the good plus zonewest which is interesting
+
+zone west p-value is less than alpha
+
+```{r}
+regression1$zone <- ifelse(regression1$zone == "west", 1, 0)
+```
+
+?ifelse
+
+Description
+ifelse returns a value with the same shape as test which is filled with elements selected from either yes or no depending on whether the element of test is TRUE or FALSE.
+
+Usage
+ifelse(test, yes, no)
+
+check to see if the zone is west if yes 1 if no 0
+
+```{r}
+View(regression1)
+```
+
+with View() i can see the zone column with 1's and 0's for yes and no for west
+
+```{r}
+str(regression1)
+```
+
+with str() i can see the zone as a num column with 1's and 0's for yes and no for west
+
+```{r}
+regression1$zone<-as.integer((regression1$zone),replace=TRUE) 
+```
+
+
+
+```{r}
+interaction<-regression1$zone*regression1$population
+```
+
+mulitple the zone and population
+assign to interaction
+
+```{r}
+reg.fit3<-lm(regression1$incidents~interaction+regression1$population+regression1$zone)
+```
+
+run analysis to fit a model
+use the interaction between zone and population + population and zone against incidents
+assign to reg.fit3
+
+```{r}
+summary(reg.fit3)
+```
+
+use summary to get the read out to see if the relationships
+
+regression1$zone p-value is less than alpha
+
+```{r}
+reg.fit4<-lm(regression1$incidents~interaction)
+```
+
+run analysis to fit a model
+use the interaction between zone and population  against incidents
+assign to reg.fit4
+
+```{r}
+summary(reg.fit4)
+```
+
+use summary to get the read out to see if the relationships
+
+both the intercept and interaction p-value is less than alpha

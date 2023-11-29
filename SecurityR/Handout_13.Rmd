@@ -1,0 +1,205 @@
+---
+title: "Machine_Learning"
+output: html_notebook
+---
+These packages are needed for this assignment:
+
+```{r}
+pkg <- c("ggplot2", "RColorBrewer")
+new.pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)  
+}
+```
+
+
+Let us first make sure we are working in a directory we feel comfortable with. So I will start by changing my working directory to the one listed below
+
+
+Let us now read the file and start exploring the dataset *memproc*.
+
+```{r}
+mydata1<- read.csv("memproc.csv", header=T)
+summary(mydata1)
+```
+
+In order to explore this dataset more in detail, let us create a plot to compare the processor and memory usage, and differentiate it based on the malware state.
+
+```{r}
+library(ggplot2)
+gg <- ggplot(mydata1, aes(proc, mem, color=state))
+gg <- gg + scale_color_brewer(palette="Set2")
+gg <- gg + geom_point(size=3) + theme_bw()
+print(gg)
+```
+
+
+I sugest you to create now a new graph but this time including the title in the chart. The title would be "Memory vs Processor Usage as function of the Malaware state".
+
+
+```{r}
+set.seed(1492)
+# count how many in the overall sample
+n <- nrow(mydata1)
+# set the test.size to be 1/3rd
+test.size <- as.integer(n/3)
+# randomly sample the rows for test set
+testset <- sample(n, test.size)
+# now split the data into test and train
+test <- mydata1[testset, ]
+train <- mydata1[-testset, ]
+```
+
+
+
+```{r}
+# pull out proc and mem columns for infected then normal
+# then use colMeans() to means of the columns
+inf <- colMeans(train[train$state=="Infected", c("proc", "mem")])
+nrm <- colMeans(train[train$state=="Normal", c("proc", "mem")])
+```
+
+
+
+
+```{r}
+print(inf)
+print(nrm)
+```
+
+
+
+```{r}
+predict.malware <- function(data) {
+  # get 'proc' and 'mem' as numeric values
+  proc <- as.numeric(data[['proc']])
+  mem <- as.numeric(data[['mem']])
+  # set up infected comparison
+  inf.a <- inf['proc'] - proc
+  inf.b <- inf['mem'] - mem
+  # pythagorean distance c = sqrt(a^2 + b^2)
+  inf.dist <- sqrt(inf.a^2 + inf.b^2)
+  # repeat for normal systems
+  nrm.a <- nrm['proc'] - proc
+  nrm.b <- nrm['mem'] - mem
+  nrm.dist <- sqrt(nrm.a^2 + nrm.b^2)
+  # assign a label of the closest (smallest)
+  ifelse(inf.dist<nrm.dist,"Infected", "Normal")
+}
+# could test with these if you uncomment them
+# predict.malware(inf['proc'], inf['mem'])
+# expect "Infected" 
+# predict.malware(nrm['proc'], nrm['mem'])
+# expect "Normal"
+```
+
+
+```{r}
+prediction <- apply(test, 1, predict.malware)
+```
+
+
+
+```{r}
+sum(test$state==prediction)/nrow(test)
+```
+
+
+
+```{r}
+# Figure 9-2 #########################################################
+slope <- -1*(1/((inf['mem']-nrm['mem'])/(inf['proc']-nrm['proc'])))
+intercept <- mean(c(inf['mem'], nrm['mem'])) - (slope*mean(c(inf['proc'], nrm['proc'])))
+```
+
+
+
+```{r}
+result <- cbind(test, predict=prediction)
+result$Accurate <- ifelse(result$state==result$predict, "Yes", "No")
+result$Accurate <- factor(result$Accurate, levels=c("Yes", "No"), ordered=T)
+```
+
+
+
+```{r}
+gg <- ggplot(result, aes(proc, mem, color=state, size=Accurate, shape=Accurate))
+gg <- gg + scale_shape_manual(values=c(16, 8))
+gg <- gg + scale_size_manual(values=c(3, 6))
+gg <- gg + scale_color_brewer(palette="Set2")
+gg <- gg + geom_point() + theme_bw()
+gg <- gg + geom_abline(intercept = intercept, slope = slope, color="gray80")
+print(gg)
+```
+
+
+
+```{r}
+set.seed(1)
+x <- runif(200, min=-10, max=10)
+y <- 1.377*(x^3) + 0.92*(x^2) + .3*x + rnorm(200, sd=250) + 1572
+x <- x + 10
+smooth <- ggplot(data.frame(x,y), aes(x, y)) + geom_point() + 
+  geom_smooth(method = "lm", formula = y ~ poly(x, 3), size = 1, se=F) + 
+  theme_bw()
+print(smooth)
+```
+
+
+
+```{r}
+memproc <- read.csv("memproc.csv", header=T)
+memproc$infected <- ifelse(memproc$state=="Infected", 1, 0)
+set.seed(1492)
+n <- nrow(memproc)
+test.size <- as.integer(n/3)
+testset <- sample(n, test.size)
+test <- memproc[testset, ]
+train <- memproc[-testset, ]
+```
+
+
+
+```{r}
+glm.out = glm(infected ~ proc + mem, data=test, family=binomial(logit))
+summary(glm.out)
+modelog <- predict.glm(glm.out, test, type="response")
+gg <- ggplot(data.frame(x=modelog, y=ifelse(test$infected>0.5, "Yes", "No")), aes(x, y)) +
+  geom_point(size=3, fill="steelblue", color="black", shape=4) + 
+  ylab("Known Infected Host") +
+  xlab("Estimated Probability of Infected Host") + theme_bw()
+print(gg)
+```
+
+
+
+```{r}
+set.seed(1) # repeatable
+x <- c(rnorm(200), rnorm(400)+2, rnorm(400)-2)
+y <- c(rnorm(200), rnorm(200)+2, rnorm(200)-2, rnorm(200)+2, rnorm(200)-2)
+randata <- data.frame(x=x, y=y)
+out <- list()
+for(i in c(3,4,5,6)) {
+  km <- kmeans(randata, i)
+  centers <- data.frame(x=km$centers[ ,1], y=km$centers[ ,2], cluster=1)
+  randata$cluster <- factor(km$cluster)
+  gg <- ggplot(randata, aes(x, y, color=cluster)) + geom_point(size=2)
+  gg <- gg + geom_point(data=centers, aes(x, y), shape=8, color="black", size=4)
+  gg <- gg + scale_x_continuous(expand=c(0,0.1))
+  gg <- gg + scale_y_continuous(expand=c(0,0.1))
+  gg <- gg + ggtitle(paste("k-means with", i, "clusters"))
+  gg <- gg + theme(panel.grid = element_blank(),
+                   panel.background = element_rect(colour = "black", fill=NA),
+                   axis.text = element_blank(),
+                   axis.title = element_blank(),
+                   legend.position = "none",
+                   axis.ticks = element_blank())
+  out[[i-2]] <- gg
+}
+print(out[[1]])
+print(out[[2]])
+print(out[[3]])
+print(out[[4]])
+```
+
+

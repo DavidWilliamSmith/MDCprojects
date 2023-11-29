@@ -1,0 +1,193 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+getwd()
+```
+```{r}
+pkg <- c("ggplot2","lattice")
+new.pkg <-pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)
+}
+```
+```{r}
+library(ggplot2)
+library(lattice)
+```
+
+
+
+```{r}
+av <-read.csv("reputation.data",sep = "#",header = FALSE)
+View(av)
+#we just uploaded reputation data into our directory by giving it the name av each of our data points was separated by "#"
+```
+
+```{r}
+colnames(av) <-c("IP","reliability","Risk","Type",
+                 "Country","Locale","Coords","x")
+# Here we are naming the columns in the table av we uploaded earlier
+```
+```{r}
+str(av)#getting an overview of the data frame
+# we have our reputation.data we named it av in our file and then we named the columns so instead of having unnamed columns we have nice organized columns.
+```
+```{r}
+head(av)
+# head av gives you an actual view of the header of the table with a more organized view , while str gives you a more messy but complete information of the table such as how many  levels per factor
+```
+```{r}
+summary(av$reliability)
+summary(av$Risk)
+table(av$reliability)
+table(av$Risk)
+# here we got a summary of both reliability and of risk with numbers such as min,mean,median,max
+#we also go the values in the table 
+```
+```{r}
+summary(av$Type,maxsum=10)
+
+summary(av$Country, maxsum=40)
+# we are getting the summary of both these categories with max level of 10 and 40
+```
+```{r}
+country.top20 <- names(summary(av$Country))[1:20]
+# we just created a new column with the top 20 countries and we called it country.top20
+```
+```{r}
+gg <-ggplot(data=subset(av,Country %in% country.top20),
+            aes(x=reorder(Country,Country, length)))
+gg <- gg + geom_bar(fill="#000099")
+
+gg <- gg + labs(title="Country Counts", x="Country", y="Count")
+# then we are going to rotate the chart to make it easier to read
+gg <- gg + coord_flip()
+```
+```{r}
+# We are going to remove garbage from the chart we created in the last step
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# here we have a chart with the top 20 countries by count from highest to lowest count we named out y value and our x value we gave the chart a title
+```
+```{r}
+# now we are going to create a bar graph of counts by risk
+gg <- ggplot(data=av, aes(x=Risk))
+gg <- gg + geom_bar(fill="#000099")
+# force a X scale to be just the limits of the data and to be discrete vs continuous
+gg <- gg + scale_x_discrete(limits=seq(max(av$Risk)))
+gg <- gg + labs(title= "'Risk' Counts", x="Risk Score", y="Count")
+# remove garbage from chart to get more precise info
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# We jsut crated a bar chart called risk counts we named our x and y axis we gave the graph a title and we got all of our data from our av table and the risk column
+```
+```{r}
+# In this part of the handout we are going to create yet another bar graph called bar graph of counts by reliability
+gg <- ggplot(data=av, aes(x=reliability))
+gg <- gg + geom_bar(fill="#000099")
+# force a X scale to be just the limits of the data and to be discrete vs continuous
+gg <- gg + scale_x_discrete(limits=seq(max(av$reliability)))
+gg <- gg + labs(title= "'Reliability' Counts", x="Reliability Score", y="Count")
+# remove garbage from chart to get more precise info
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# we created another bar graph called reliability counts with our y and x axis named and we got the data from our av table and our reliability column
+```
+```{r}
+country10 <- summary(av$Country, maxsum=10)
+# now we are converting into a percentage by dividing it by the number of rows in av
+country.perc10 <- country10/nrow(av)
+print(country.perc10)
+# here we got the top 10 countries and we converted the value they sustained into a percentage by dividing by the number of rows in av and they we are displaying the top in percentage
+
+```
+```{r}
+#we are computing a contingency table for risk/reliability factors which is going to produce a matrix
+#of counts of rows that have attributes at each (x,y) location
+rr.tab <- xtabs(~Risk+reliability, data=av)
+print(ftable(rr.tab)) #print the table 
+# we just created another table that shows us what risk and reliability have in common
+```
+```{r}
+#graphical view
+#we need to use a function called levelplot from the lattice package we downloaded at the begining of the handout
+# and we are going to cast the table into a data frame
+rr.df = data.frame(table(av$Risk, av$reliability))
+# now we are going to name our columns
+colnames(rr.df) <- c("Risk", "Reliability", "Freq")
+levelplot(Freq~Reliability*Risk, data=rr.df, main="Risk ~ Reliability",
+          ylab = "Reliability", xlab = "Risk", shrink = c (0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5", "#01665E"))(20))
+# we just created a levelplot wich we got from the lattice packege we donwloaded and we used our Risk and reliability columns to see which is the perfect spot between both of those categories
+```
+```{r}
+# We are going to generate random samples for risk and Reliability and re-run xtab
+#starting PRNG from reproducable point
+set.seed(1492) # as it leads to discovery
+#generate 260,00 random samples
+rel=sample(1:7, 260000, replace=T)
+rsk=sample(1:10,260000, replace=T)
+#Cast the table into a dataframe
+tmp.df = data.frame(table(factor(rsk), factor(rel)))
+# we are going to give the columns names
+colnames(rr.df) <- c("Risk", "Reliability", "Freq")
+levelplot(Freq~Reliability*Risk, data=rr.df, main="Risk ~ Reliability",
+          ylab = "Reliability", xlab = "Risk", shrink = c (0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5", "#01665E"))(20))
+```
+```{r}
+# We are going to create a new variable called "simpletype & replacing multiple categories with label of"multiples"
+av$simpletype <- as.character(av$Type)
+#Group all nodes with multiple categories into a new category
+av$simpletype[grep(';', av$simpletype)] <- "Multiples"
+#Turn it into a factor once again
+av$simpletype <- factor(av$simpletype)
+rrt.df = data.frame(table(av$Risk, av$reliability, av$simpletype))
+colnames(rrt.df) <- c("Risk", "Reliability", "simpletype","Freq")
+levelplot(Freq ~ Reliability*Risk|simpletype, data=rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+
+# we jsut created a levelplotjsut like the one before but we added an new column called simpletype which shows us the types and where we see more risk a reliability per type
+```
+```{r}
+# we are going to go fro the same levelplot but we are filterig out scanning host which was the more popular one in the earlier levelplot
+rrt.df <- subset(rrt.df, simpletype != "Scanning Host")
+levelplot(Freq ~ Reliability*Risk|simpletype, data =rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5, 1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+# here we have the same level plot we had in the earlier example but without scanning host as a category and we see the graph a lot more distributed than before
+
+```
+```{r}
+rrt.df = subset(rrt.df,
+                !(simpletype %in% c("Malware distribution",
+                                    "Malware Domain")))
+sprintf("Count: %d; Percent: %2.1f%%",
+        sum(rrt.df$Freq),
+        100*sum(rrt.df$Freq)/nrow(av))
+levelplot(Freq ~ Reliability*Risk|simpletype, data =rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5, 1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+# here we created another levelplot but with less columns in this case we took off malware distribution and malware domain and yet again we see the numbers better distributed across the graph
+```
+

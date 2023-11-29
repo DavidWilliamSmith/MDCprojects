@@ -1,0 +1,321 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+In this handout we are going to focus in graphing information about malicious nodes. As security data scientist professionals,it is a good idea to get into the habit of visualizing data to pick up structures or patterns we might not see otherwise.
+
+```{r}
+anscombe[,c(1,5,2,6,3,7,4,8)]
+```
+?anscombe
+
+Anscombe's Quartet of ‘Identical’ Simple Linear Regressions
+Description
+Four xx-yy datasets which have the same traditional statistical properties (mean, variance, correlation, regression line, etc.), yet are quite different.
+```{r}
+sapply(anscombe,mean)
+```
+?sapply
+Apply a Function over a List or Vector
+Description
+sapply is a user-friendly version and wrapper of lapply by default returning a vector, matrix or, if simplify = "array", an array if appropriate, by applying simplify2array(). sapply(x, f, simplify = FALSE, USE.NAMES = FALSE) is the same as lapply(x, f).
+
+```{r}
+sapply(anscombe,sd)
+```
+
+
+
+```{r}
+sapply(anscombe,var)
+```
+
+
+
+
+```{r}
+for (i in 1:4) cat(cor(anscombe[,i], anscombe[,i+4]), "\n")
+```
+
+What do these values above represent?Explain.
+
+
+
+```{r}
+# Retrieve and read ZeuS blocklist data into R
+zeusURL <- "https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist"
+zeusData <- "data/zeus.csv"
+if (file.access(zeusData)) {
+  # need to change download method for universal "https" compatibility
+  download.file(zeusURL, zeusData, method="curl") 
+}
+# read in the ZeuS table; skip junk; no header; assign colnames
+zeus <- read.table(zeusData, skip=5, header=FALSE, col.names=c("IP"))
+```
+
+Explain both the output and the syntax of the task completed above.
+
+
+```{r}
+# requires packages: igraph, plyr, RColorBrewer, colorspace
+# requires object: set2 (4-4)
+library(igraph)
+library(plyr)
+library(colorspace)
+```
+
+
+
+
+
+```{r}
+# HELPER FUNCTION MENTIONED IN THE BOOK
+# BUT NOT IN THE PRINTED LISTINGS
+
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+```
+
+
+```{r}
+# HELPER FUNCTION MENTIONED IN THE BOOK
+# BUT NOT IN THE PRINTED LISTINGS
+
+BulkOrigin <- function(ip.list,host="v4.whois.cymru.com",port=43) {
+ 
+  # setup query
+  cmd <- "begin\nverbose\n" 
+  ips <- paste(unlist(ip.list), collapse="\n")
+  cmd <- sprintf("%s%s\nend\n",cmd,ips)
+  
+  # setup connection and post query 
+  con <- socketConnection(host=host,port=port,blocking=TRUE,open="r+")  
+  cat(cmd,file=con)
+  response <- readLines(con)
+  close(con)
+  
+  # trim header, split fields and convert results
+  response <- response[2:length(response)]
+  response <- laply(response,.fun=function(n) {
+    sapply(strsplit(n,"|",fixed=TRUE),trim)
+  })
+  response <- adply(response,c(1))
+  response <- subset(response, select = -c(X1) )
+  names(response) = c("AS","IP","BGP.Prefix","CC",
+                      "Registry","Allocated","AS.Name")
+  
+  return(response)
+  
+}
+```
+
+
+```{r}
+# HELPER FUNCTION MENTIONED IN THE BOOK
+# BUT NOT IN THE PRINTED LISTINGS
+
+BulkPeer <- function(ip.list,host="v4-peer.whois.cymru.com",port=43) {
+   
+  # setup query
+  cmd <- "begin\nverbose\n" 
+  ips <- paste(unlist(ip.list), collapse="\n")
+  cmd <- sprintf("%s%s\nend\n",cmd,ips)
+  
+  # setup connection and post query
+  con <- socketConnection(host=host,port=port,blocking=TRUE,open="r+")  
+  cat(cmd,file=con)
+  response <- readLines(con)
+  close(con)
+  
+  # trim header, split fields and convert results
+  response <- response[2:length(response)]
+  response <- laply(response,function(n) {
+    sapply(strsplit(n,"|",fixed=TRUE),trim)
+  })  
+  response <- adply(response,c(1))
+  response <- subset(response, select = -c(X1) )
+  names(response) <- c("Peer.AS","IP","BGP.Prefix","CC",
+                       "Registry","Allocated","Peer.AS.Name")
+  return(response)
+  
+}
+```
+
+
+
+```{r}
+# HELPER FUNCTION MENTIONED IN THE BOOK
+# BUT NOT IN THE PRINTED LISTINGS
+
+BulkOriginASN <- function(asn.list,host="v4.whois.cymru.com",port=43) {
+  
+  # setup query
+  cmd <- "begin\nverbose\n" 
+  ips <- paste(unlist(asn.list), collapse="\n")
+  cmd <- sprintf("%s%s\nend\n",cmd,ips)
+  
+  # setup connection and post query
+  con <- socketConnection(host=host,port=port,blocking=TRUE,open="r+")  
+  cat(cmd,file=con)
+  response <- readLines(con)
+  close(con)
+  
+  # trim header, split fields and convert results
+  
+  response <- response[2:length(response)]
+  response <- laply(response,.fun=function(n) {
+    sapply(strsplit(n,"|",fixed=TRUE),trim)
+  })
+  
+  response <- adply(response,c(1))
+  response <- subset(response, select = -c(X1) )
+  names(response) <- c("AS","CC","Registry","Allocated","AS.Name")
+  
+  return(response)
+  
+}
+```
+
+
+
+
+
+```{r}
+# load the zeus botnet data used to perform the
+# remainder of the analyses in the chapter
+zeus <- read.table("data/zeus-book.csv", skip=5, header=FALSE, 
+                   col.names=c("IP"))
+ips <- as.character(zeus$IP) 
+# get BGP origin data & peer data; 
+origin <- BulkOrigin(ips)
+g <- graph.empty() # start graphing
+# Make IP vertices; IP endpoints are red
+g <- g + vertices(ips, size=5, color=set2[4], group=1)
+# Make BGP vertices
+g <- g + vertices(origin$CC, size=5, color=set2[2], group=2)
+# for each IP address, get the origin AS CC and return 
+# them as a pair to create the IP->CC edge list
+ip.cc.edges <- lapply(ips, function(x) {
+  iCC <- origin[origin$IP==x, ]$CC
+  lapply(iCC, function(y){
+    c(x, y)
+  })
+})
+```
+
+
+
+
+```{r}
+g <- g + edges(unlist(ip.cc.edges)) # build CC->IP edges
+# simplify the graph by combining commmon edges
+g <- simplify(g, edge.attr.comb=list(weight="sum"))
+# delete any standalone vertices (lone wolf ASNs). In "graph" terms
+# delete any vertex with a degree of 0
+g <- delete.vertices(g, which(degree(g) < 1))
+E(g)$arrow.size <- 0 # we hate arrows
+# blank out all the IP addresses to focus on ASNs 
+V(g)[grep("\\.", V(g)$name)]$name <- ""
+```
+
+
+
+```{r}
+# Visualizing the ZeuS blocklist country cluster graph
+# requires packages: igraph, plyr
+# requires all objects from Listing 4-11
+# this is a great layout for moderately sized networks. you can
+# tweak the "n=10000" if this runs too slowly for you. The more
+# iterations, the cleaner the graph will look
+L <- layout.fruchterman.reingold(g, niter=10000, area=30*vcount(g)^2)
+# plot the graph
+par(bg = 'white', mfrow=c(1,1))
+plot(g, margin=0, layout=L, vertex.label.dist=0.5, 
+     vertex.label.cex=0.75, 
+     vertex.label.color="black",
+     vertex.label.family="sans", 
+     vertex.label.font=2,
+     main="ZeuS botnet nodes clustered by country")
+```
+
+Discuss in detail both the output and the syntax related to the task performed above.
+
+```{r}
+# Listing 4-14
+# require package: igraph (4-11)
+# requires object: V() (4-11), g (4-11)
+# read in country code to name translation table
+zeus.cc <- grep("[A-Z]", V(g)$name, value=TRUE)
+zeus.cc <- zeus.cc[order(zeus.cc)]
+# read in the country codes data frame
+cc.df <- read.csv("data/countrycode_data.csv")
+# display cc & name for just the ones from our data set
+print(head(cc.df[cc.df$iso2c %in% zeus.cc, c(7,1)], n=10),
+      row.names=FALSE)
+```
+
+
+
+```{r}
+# requires objects: BulkOrigin() & BulkPeer() from book's web site &
+#   set2 (4-4)
+# create connected network of ZeuS IPs, ASNs, and ASN peers
+# generates Figure 4-8
+# require package: igraph, RColorBrewer
+g <- graph.empty()
+g <- g + vertices(ips, size=3, color=set2[4], group=1)
+origin <- BulkOrigin(ips)
+peers <- BulkPeer(ips)
+# add ASN origin & peer vertices
+g <- g + vertices(unique(c(peers$Peer.AS, origin$AS)),
+                  size=3, color=set2[2], group=2)
+# build IP->BGP edge list
+ip.edges <- lapply(ips, function(x) {
+  iAS <- origin[origin$IP==x, ]$AS
+  lapply(iAS,function(y){
+    c(x, y)
+  })
+})
+```
+
+
+
+
+```{r}
+bgp.edges <- lapply(
+  grep("NA",unique(origin$BGP.Prefix),value=TRUE,invert=TRUE),
+  function(x) {
+    startAS <- unique(origin[origin$BGP.Prefix==x,]$AS)
+    lapply(startAS,function(z) {
+      pAS <- peers[peers$BGP.Prefix==x,]$Peer.AS
+      lapply(pAS,function(y) {
+        c(z,y)
+      })
+    })
+  })
+```
+
+
+
+```{r}
+g <- g + edges(unlist(ip.edges))
+g <- g + edges(unlist(bgp.edges))
+g <- delete.vertices(g, which(degree(g) < 1))
+g <- simplify(g, edge.attr.comb=list(weight="sum"))
+E(g)$arrow.size <- 0
+V(g)[grep("\\.", V(g)$name)]$name = ""
+L <- layout.fruchterman.reingold(g, niter=10000, area=30*vcount(g)^2)
+par(bg = 'white')
+plot(g, margin=0, layout=L, vertex.label.dist=0.5, 
+     vertex.label=NA,
+     main="ZeuS botnet ASN+Peer Network")
+```
+
+
+
+Explain both the output and the syntax of the task completed above.
+
+
+
+

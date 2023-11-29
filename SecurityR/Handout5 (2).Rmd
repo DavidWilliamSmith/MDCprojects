@@ -1,0 +1,945 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+Welcome to handout#5, let start by getting our working directory.
+
+```{r}
+getwd()
+
+```
+# here i got a path, through files, to my folder for class
+# meaning unless i tell R otherwise everytime i save a file simultaneaously saving in my directory
+
+?getwd
+Get or Set Working Directory
+Description
+getwd returns an absolute filepath representing the current working directory of the R process; setwd(dir) is used to set the working directory to dir.
+
+Usage
+getwd()
+setwd(dir)
+Arguments
+dir	
+A character string: tilde expansion will be done.
+
+Details
+See files for how file paths with marked encodings are interpreted.
+
+Value
+getwd returns a character string or NULL if the working directory is not available. On Windows the path returned will use / as the path separator and be encoded in UTF-8. The path will not have a trailing / unless it is the root directory (of a drive or share on Windows).
+
+setwd returns the current directory before the change, invisibly and with the same conventions as getwd. It will give an error if it does not succeed (including if it is not implemented).
+
+Note
+Note that the return value is said to be an absolute filepath: there can be more than one representation of the path to a directory and on some OSes the value returned can differ after changing directories and changing back to the same directory (for example if symbolic links have been traversed).
+
+
+```{r}
+pkg <- c("ggplot2","lattice")
+new.pkg <-pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)
+}
+
+```
+# here i'm installing 2 packages
+# if the length of the new.pkg is satisfied, than install new package
+
+The syntax of if statement is:
+
+if (test_expression) {
+statement
+}
+If the test_expression is TRUE, the statement gets executed. But if it’s FALSE, nothing happens.
+
+Here, test_expression can be a logical or numeric vector, but only the first element is taken into consideration.
+
+In the case of numeric vector, zero is taken as FALSE, rest as TRUE.
+
+```{r}
+library(ggplot2)
+library(lattice)
+```
+# here are the library declarations for ggplot2 and lattice
+
+?library()
+library and require load and attach add-on packages.
+
+?ggplot2
+A system for 'declaratively' creating graphics, based on "The Grammar of Graphics". You provide the data, tell 'ggplot2' how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details.
+
+??lattice
+Help pages:
+ggplot2::translate_qplot_lattice		Translating between qplot and lattice
+lattice::Lattice		Lattice Graphics
+lattice::panel.identify		Functions to Interact with Lattice Plots
+lattice::lattice.options		Low-level Options Controlling Behaviour of Lattice
+lattice::latticeParseFormula		Parse Trellis formula
+lattice::panel.smoothScatter		Lattice panel function analogous to smoothScatter
+lattice::prepanel.lmline		Useful Prepanel Function for Lattice
+MASS::con2tr		Convert Lists to Data Frames for use by lattice
+```{r}
+av <-read.csv("reputation.data",sep = "#",header = FALSE)
+View(av)
+#we just uploaded reputation data into our directory by giving it the name av each of our data points was separated by "#"
+```
+# i was having an issue with this before but it seems to be working now
+# here i got reputation to be read as, or converted into a csv file
+
+?read.csv
+Reads a file in table format and creates a data frame from it, with cases corresponding to lines and variables to fields in the file.
+
+?View
+Invoke a Data Viewer
+Description
+Invoke a spreadsheet-style data viewer on a matrix-like R object.
+
+Usage
+View(x, title)
+Arguments
+x	
+an R object which can be coerced to a data frame with non-zero numbers of rows and columns.
+
+title	
+title for viewer window. Defaults to name of x prefixed by Data:.
+
+Details
+Object x is coerced (if possible) to a data frame, then columns are converted to character using format.data.frame. The object is then viewed in a spreadsheet-like data viewer, a read-only version of data.entry.
+
+If there are row names on the data frame that are not 1:nrow, they are displayed in a separate first column called row.names.
+
+Objects with zero columns or zero rows are not accepted.
+
+On Unix-alikes,
+the array of cells can be navigated by the cursor keys and Home, End, Page Up and Page Down (where supported by X11) as well as Enter and Tab.
+
+On Windows,
+the array of cells can be navigated via the scrollbars and by the cursor keys, Home, End, Page Up and Page Down.
+
+On Windows, the initial size of the data viewer window is taken from the default dimensions of a pager (see Rconsole), but adjusted downwards to show a whole number of rows and columns.
+
+Value
+Invisible NULL. The functions puts up a window and returns immediately: the window can be closed via its controls or menus.
+
+```{r}
+colnames(av) <-c("IP","reliability","Risk","Type",
+                 "Country","Locale","Coords","x")
+# Here we are naming the columns in the table av we uploaded earlier
+```
+# here i create the columns with headers (names)
+
+?colnames
+Row and Column Names
+Description
+Retrieve or set the row or column names of a matrix-like object.
+
+Usage
+rownames(x, do.NULL = TRUE, prefix = "row")
+rownames(x) <- value
+
+colnames(x, do.NULL = TRUE, prefix = "col")
+colnames(x) <- value
+Arguments
+x	
+a matrix-like R object, with at least two dimensions for colnames.
+
+do.NULL	
+logical. If FALSE and names are NULL, names are created.
+
+prefix	
+for created names.
+
+value	
+a valid value for that component of dimnames(x). For a matrix or array this is either NULL or a character vector of non-zero length equal to the appropriate dimension.
+
+Details
+The extractor functions try to do something sensible for any matrix-like object x. If the object has dimnames the first component is used as the row names, and the second component (if any) is used for the column names. For a data frame, rownames and colnames eventually call row.names and names respectively, but the latter are preferred.
+
+If do.NULL is FALSE, a character vector (of length NROW(x) or NCOL(x)) is returned in any case, prepending prefix to simple numbers, if there are no dimnames or the corresponding component of the dimnames is NULL.
+
+The replacement methods for arrays/matrices coerce vector and factor values of value to character, but do not dispatch methods for as.character.
+
+For a data frame, value for rownames should be a character vector of non-duplicated and non-missing names (this is enforced), and for colnames a character vector of (preferably) unique syntactically-valid names. In both cases, value will be coerced by as.character, and setting colnames will convert the row names to character.
+
+Note
+If the replacement versions are called on a matrix without any existing dimnames, they will add suitable dimnames. But constructions such as
+
+    rownames(x)[3] <- "c"
+may not work unless x already has dimnames, since this will create a length-3 value from the NULL value of rownames(x).
+
+```{r}
+str(av)#getting an overview of the data frame
+# we have our reputation.data we named it av in our file and then we named the columns so instead of having unnamed columns we have nice organized columns.
+```
+# its always good to see df with structure function
+# you can obs, data types
+# very useful
+
+
+?str
+Compactly Display the Structure of an Arbitrary R Object
+Description
+Compactly display the internal structure of an R object, a diagnostic function and an alternative to summary (and to some extent, dput). Ideally, only one line for each ‘basic’ structure is displayed. It is especially well suited to compactly display the (abbreviated) contents of (possibly nested) lists. The idea is to give reasonable output for any R object. It calls args for (non-primitive) function objects.
+
+strOptions() is a convenience function for setting options(str = .), see the examples.
+
+```{r}
+head(av)
+# head av gives you an actual view of the header of the table with a more organized view , while str gives you a more messy but complete information of the table such as how many  levels per factor
+```
+# head is like excel spreadsheet, nice and organized, with structured columns and rows
+
+?head
+Return the First or Last Parts of an Object
+Description
+Returns the first or last parts of a vector, matrix, table, data frame or function. Since head() and tail() are generic functions, they may also have been extended to other classes.
+
+```{r}
+summary(av$reliability)
+summary(av$Risk)
+table(av$reliability)
+table(av$Risk)
+# here we got a summary of both reliability and of risk with numbers such as min,mean,median,max
+#we also go the values in the table 
+
+```
+# summary function will give me the min, median, mean, and max from specific columns
+
+# table function will dispa the values
+
+?summary
+Description
+summary is a generic function used to produce result summaries of the results of various model fitting functions. The function invokes particular methods which depend on the class of the first argument.
+
+?table
+Help on topic 'table' was found in the following packages:
+
+Cross Tabulation and Table Creation
+(in package base in library C:/PROGRA~1/R/R-42~1.1/library)
+Table S3 class
+(in package vctrs in library C:/Users/dsmit/AppData/Local/R/win-library/4.2)
+```{r}
+summary(av$Type,maxsum=10)
+
+summary(av$Country, maxsum=40)
+# we are getting the summary of both these categories with max level of 10 and 40
+```
+# herewere getting the same results for both columns
+
+?maxsum
+
+Assignment Operators
+Description
+Assign a value to a name.
+
+Usage
+x <- value
+x <<- value
+value -> x
+value ->> x
+
+x = value
+Arguments
+x	
+a variable name (possibly quoted).
+
+value	
+a value to be assigned to x.
+
+Details
+There are three different assignment operators: two of them have leftwards and rightwards forms.
+
+The operators <- and = assign into the environment in which they are evaluated. The operator <- can be used anywhere, whereas the operator = is only allowed at the top level (e.g., in the complete expression typed at the command prompt) or as one of the subexpressions in a braced list of expressions.
+
+The operators <<- and ->> are normally only used in functions, and cause a search to be made through parent environments for an existing definition of the variable being assigned. If such a variable is found (and its binding is not locked) then its value is redefined, otherwise assignment takes place in the global environment. Note that their semantics differ from that in the S language, but are useful in conjunction with the scoping rules of R. See ‘The R Language Definition’ manual for further details and examples.
+
+In all the assignment operator expressions, x can be a name or an expression defining a part of an object to be replaced (e.g., z[[1]]). A syntactic name does not need to be quoted, though it can be (preferably by backticks).
+
+The leftwards forms of assignment <- = <<- group right to left, the other from left to right.
+
+Value
+value. Thus one can use a <- b <- c <- 6.
+```{r}
+country.top20 <- names(summary(av$Country))[1:20]
+# we just created a new column with the top 20 countries and we called it country.top20
+```
+# here i created another column named names that is using a function to read the Country column and get the top 20 values 
+
+?names
+
+```{r}
+gg <-ggplot(data=subset(av,Country %in% country.top20),
+            aes(x=reorder(Country,Country, length)))
+gg <- gg + geom_bar(fill="#000099")
+
+gg <- gg + labs(title="Country Counts", x="Country", y="Count")
+# then we are going to rotate the chart to make it easier to read
+gg <- gg + coord_flip()
+
+print(gg)
+```
+# here i'm basically getting a chart ready for display
+
+?ggplot
+
+Create a new ggplot
+Description
+ggplot() initializes a ggplot object. It can be used to declare the input data frame for a graphic and to specify the set of plot aesthetics intended to be common throughout all subsequent layers unless specifically overridden.
+
+Usage
+ggplot(data = NULL, mapping = aes(), ..., environment = parent.frame())
+Arguments
+data	
+Default dataset to use for plot. If not already a data.frame, will be converted to one by fortify(). If not specified, must be supplied in each layer added to the plot.
+
+mapping	
+Default list of aesthetic mappings to use for plot. If not specified, must be supplied in each layer added to the plot.
+
+...	
+Other arguments passed on to methods. Not currently used.
+
+environment	
+DEPRECATED. Used prior to tidy evaluation.
+
+Details
+ggplot() is used to construct the initial plot object, and is almost always followed by + to add component to the plot. There are three common ways to invoke ggplot():
+
+⁠ggplot(df, aes(x, y, other aesthetics))⁠
+
+ggplot(df)
+
+ggplot()
+
+The first method is recommended if all layers use the same data and the same set of aesthetics, although this method can also be used to add a layer using data from another data frame. See the first example below. The second method specifies the default data frame to use for the plot, but no aesthetics are defined up front. This is useful when one data frame is used predominantly as layers are added, but the aesthetics may vary from one layer to another. The third method initializes a skeleton ggplot object which is fleshed out as layers are added. This method is useful when multiple data frames are used to produce different layers, as is often the case in complex graphics.
+
+?aes
+
+Construct aesthetic mappings
+Description
+Aesthetic mappings describe how variables in the data are mapped to visual properties (aesthetics) of geoms. Aesthetic mappings can be set in ggplot() and in individual layers.
+
+Usage
+aes(x, y, ...)
+Arguments
+x, y, ...	
+List of name-value pairs in the form aesthetic = variable describing which variables in the layer data should be mapped to which aesthetics used by the paired geom/stat. The expression variable is evaluated within the layer data, so there is no need to refer to the original dataset (i.e., use ggplot(df, aes(variable)) instead of ggplot(df, aes(df$variable))). The names for x and y aesthetics are typically omitted because they are so common; all other aesthetics must be named.
+
+Details
+This function also standardises aesthetic names by converting color to colour (also in substrings, e.g., point_color to point_colour) and translating old style R names to ggplot names (e.g., pch to shape and cex to size).
+
+Value
+A list with class uneval. Components of the list are either quosures or constants.
+
+Quasiquotation
+aes() is a quoting function. This means that its inputs are quoted to be evaluated in the context of the data. This makes it easy to work with variables from the data frame because you can name those directly. The flip side is that you have to use quasiquotation to program with aes(). See a tidy evaluation tutorial such as the dplyr programming vignette to learn more about these techniques.
+
+See Also
+vars() for another quoting function designed for faceting specifications.
+
+?subset
+
+Subsetting Vectors, Matrices and Data Frames
+Description
+Return subsets of vectors, matrices or data frames which meet conditions.
+
+Usage
+subset(x, ...)
+
+## Default S3 method:
+subset(x, subset, ...)
+
+## S3 method for class 'matrix'
+subset(x, subset, select, drop = FALSE, ...)
+
+## S3 method for class 'data.frame'
+subset(x, subset, select, drop = FALSE, ...)
+Arguments
+x	
+object to be subsetted.
+
+subset	
+logical expression indicating elements or rows to keep: missing values are taken as false.
+
+select	
+expression, indicating columns to select from a data frame.
+
+drop	
+passed on to [ indexing operator.
+
+...	
+further arguments to be passed to or from other methods.
+
+Details
+This is a generic function, with methods supplied for matrices, data frames and vectors (including lists). Packages and users can add further methods.
+
+For ordinary vectors, the result is simply x[subset & !is.na(subset)].
+
+For data frames, the subset argument works on the rows. Note that subset will be evaluated in the data frame, so columns can be referred to (by name) as variables in the expression (see the examples).
+
+The select argument exists only for the methods for data frames and matrices. It works by first replacing column names in the selection expression with the corresponding column numbers in the data frame and then using the resulting integer vector to index the columns. This allows the use of the standard indexing conventions so that for example ranges of columns can be specified easily, or single columns can be dropped (see the examples).
+
+The drop argument is passed on to the indexing method for matrices and data frames: note that the default for matrices is different from that for indexing.
+
+Factors may have empty levels after subsetting; unused levels are not automatically removed. See droplevels for a way to drop all unused levels from a data frame.
+
+Value
+An object similar to x contain just the selected elements (for a vector), rows and columns (for a matrix or data frame), and so on.
+
+Warning
+This is a convenience function intended for use interactively. For programming it is better to use the standard subsetting functions like [, and in particular the non-standard evaluation of argument subset can have unanticipated consequences.
+
+?reorder
+
+Reorder Levels of a Factor
+Description
+reorder is a generic function. The "default" method treats its first argument as a categorical variable, and reorders its levels based on the values of a second variable, usually numeric.
+
+Usage
+reorder(x, ...)
+
+## Default S3 method:
+reorder(x, X, FUN = mean, ...,
+        order = is.ordered(x), decreasing = FALSE)
+
+Arguments
+x	
+an atomic vector, usually a factor (possibly ordered). The vector is treated as a categorical variable whose levels will be reordered. If x is not a factor, its unique values will be used as the implicit levels.
+
+X	
+a vector of the same length as x, whose subset of values for each unique level of x determines the eventual order of that level.
+
+FUN	
+a function whose first argument is a vector and returns a scalar, to be applied to each subset of X determined by the levels of x.
+
+...	
+optional: extra arguments supplied to FUN
+
+order	
+logical, whether return value will be an ordered factor rather than a factor.
+
+decreasing	
+logical, whether the levels will be ordered in increasing or decreasing order.
+
+Details
+This, as relevel(), is a special case of simply calling factor(x, levels = levels(x)[....]).
+
+Value
+A factor or an ordered factor (depending on the value of order), with the order of the levels determined by FUN applied to X grouped by x. By default, the levels are ordered such that the values returned by FUN are in increasing order. Empty levels will be dropped.
+
+Additionally, the values of FUN applied to the subsets of X (in the original order of the levels of x) is returned as the "scores" attribute.
+
+?geom_bar
+
+Bar charts
+Description
+There are two types of bar charts: geom_bar() and geom_col(). geom_bar() makes the height of the bar proportional to the number of cases in each group (or if the weight aesthetic is supplied, the sum of the weights). If you want the heights of the bars to represent values in the data, use geom_col() instead. geom_bar() uses stat_count() by default: it counts the number of cases at each x position. geom_col() uses stat_identity(): it leaves the data as is.
+
+Usage
+geom_bar(
+  mapping = NULL,
+  data = NULL,
+  stat = "count",
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  orientation = NA,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+
+geom_col(
+  mapping = NULL,
+  data = NULL,
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+
+stat_count(
+  mapping = NULL,
+  data = NULL,
+  geom = "bar",
+  position = "stack",
+  ...,
+  width = NULL,
+  na.rm = FALSE,
+  orientation = NA,
+  show.legend = NA,
+  inherit.aes = TRUE
+)
+Arguments
+mapping	
+Set of aesthetic mappings created by aes() or aes_(). If specified and inherit.aes = TRUE (the default), it is combined with the default mapping at the top level of the plot. You must supply mapping if there is no plot mapping.
+
+data	
+The data to be displayed in this layer. There are three options:
+
+If NULL, the default, the data is inherited from the plot data as specified in the call to ggplot().
+
+A data.frame, or other object, will override the plot data. All objects will be fortified to produce a data frame. See fortify() for which variables will be created.
+
+A function will be called with a single argument, the plot data. The return value must be a data.frame, and will be used as the layer data. A function can be created from a formula (e.g. ~ head(.x, 10)).
+
+position	
+Position adjustment, either as a string, or the result of a call to a position adjustment function.
+
+...	
+Other arguments passed on to layer(). These are often aesthetics, used to set an aesthetic to a fixed value, like colour = "red" or size = 3. They may also be parameters to the paired geom/stat.
+
+width	
+Bar width. By default, set to 90% of the resolution of the data.
+
+na.rm	
+If FALSE, the default, missing values are removed with a warning. If TRUE, missing values are silently removed.
+
+orientation	
+The orientation of the layer. The default (NA) automatically determines the orientation from the aesthetic mapping. In the rare event that this fails it can be given explicitly by setting orientation to either "x" or "y". See the Orientation section for more detail.
+
+show.legend	
+logical. Should this layer be included in the legends? NA, the default, includes if any aesthetics are mapped. FALSE never includes, and TRUE always includes. It can also be a named logical vector to finely select the aesthetics to display.
+
+inherit.aes	
+If FALSE, overrides the default aesthetics, rather than combining with them. This is most useful for helper functions that define both data and aesthetics and shouldn't inherit behaviour from the default plot specification, e.g. borders().
+
+geom, stat	
+Override the default connection between geom_bar() and stat_count().
+
+Details
+A bar chart uses height to represent a value, and so the base of the bar must always be shown to produce a valid visual comparison. Proceed with caution when using transformed scales with a bar chart. It's important to always use a meaningful reference point for the base of the bar. For example, for log transformations the reference point is 1. In fact, when using a log scale, geom_bar() automatically places the base of the bar at 1. Furthermore, never use stacked bars with a transformed scale, because scaling happens before stacking. As a consequence, the height of bars will be wrong when stacking occurs with a transformed scale.
+
+By default, multiple bars occupying the same x position will be stacked atop one another by position_stack(). If you want them to be dodged side-to-side, use position_dodge() or position_dodge2(). Finally, position_fill() shows relative proportions at each x by stacking the bars and then standardising each bar to have the same height.
+
+Orientation
+This geom treats each axis differently and, thus, can thus have two orientations. Often the orientation is easy to deduce from a combination of the given mappings and the types of positional scales in use. Thus, ggplot2 will by default try to guess which orientation the layer should have. Under rare circumstances, the orientation is ambiguous and guessing may fail. In that case the orientation can be specified directly using the orientation parameter, which can be either "x" or "y". The value gives the axis that the geom should run along, "x" being the default orientation you would expect for the geom.
+
+Aesthetics
+geom_bar() understands the following aesthetics (required aesthetics are in bold):
+
+x
+
+y
+
+alpha
+
+colour
+
+fill
+
+group
+
+linetype
+
+size
+
+Learn more about setting these aesthetics in vignette("ggplot2-specs").
+
+geom_col() understands the following aesthetics (required aesthetics are in bold):
+
+x
+
+y
+
+alpha
+
+colour
+
+fill
+
+group
+
+linetype
+
+size
+
+Learn more about setting these aesthetics in vignette("ggplot2-specs").
+
+stat_count() understands the following aesthetics (required aesthetics are in bold):
+
+x or y
+
+group
+
+weight
+
+Learn more about setting these aesthetics in vignette("ggplot2-specs").
+
+Computed variables
+count
+number of points in bin
+
+prop
+groupwise proportion
+
+See Also
+geom_histogram() for continuous data, position_dodge() and position_dodge2() for creating side-by-side bar charts.
+
+stat_bin(), which bins data in ranges and counts the cases in each range. It differs from stat_count(), which counts the number of cases at each x position (without binning into ranges). stat_bin() requires continuous x data, whereas stat_count() can be used for both discrete and continuous x data.
+
+?labs
+
+Modify axis, legend, and plot labels
+Description
+Good labels are critical for making your plots accessible to a wider audience. Always ensure the axis and legend labels display the full variable name. Use the plot title and subtitle to explain the main findings. It's common to use the caption to provide information about the data source. tag can be used for adding identification tags to differentiate between multiple plots.
+
+Usage
+labs(
+  ...,
+  title = waiver(),
+  subtitle = waiver(),
+  caption = waiver(),
+  tag = waiver(),
+  alt = waiver(),
+  alt_insight = waiver()
+)
+
+xlab(label)
+
+ylab(label)
+
+ggtitle(label, subtitle = waiver())
+Arguments
+...	
+A list of new name-value pairs. The name should be an aesthetic.
+
+title	
+The text for the title.
+
+subtitle	
+The text for the subtitle for the plot which will be displayed below the title.
+
+caption	
+The text for the caption which will be displayed in the bottom-right of the plot by default.
+
+tag	
+The text for the tag label which will be displayed at the top-left of the plot by default.
+
+alt, alt_insight	
+Text used for the generation of alt-text for the plot. See get_alt_text for examples.
+
+label	
+The title of the respective axis (for xlab() or ylab()) or of the plot (for ggtitle()).
+
+Details
+You can also set axis and legend labels in the individual scales (using the first argument, the name). If you're changing other scale options, this is recommended.
+
+If a plot already has a title, subtitle, caption, etc., and you want to remove it, you can do so by setting the respective argument to NULL. For example, if plot p has a subtitle, then p + labs(subtitle = NULL) will remove the subtitle from the plot.
+
+?coord_flip
+
+Cartesian coordinates with x and y flipped
+Description
+Flip cartesian coordinates so that horizontal becomes vertical, and vertical, horizontal. This is primarily useful for converting geoms and statistics which display y conditional on x, to x conditional on y.
+
+Usage
+coord_flip(xlim = NULL, ylim = NULL, expand = TRUE, clip = "on")
+Arguments
+xlim	
+Limits for the x and y axes.
+
+ylim	
+Limits for the x and y axes.
+
+expand	
+If TRUE, the default, adds a small expansion factor to the limits to ensure that data and axes don't overlap. If FALSE, limits are taken exactly from the data or xlim/ylim.
+
+clip	
+Should drawing be clipped to the extent of the plot panel? A setting of "on" (the default) means yes, and a setting of "off" means no. In most cases, the default of "on" should not be changed, as setting clip = "off" can cause unexpected results. It allows drawing of data points anywhere on the plot, including in the plot margins. If limits are set via xlim and ylim and some data points fall outside those limits, then those data points may show up in places such as the axes, the legend, the plot title, or the plot margins.
+
+?print
+
+Print Values
+Description
+print prints its argument and returns it invisibly (via invisible(x)). It is a generic function which means that new printing methods can be easily added for new classes.
+
+Usage
+
+print(x, ...)
+
+## S3 method for class 'factor'
+print(x, quote = FALSE, max.levels = NULL,
+      width = getOption("width"), ...)
+
+## S3 method for class 'table'
+print(x, digits = getOption("digits"), quote = FALSE,
+      na.print = "", zero.print = "0",
+      right = is.numeric(x) || is.complex(x),
+      justify = "none", ...)
+
+## S3 method for class 'function'
+print(x, useSource = TRUE, ...)
+Arguments
+x	
+an object used to select a method.
+
+...	
+further arguments passed to or from other methods.
+
+quote	
+logical, indicating whether or not strings should be printed with surrounding quotes.
+
+max.levels	
+integer, indicating how many levels should be printed for a factor; if 0, no extra "Levels" line will be printed. The default, NULL, entails choosing max.levels such that the levels print on one line of width width.
+
+width	
+only used when max.levels is NULL, see above.
+
+digits	
+minimal number of significant digits, see print.default.
+
+na.print	
+character string (or NULL) indicating NA values in printed output, see print.default.
+
+zero.print	
+character specifying how zeros (0) should be printed; for sparse tables, using "." can produce more readable results, similar to printing sparse matrices in Matrix.
+
+right	
+logical, indicating whether or not strings should be right aligned.
+
+justify	
+character indicating if strings should left- or right-justified or left alone, passed to format.
+
+useSource	
+logical indicating if internally stored source should be used for printing when present, e.g., if options(keep.source = TRUE) has been in use.
+
+Details
+The default method, print.default has its own help page. Use methods("print") to get all the methods for the print generic.
+
+print.factor allows some customization and is used for printing ordered factors as well.
+
+print.table for printing tables allows other customization. As of R 3.0.0, it only prints a description in case of a table with 0-extents (this can happen if a classifier has no valid data).
+
+See noquote as an example of a class whose main purpose is a specific print method.
+
+
+```{r}
+# We are going to remove garbage from the chart we created in the last step
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# here we have a chart with the top 20 countries by count from highest to lowest count we named out y value and our x value we gave the chart a title
+```
+# here i'm making a few modifications to the charts display
+
+?theme
+
+Modify components of a theme
+Description
+Themes are a powerful way to customize the non-data components of your plots: i.e. titles, labels, fonts, background, gridlines, and legends. Themes can be used to give plots a consistent customized look. Modify a single plot's theme using theme(); see theme_update() if you want modify the active theme, to affect all subsequent plots. Use the themes available in complete themes if you would like to use a complete theme such as theme_bw(), theme_minimal(), and more. Theme elements are documented together according to inheritance, read more about theme inheritance below.
+
+
+```{r}
+# now we are going to create a bar graph of counts by risk
+gg <- ggplot(data=av, aes(x=Risk))
+gg <- gg + geom_bar(fill="#000099")
+# force a X scale to be just the limits of the data and to be discrete vs continuous
+
+
+gg <- gg + scale_x_discrete(limits=seq(max(av$Risk)))
+gg <- gg + labs(title= "'Risk' Counts", x="Risk Score", y="Count")
+# remove garbage from chart to get more precise info
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# We jsut crated a bar chart called risk counts we named our x and y axis we gave the graph a title and we got all of our data from our av table and the risk column
+```
+?scale_x_discrete
+
+Position scales for discrete data
+Description
+scale_x_discrete() and scale_y_discrete() are used to set the values for discrete x and y scale aesthetics. For simple manipulation of scale labels and limits, you may wish to use labs() and lims() instead.
+
+?seq
+
+Sequence Generation
+
+Description
+Generate regular sequences. seq is a standard generic with a default method. seq.int is a primitive which can be much faster but has a few restrictions. seq_along and seq_len are very fast primitives for two common cases.
+
+```{r}
+# In this part of the handout we are going to create yet another bar graph called bar graph of counts by reliability
+gg <- ggplot(data=av, aes(x=reliability))
+gg <- gg + geom_bar(fill="#000099")
+# force a X scale to be just the limits of the data and to be discrete vs continuous
+gg <- gg + scale_x_discrete(limits=seq(max(av$reliability)))
+gg <- gg + labs(title= "'Reliability' Counts", x="Reliability Score", y="Count")
+# remove garbage from chart to get more precise info
+gg <- gg + theme(panel.grid=element_blank(),
+                 panel.background=element_blank())
+print(gg)
+# we created another bar graph called reliability counts with our y and x axis named and we got the data from our av table and our reliability column
+```
+
+
+```{r}
+country10 <- summary(av$Country, maxsum=10)
+# now we are converting into a percentage by dividing it by the number of rows in av
+
+country.perc10 <- country10/nrow(av)
+print(country.perc10)
+# here we got the top 10 countries and we converted the value they sustained into a percentage by dividing by the number of rows in av and they we are displaying the top in percentage
+
+```
+# here i'm getting an errorbecause its not liking country as a character
+# Error in country10/nrow(av) : non-numeric argument to binary operator
+
+```{r}
+#we are computing a contingency table for risk/reliability factors which is going to produce a matrix
+#of counts of rows that have attributes at each (x,y) location
+rr.tab <- xtabs(~Risk+reliability, data=av)
+print(ftable(rr.tab)) #print the table 
+# we just created another table that shows us what risk and reliability have in common
+```
+# here a matrix is created and shows
+# matrix can show relationships between factors and variablese
+
+?xtabs
+
+Cross Tabulation
+Description
+Create a contingency table (optionally a sparse matrix) from cross-classifying factors, usually contained in a data frame, using a formula interface.
+
+
+?ftable
+
+Flat Contingency Tables
+Description
+Create ‘flat’ contingency tables.
+
+
+```{r}
+#graphical view
+#we need to use a function called levelplot from the lattice package we downloaded at the begining of the handout
+# and we are going to cast the table into a data frame
+rr.df = data.frame(table(av$Risk, av$reliability))
+# now we are going to name our columns
+colnames(rr.df) <- c("Risk", "Reliability", "Freq")
+levelplot(Freq~Reliability*Risk, data=rr.df, main="Risk ~ Reliability",
+          ylab = "Reliability", xlab = "Risk", shrink = c (0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5", "#01665E"))(20))
+# we just created a levelplot wich we got from the lattice packege we donwloaded and we used our Risk and reliability columns to see which is the perfect spot between both of those categories
+```
+# heres a levelplot chart  from lattice pkg
+# using CSS to change colors
+
+?colorRampPalette
+
+Color interpolation
+Description
+These functions return functions that interpolate a set of given colors to create new color palettes (like topo.colors) and color ramps, functions that map the interval [0, 1][0,1] to colors (like grey).
+
+?levelplot
+
+Level plots and contour plots
+Description
+Draws false color level plots and contour plots
+
+```{r}
+# We are going to generate random samples for risk and Reliability and re-run xtab
+#starting PRNG from reproducable point
+set.seed(1492) # as it leads to discovery
+#generate 260,00 random samples
+rel=sample(1:7, 260000, replace=T)
+rsk=sample(1:10,260000, replace=T)
+#Cast the table into a dataframe
+tmp.df = data.frame(table(factor(rsk), factor(rel)))
+# we are going to give the columns names
+colnames(rr.df) <- c("Risk", "Reliability", "Freq")
+levelplot(Freq~Reliability*Risk, data=rr.df, main="Risk ~ Reliability",
+          ylab = "Reliability", xlab = "Risk", shrink = c (0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5", "#01665E"))(20))
+```
+# changing the DF 
+
+?set.seed
+
+Random Number Generation
+Description
+.Random.seed is an integer vector, containing the random number generator (RNG) state for random number generation in R. It can be saved and restored, but should not be altered by the user.
+
+RNGkind is a more friendly interface to query or set the kind of RNG in use.
+
+RNGversion can be used to set the random generators as they were in an earlier R version (for reproducibility).
+
+set.seed is the recommended way to specify seeds.
+
+?sample
+
+Random Samples and Permutations
+Description
+sample takes a sample of the specified size from the elements of x using either with or without replacement.
+
+```{r}
+# We are going to create a new variable called "simpletype & replacing multiple categories with label of"multiples"
+av$simpletype <- as.character(av$Type)
+#Group all nodes with multiple categories into a new category
+av$simpletype[grep(';', av$simpletype)] <- "Multiples"
+#Turn it into a factor once again
+av$simpletype <- factor(av$simpletype)
+rrt.df = data.frame(table(av$Risk, av$reliability, av$simpletype))
+colnames(rrt.df) <- c("Risk", "Reliability", "simpletype","Freq")
+levelplot(Freq ~ Reliability*Risk|simpletype, data=rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5,1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+
+# we jsut created a levelplotjsut like the one before but we added an new column called simpletype which shows us the types and where we see more risk a reliability per type
+```
+# creating more variables and adding to the DF to display
+
+# scanning host column seems to have the highest value
+
+?as.character
+
+Character Vectors
+Description
+Create or test for objects of type "character"
+
+?data.frame
+
+Data Frames
+Description
+The function data.frame() creates data frames, tightly coupled collections of variables which share many of the properties of matrices and of lists, used as the fundamental data structure by most of R's modeling software.
+
+```{r}
+# we are going to go fro the same levelplot but we are filterig out scanning host which was the more popular one in the earlier levelplot
+rrt.df <- subset(rrt.df, simpletype != "Scanning Host")
+levelplot(Freq ~ Reliability*Risk|simpletype, data =rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5, 1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+# here we have the same level plot we had in the earlier example but without scanning host as a category and we see the graph a lot more distributed than before
+
+```
+# same as above but removing the scanning host from the request
+
+# malware domain is the column with the hishest value
+
+```{r}
+rrt.df = subset(rrt.df,
+                !(simpletype %in% c("Malware distribution",
+                                    "Malware Domain")))
+sprintf("Count: %d; Percent: %2.1f%%",
+        sum(rrt.df$Freq),
+        100*sum(rrt.df$Freq)/nrow(av))
+levelplot(Freq ~ Reliability*Risk|simpletype, data =rrt.df,
+          main="Risk ~ Reliability | Type",ylab = "Risk",
+          xlab = "Reliability", shrink = c(0.5, 1),
+          col.regions = colorRampPalette(c("#F5F5F5","#01665E"))(20))
+# here we created another levelplot but with less columns in this case we took off malware distribution and malware domain and yet again we see the numbers better distributed across the graph
+```
+# got count of 15171 and Percent of %5.9
+# same as above with some modification and using the sum function
+# malware IP is the column with the highest value
+
+?sum
+
+Sum of Vector Elements
+Description
+sum returns the sum of all the values present in its arguments.

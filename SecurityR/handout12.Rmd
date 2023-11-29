@@ -1,0 +1,301 @@
+---
+title: "Handout_12_reg-ML"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+getwd()
+```
+
+
+
+
+```{r}
+data<-read.csv("quiz2.csv",header = TRUE,sep = ",")
+data
+```
+
+
+```{r}
+summary(data)
+```
+
+
+```{r}
+str(data)
+```
+
+```{r}
+head(data)
+```
+
+
+```{r}
+model1<-lm(infections~income+pop,data = data)
+summary(model1)
+```
+
+
+```{r}
+vif(model1)
+```
+
+
+```{r}
+confint(model1)
+```
+
+
+
+```{r}
+data1<-data[,c(3,4,5,6,7)]
+```
+
+
+```{r}
+cor.data<-cor(data1)
+cor.data
+```
+
+
+
+
+```{r}
+install.packages("Corrplot")
+```
+
+```{r}
+library(corrplot)
+```
+
+```{r}
+corrplot(cor.data,method = "ellipse")
+```
+
+
+
+```{r}
+install.packages("leaps")
+```
+
+
+```{r}
+library("leaps")
+```
+
+
+```{r}
+model2<-lm(infections~.,data = data1)
+summary(model2)
+```
+
+
+```{r}
+vif(model2)
+```
+
+
+```{r}
+submodel2<-regsubsets(infections~.,data = data1)
+best.summary<-summary(submodel2)
+```
+
+
+
+```{r}
+names(best.summary)
+```
+
+
+
+```{r}
+which.min(best.summary$rss)
+```
+
+```{r}
+par(mfrow=c(1,2))
+```
+
+```{r}
+plot(best.summary$cp,xlab = "number of features",ylab = "cp")
+```
+
+
+```{r}
+which.min(best.summary$bic)
+```
+
+
+
+```{r}
+which.max(best.summary$adjr2)
+```
+
+
+```{r}
+bestsummary.fit1<-lm(infections~income+ufo2010,data = data1)
+```
+
+
+
+```{r}
+summary(bestsummary.fit1)
+```
+
+Make a decision that you think can help us get the best results out of this model.
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(bestsummary.fit1)
+```
+
+
+```{r}
+library(car)
+vif(bestsummary.fit1)
+```
+
+
+
+```{r}
+bestsummary.fit2<-lm(infections~ufo2010,data = data1)
+summary(bestsummary.fit2)
+```
+
+
+```{r}
+bestsummary.fit3<-lm(infections~income,data = data1)
+summary(bestsummary.fit3)
+```
+
+
+Let us run the Breuch-Pagan (BP)test in order to address the heteroskedasticity issue:
+
+
+$H_0$:$sigma^2=0$
+$H_a$:$Otherwise$
+
+```{r}
+install.packages("lmtest")
+```
+
+
+```{r}
+library(lmtest)
+```
+
+
+
+```{r}
+bptest(bestsummary.fit2)
+```
+
+P-value =0.8132 so we do not have enough evidence to reject the null(error variance=0)
+
+
+```{r}
+plot(bestsummary.fit2$fitted.values,data1$infections,xlab = "predicted",ylab = "actual",main = "Actual vs Predicted")
+```
+
+
+
+```{r}
+data1["Actual"]=data$ufo2010
+#create the vector actual
+data1$Forecast=predict(bestsummary.fit2)
+#populate forecast with the predicted values
+```
+
+
+
+```{r}
+library(ggplot2)
+```
+
+
+
+
+```{r}
+ggplot(data1,aes(x=Forecast,y=Actual))+geom_point()
+geom_smooth(method = lm)
+```
+
+I would like you to add a title to the plot obtained above.
+
+We need this package in order to calculate the Prediction Error Sum of Squares.
+
+```{r}
+install.packages("MPV")
+```
+
+
+```{r}
+library(MPV)
+```
+
+
+Let us examine the prediction sum of squares(Press) statistic and selecting the model that has the lowest value.
+
+```{r}
+
+PRESS(model2)#every quantitative predictor
+PRESS(bestsummary.fit1)#income+ufo2010
+PRESS(bestsummary.fit3)#income
+PRESS(bestsummary.fit2)#ufo
+```
+
+
+#Other linear considerations
+Let us discuss first the inclusion of a quantitative variable and second the inclusion of an interaction term.
+
+
+```{r}
+finaldata<-read.csv("finalexam.csv",header = TRUE,sep = ",")
+finaldata
+```
+
+
+```{r}
+install.packages("ISLR")
+```
+
+
+```{r}
+library(ISLR)
+```
+
+
+
+```{r}
+str(data)
+```
+
+
+```{r}
+qualitative.fit<-lm(infections~region+ufo2010,data = finaldata)
+summary(qualitative.fit)
+```
+
+
+
+
+```{r}
+incufo<-finaldata$ufo2010*finaldata$income
+```
+
+
+```{r}
+interaction.fit<-lm(infections~region+incufo,data = finaldata)
+summary(interaction.fit)
+```
+
+```{r}
+PRESS(qualitative.fit)
+PRESS(interaction.fit)
+```
+
+We would have to make a decision when it comes to the model we would like to use.
+

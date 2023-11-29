@@ -1,0 +1,233 @@
+---
+title: "Handout 7"
+output:
+  html_document:
+    df_print: paged
+---
+Please let us use this handout to discuss Associations /Correlations. I would like you to make comments as you run the code we have listed in this handout. In your submission file you should include commments that show a clear understanding of the correlation concept.
+
+```{r}
+mfrow <- par()$mfrow
+mar <- par()$mar
+oma <- par()$oma
+```
+# here creating graphical parameters mrow, mar and oma and assign them to variables to be used later
+
+?par
+
+Set or Query Graphical Parameters
+Description
+par can be used to set or query graphical parameters. Parameters can be set by specifying them as arguments to par in tag = value form, or by passing them as a list of tagged values.
+
+mar
+A numerical vector of the form c(bottom, left, top, right) which gives the number of lines of margin to be specified on the four sides of the plot. The default is c(5, 4, 4, 2) + 0.1.
+
+mfcol, mfrow
+A vector of the form c(nr, nc). Subsequent figures will be drawn in an nr-by-nc array on the device by columns (mfcol), or rows (mfrow), respectively.
+
+In a layout with exactly two rows and columns the base value of "cex" is reduced by a factor of 0.83: if there are three or more of either rows or columns, the reduction factor is 0.66.
+
+Setting a layout resets the base value of cex and that of mex to 1.
+
+If either of these is queried it will give the current layout, so querying cannot tell you the order in which the array will be filled.
+
+Consider the alternatives, layout and split.screen.
+
+oma
+A vector of the form c(bottom, left, top, right) giving the size of the outer margins in lines of text.
+
+# here creating graphical parameters mrow, mar and oma and assign them to variables to be used later
+
+```{r}
+par(mfrow=c(2, 3), mar=c(0, 0, 2, 0), oma=c(1, 1, 1, 1))
+set.seed(2)
+x <- runif(500, min=0, max=pi)
+```
+# here instead of using the defualt values for the graphical parameters adding specific values to mfrow, mar and oma
+
+# set the seed value to 2
+
+# assign x the runif values that generates random deviates
+# number of observations is 500
+# lower and upper limits is 0 and pi
+
+?set.seed
+
+Random Number Generation
+Description
+.Random.seed is an integer vector, containing the random number generator (RNG) state for random number generation in R. It can be saved and restored, but should not be altered by the user.
+
+RNGkind is a more friendly interface to query or set the kind of RNG in use.
+
+RNGversion can be used to set the random generators as they were in an earlier R version (for reproducibility).
+
+set.seed is the recommended way to specify seeds.
+
+set.seed uses a single integer argument to set as many seeds as are required. It is intended as a simple way to get quite different seeds by specifying small integer arguments, and also as a way to get valid seed sets for the more complicated methods (especially "Mersenne-Twister" and "Knuth-TAOCP"). There is no guarantee that different values of seed will seed the RNG differently, although any exceptions would be extremely rare. If called with seed = NULL it re-initializes (see ‘Note’) as if no seed had yet been set.
+
+?runif
+
+The Uniform Distribution
+Description
+These functions provide information about the uniform distribution on the interval from min to max. dunif gives the density, punif gives the distribution function qunif gives the quantile function and runif generates random deviates.
+vector of probabilities.
+
+n	
+number of observations. If length(n) > 1, the length is taken to be the number required.
+
+min, max	
+lower and upper limits of the distribution. Must be finite.
+
+```{r}
+y <- rnorm(500, mean=x, sd=0.2)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Designation: ", round(cor(x,y), 2)))
+```
+# assign values to y
+# 500 to n
+# use x for the mean
+# sd  0.2
+
+# plotting values to a scatterplot
+# using x and y values from what we did earlier
+# pch,cex,col,axes, xlab, ylab are for aesthetics reasons
+# give it a name disgnation
+# use cor for correlation of x and y rounded to 2 places
+
+# scatterplot shows a positive correlation between x and y : incline(r close to 1)
+
+# see details on the syntax below
+
+Make comments about the output as well as the syntax related to the chunk ran above.
+
+?rnorm
+
+The Normal Distribution
+Description
+Density, distribution function, quantile function and random generation for the normal distribution with mean equal to mean and standard deviation equal to sd.
+
+n	
+number of observations. If length(n) > 1, the length is taken to be the number required.
+
+mean	
+vector of means.
+
+sd	
+vector of standard deviations.
+
+?plot
+
+Generic X-Y Plotting
+Description
+Generic function for plotting of R objects.
+Arguments
+x	
+the coordinates of points in the plot. Alternatively, a single plotting structure, function or any R object with a plot method can be provided.
+
+y	
+the y coordinates of points in the plot, optional if x is an appropriate structure.
+
+pch
+a vector of plotting characters or symbols: see points.
+
+cex
+a numerical vector giving the amount by which plotting characters and symbols should be scaled relative to the default. This works as a multiple of par("cex"). NULL and NA are equivalent to 1.0. Note that this does not affect annotation: see below.
+
+col
+The colors for lines and points. Multiple colors can be specified so that each point can be given its own color. If there are fewer colors than points they are recycled in the standard fashion. Lines will all be plotted in the first colour specified.
+
+on the plot.
+
+axes	
+a logical value indicating whether both axes should be drawn on the plot. Use graphical parameter "xaxt" or "yaxt" to suppress just one of the axes.
+
+xlab
+a title for the x axis: see title.
+
+ylab
+a title for the y axis: see title.
+
+?round
+
+round rounds the values in its first argument to the specified number of decimal places (default 0)
+
+?paste
+
+Concatenate Strings
+Description
+Concatenate vectors after converting to character.
+
+
+paste converts its arguments (via as.character) to character strings, and concatenates them (separating them by the string given by sep). If the arguments are vectors, they are concatenated term-by-term to give a character vector result. Vector arguments are recycled as needed, with zero-length arguments being recycled to "" only if recycle0 is not true or collapse is not NULL.
+
+?cor
+
+Correlation, Variance and Covariance (Matrices)
+Description
+var, cov and cor compute the variance of x and the covariance or correlation of x and y if these are vectors. If x and y are matrices then the covariances (or correlations) between the columns of x and the columns of y are computed.
+
+cov2cor scales a covariance matrix into the corresponding correlation matrix efficiently.
+
+```{r}
+y <- rnorm(500, mean=-x, sd=0.3)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Correlation: ", round(cor(x,y), 2)))
+```
+# here did basically the sames as the previous plot but this time changing the mean x to a negative value on the y-axis(slope)
+# sd is 0.3
+# changed the name to correlation
+# plot displays a negative correlation going in a decline
+# r is closest to -1
+
+```{r}
+y <- rnorm(500, mean=sin(x), sd=0.2)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Correlation: ", round(cor(x,y), 2)))
+```
+# here did basically the sames as the previous plot but this time changing the mean x to sin() on the y-axis(slope)
+?sin
+Trigonometric Functions
+Description
+These functions give the obvious trigonometric functions. They respectively compute the cosine, sine, tangent, arc-cosine, arc-sine, arc-tangent, and the two-argument arc-tangent.
+
+cospi(x), sinpi(x), and tanpi(x), compute cos(pi*x), sin(pi*x), and tan(pi*x).
+
+# sd is 0.2
+# plot displays a non linear relationship(parabola)
+# r close to 0
+
+```{r}
+y <- rnorm(500, mean=x, sd=2)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Correlation: ", round(cor(x,y), 2)))
+```
+# here did basically the sames as the previous plot but this time changing the mean back to x on the y-axis(slope)
+# sd is 0.2
+# plot displays no relationship (shapeless)
+# r is close to 0
+
+```{r}
+y <- rnorm(500, mean=-x, sd=1)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Correlation: ", round(cor(x,y), 2)))
+```
+# here did basically the sames as the previous plot but this time changing the mean back to a negative x on the y-axis(slope)
+# sd is 1
+# plot displays a non linear relationship
+# r is is getting closer to -1
+
+
+```{r}
+y <- runif(500, min=0, max=pi)
+plot(x,y, pch=19, cex=.8, col="#666699CC", axes=FALSE, xlab="", ylab="", 
+     main=paste("Correlation: ", round(cor(x,y), 2)))
+```
+# here did basically the sames as the previous plot but this time changing the min to 0 on the y-axis(slope)
+# max to pi
+# plot displays a non linear relationship
+# r is is getting closer to -1
+
+# so basically for all these scatterplots we have manually changed the DV(dependent variable/outcome/response)(Y) which changes the outcome with the cor() to a value that the closer the outcome is to -1,0 or 1 the visual representation will be different and easy to recognize relationships between x and y.
+
+
+

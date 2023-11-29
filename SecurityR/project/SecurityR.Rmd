@@ -1,0 +1,259 @@
+---
+title: "SecurityR"
+output: html_notebook
+---
+
+The purpose of this project is to develop a logistic regression model that can look at the odds of there being a presence of a bening or a spam URL_type.
+
+```{r}
+getwd()
+```
+
+For this model we will be using the group 5 data set.
+
+__Group 5 data set dictionary__
+
+```{r}
+head(final1)
+```
+
+--pathurlRatio: Numerical-Path divided by URL.
+--ArgUrlRatio: Numerical-Ratio of argument and URL.
+--argDomanRatio: Numerical-Argument divided by domain. The argDomanRatio holds the sum of the arguments grouped by the specifies domains, divided by the amount of times a domain is requested. domainUrlRatio: Numerical-Domain divided by URL.
+--DomainUrlRatio – Domain divided by URL.
+--pathDomainRatio-Numerical-Path: divided by Domain. The URL divided by the domain is the domain Path Domain ratio.
+--argPathRatio: Numerical-Ratio of argument and path.
+--CharacterContinuityRate – Used to find the sum of the longest token length of each character type in the domain.
+--NumberRate_URL: Numerical-Number rate calculate the proportion of digits in the URL part of URL itself.
+--NumberRate_FileName: Numerical-Number rate calculate the proportion of digits in the URL part of filename.
+--NumberRate_AfterPath: Numerical-Number rate calculate the proportion of digits in the URL parts of part after the path.
+--Entropy_Domain: Numerical-Malicious websites often insert additional characters in the URL to make it look like a legitimate. e.g, CITI can be written as CIT1, by replacing last alphabet I with digit 1. English text has fairly low entropy i.e., it is predictable. By inserting characters the entropy changes than usual. For identifying the randomly generated malicious URLs, alphabet entropy is used. A formula is used to calculate the information entropy.
+
+```{r}
+final1<-read.csv("group5.csv",sep = ",",header = TRUE)
+```
+
+we made a new shorter value to make it essayer to call our data set.
+
+
+```{r}
+mydata1<-na.omit(final1)
+```
+we then create an other value that omits all incomplete vectors from out data set.
+
+
+let us first review our new and imporved data set before moving on
+```{r}
+summary(mydata1)
+```
+
+```{r}
+str(mydata1)
+```
+
+
+
+Since the purpose of this project is to see if a URL is malware or a Defacement we should create a new vaule that only retrievers the data from class.
+
+```{r}
+mydata1$class<-as.factor(mydata1$class)
+```
+
+
+```{r}
+str(mydata1)
+```
+
+Since logistic regression models only can use numeric values we need to change all of the classes values to 0s and 1s 
+```{r}
+mydata1$class <- ifelse(mydata1$class == "Defacement", 1, 0)
+```
+Defacement = 1
+malware = 0
+
+
+
+```{r}
+View(mydata1)
+```
+
+
+__Train and Test Data__
+
+The reason why we created two different data sets from the original one is so that we can improve our ability so as to accurately predict the previously unused or unseen data.
+
+
+Now we are going to be splitting the data in to 70/30 to help `train` and `test` our malware detecting AI. 70% percent of the data will be used to train the AI will the other 30% will be used to test our new AI.
+
+```{r}
+set.seed(123)  # random number generator
+ind <- sample(2, nrow(mydata1), replace = TRUE, prob = c(0.9, 0.1))
+```
+
+First lets Partitions the data
+
+```{r}
+train1 <- mydata1[ind==1, ]  #the training set
+
+test1 <- mydata1[ind==2, ]   # the testing set 
+```
+
+let us now look at and confirm the dimensions of these two new vaules.
+
+
+```{r}
+dim(train1)
+dim(test1)
+```
+
+
+
+
+We need to make sure that these new values has a well-balanced outcome variable between the two data sets to do this lets use table to see the amount of each variable in the new vaule.
+
+```{r}
+table(train1$class)
+table(test1$class)
+```
+
+This ratio is just what we need now we can start training and testing our AI
+
+
+
+# Modeling and Evaluation
+
+for the logistic regression model We will be using the function `glm()` 
+
+An R installation comes with the `glm()` function fitting the **generalized linear models**, which are a class of models that includes logistic regression. The code syntax is similar to the `lm()` function that we used for linear regression. One difference is that we must use the `family = binomial` argument in the function, which tells R to run a logistic regression method instead of the other versions of the generalized linear models. We will start by creating a model that includes all of the features on the train set and see how it performs on the test set:
+
+
+```{r}
+attach(train1)
+```
+
+
+
+
+```{r}
+full.fit <- glm(class ~ ., family = binomial, data = train1)
+```
+
+Create a summary of the model:
+
+```{r}
+summary(full.fit)
+```
+
+
+Since the coefficients in logistic regression  cannot be translated due to "the change in Y is based on one-unit change in X", we convert The beta coefficients from the log function into odds ratios with an exponent (beta).
+
+To create these odds ratios in R, we will use the `exp(coef())` syntax.
+```{r}
+exp(coef(full.fit))
+```
+
+
+The interpretation of an odds ratio is the change in the outcome odds resulting from a unit change in the feature. If the value is greater than 1, it indicates that, as the feature increases, the odds of the outcome increase. Conversely, a value less than 1 would mean that, as the feature increases, the odds of the outcome decrease.
+
+
+Let us now run a model with the coefficients with the lowest p-values.
+
+
+
+## Testing the model
+
+You will first have to create a vector of the predicted probabilities, as follows:
+
+```{r}
+train.probs <- predict(full.fit, type = "response")
+# inspect the first 5 probabilities
+# train.probs[1:5]
+```
+created a vector for predicting with probabilities
+
+Next, we need to evaluate how well the model performed in training and then evaluate how it fits on the test set. A quick way to do this is to produce a confusion matrix. The default value by which the function selects either benign or malignant is 0.50, which is to say that any probability at or above 0.50 is classified as malignant:
+
+
+```{r}
+
+trainY1<-mydata1$class[ind==1]
+testY1<-mydata1$class[ind==2]
+
+```
+
+Use a confusion matrix to compare the test to train
+
+```{r}
+install.packages("caret")
+
+```
+
+```{r}
+#library(caret)
+```
+
+
+```{r}
+install.packages("InformationValue")
+```
+
+
+```{r}
+library(InformationValue)
+```
+
+
+```{r}
+confusionMatrix(trainY1,train.probs)
+```
+
+read out of the confusion matrix
+
+```{r}
+misClassError(trainY1, train.probs)
+```
+?misClassError
+
+Calculate the percentage misclassification error for the given actuals and probaility scores
+
+16% chance of classification error in probability score in training
+
+```{r}
+test.probs <- predict(full.fit, newdata = test1, type = "response")
+```
+
+create a fit for testing prediction 
+assign to test.probs
+
+```{r}
+#misclassification error
+misClassError(testY1, test.probs)
+```
+18% chance of classification error in probability score in testing
+
+
+```{r}
+# confusion matrix
+confusionMatrix(testY1, test.probs)
+```
+Higher chance of error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

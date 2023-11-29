@@ -1,0 +1,465 @@
+---
+title: "Getting Started with R,Part II"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  html_notebook: default
+---
+
+Let us continue getting started with R as we start discussing important statistical concepts.
+
+
+## Case-scenario 1
+Kate must take four quizzes in a math class. If her scores on the first three quizzes are 71, 69, and 79, what score does she need on the final quiz for her overall mean to be at least 70?
+
+## Solution
+
+Given that 
+$x_1 = 71, x_2 = 69, x_3 = 79$
+
+we want to find $x_4$ such that the mean (average) grade is 
+$\bar{x} >= 70$
+
+Notice that in this case $n = 4$.
+
+According to the information above:
+$70 /times 4 = 71 + 69 + 79 + x_4$
+
+so when $x_4 = 61$, the quiz average will be 70.
+
+
+```{r}
+# Grades so far
+# vector created is called grades_before
+grades_before <- c(71, 69, 79)
+# Average quiz grade wanted
+# This is the grade we are testing against
+wanted_grade <- 70
+# Number of quizzes
+# intervals
+n_quizzes <- 4
+# Needed grade on quiz 4
+# x_4 is the value overall value
+x_4 <- n_quizzes*wanted_grade - sum(grades_before)
+# Minimum grade needed by Kate
+x_4
+# highlight. ctrl + enter
+```
+[1] 61
+According to the calculations above, Kate must score 61 or better on the final quiz to get an average quiz grade of at least 70.
+
+
+We could confirm this, by using the function `mean()` in `R`
+
+```{r}
+# Quiz grades
+kate_grades <- c(71, 69, 79,61)
+# Find mean
+# mean function
+mean(kate_grades)
+# Find standard deviation
+# sd function
+sd(kate_grades)
+# Find maximum grade
+# max function
+max(kate_grades)
+# Find minimum grade
+# min function
+min(kate_grades)
+# highlight. ctrl + enter
+```
+[1] 70
+[1] 7.393691
+[1] 79
+[1] 61
+We can also use the `summary()` function to find basic statistics, including the median!
+
+```{r}
+# summary is a generic function used to produce result summaries of the results of various model fitting functions. The function invokes particular methods which depend on the class of the first argument.
+summary(kate_grades)
+# highlight. ctrl + enter
+```
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+     61      67      70      70      73      79
+
+Next, I would like you to explain in detail every single task we completed above. 
+_ Kate needed to know what grade she needed to get for her last quiz to get at least a 70 for overall quiz grade
+_ We have 3 quiz grades x1=71  x2=69 + x3=79 
+_ vector created is called grades_before
+_ The grade we want to test against is 70
+_ 4 intervals for the overall quizzes
+_ plug into formula 
+_ $70 /times 4 = 71 + 69 + 79 + x_4$
+_ answer comes to 61
+_ so the lowest grade kate can get is a 61
+
+_ ways to confirm is plug the value 61 into a vector and use the mean function to test against or summary function which will spit out mean, standard deviation, max, and min for specified vector
+
+###Now let us go back to Case-scenario 1
+
+Another useful function is `quantile` to find 
+```{r}
+# The generic function quantile produces sample quantiles corresponding to the given probabilities. The smallest observation corresponds to a probability of 0 and the largest to a probability of 1.
+# the 25% 
+# here a quarter observation
+quantile(kate_grades, 1/4)
+# the 75%
+# here a three quarter observation
+quantile(kate_grades, 3/4)
+# The interquartile range of an observation variable is the difference of its upper and lower quantiles. It is a measure of how far apart the middle portion of data spreads in value
+# the function IQR finds the interquartile range
+# IQR(x) = quantile(x, 3/4) - quantile(x, 1/4)
+IQR(kate_grades)
+# highlight. ctrl + enter
+```
+25% 
+ 67 
+75% 
+ 73 
+[1] 6
+
+Make comments about the output
+_ The generic function quantile produces sample quantiles corresponding to the given probabilities. The smallest observation corresponds to a probability of 0 and the largest to a probability of 1.
+_ we made observations with the upper and lower quantile
+_ The interquartile range of an observation variable is the difference of its upper and lower quantiles. It is a measure of how far apart the middle portion of data spreads in value
+_ interquartile subtracts the upper and lower quantiles
+
+In addition, let us deal with a similar case scenario and complete every single task we execute in Case-scenario 1.
+
+Frank must take six quizzes in a Physics class. If his scores on the first five quizzes are 41,69,63,94, and 99, what score does he need on the final quiz for his overall mean to be at least 70?
+run a similar query using Frank_grades
+
+```{r}
+# Grades so far
+# vector created is called grades_before
+grades_before <- c(41,69,63,94,99)
+# Average quiz grade wanted
+# This is the grade we are testing against
+wanted_grade <- 70
+# Number of quizzes
+# intervals
+n_quizzes <- 6
+# Needed grade on quiz 4
+# x_4 is the value overall value
+x_6 <- n_quizzes*wanted_grade - sum(grades_before)
+# Minimum grade needed by Kate
+x_6
+# highlight. ctrl + enter
+```
+
+```{r}
+# Quiz grades
+frank_grades <- c(41,69,63,94,99,54)
+# Find mean
+# mean function
+mean(frank_grades)
+# Find standard deviation
+# sd function
+sd(frank_grades)
+# Find maximum grade
+# max function
+max(frank_grades)
+# Find minimum grade
+# min function
+min(frank_grades)
+# highlight. ctrl + enter
+# summary is a generic function used to produce result summaries of the results of various model fitting functions. The function invokes particular methods which depend on the class of the first argument.
+summary(frank_grades)
+# highlight. ctrl + enter
+# The generic function quantile produces sample quantiles corresponding to the given probabilities. The smallest observation corresponds to a probability of 0 and the largest to a probability of 1.
+# the 25% 
+# here a quarter observation
+quantile(frank_grades, 1/4)
+# the 75%
+# here a three quarter observation
+quantile(frank_grades, 3/4)
+# The interquartile range of an observation variable is the difference of its upper and lower quantiles. It is a measure of how far apart the middle portion of data spreads in value
+# the function IQR finds the interquartile range
+# IQR(x) = quantile(x, 3/4) - quantile(x, 1/4)
+IQR(frank_grades)
+# highlight. ctrl + enter
+```
+_ frank needed to know what grade she needed to get for her last quiz to get at least a 70 for overall quiz grade
+_ We have 3 quiz grades 41,69,63,94,99 
+_ vector created is called grades_before
+_ The grade we want to test against is 70
+_ 6 intervals for the overall quizzes
+_ plug into formula 
+_ $70 /times 6 = 41+69+63+94+99+x_6$
+_ answer comes to 54
+_ so the lowest grade frank can get is a 54
+
+_ ways to confirm is plug the value 54 into a vector and use the mean function to test against or summary function which will spit out mean, standard deviation, max, and min for specified vector
+_ The generic function quantile produces sample quantiles corresponding to the given probabilities. The smallest observation corresponds to a probability of 0 and the largest to a probability of 1.
+_ we made observations with the upper and lower quantile
+_ The interquartile range of an observation variable is the difference of its upper and lower quantiles. It is a measure of how far apart the middle portion of data spreads in value
+_ interquartile subtracts the upper and lower quantiles
+
+# Case-scenario 2
+
+The average salary of 10 men is 72,000 and the average salary of 4 women is 84,000. Find the mean salary of all 14 people.
+
+## Solution
+
+We can easily find the joined mean by adding both mean and dividing by the total number of people.
+
+Let $n_1 = 10$ denote the number of men, and $y_1 = 72000$ their mean salary. Let $n_2 = 4$ the number of women and $y_2 = 84000$ their mean salary.
+Then the mean salary of all 16 individuals is:
+$\frac{n_1 x_1 + n_2 x_2}{n_1 + n_2}$
+
+We can compute this in R as follows:
+
+```{r}
+n_1 <- 10
+n_2 <- 4
+y_1 <- 72000
+y_2 <- 84000
+# Mean salary overall
+salary_ave <-  (n_1*y_1 + n_2*y_2)/(n_1+n_2)
+salary_ave
+# highlight. ctrl + enter
+```
+[1] 75428.57
+Solve a similar problem by changing number of men and women as well as the average income for each group. Make comments about the output.
+
+# Case-scenario 2 part b
+
+The average salary of 50 men is 100,000 and the average salary of 40 women is 120,000. Find the mean salary of all 90 people.
+
+## Solution part b
+
+We find the joined mean by adding both mean and dividing by the total number of people.
+
+Let $n_1 = 50$ denote the number of men, and $y_1 = 100000$ their mean salary. Let $n_2 = 40$ the number of women and $y_2 = 120000$ their mean salary.
+Then the mean salary of all 16 individuals is:
+$\frac{n_1 x_1 + n_2 x_2}{n_1 + n_2}$
+
+We can compute this in R as follows:
+
+```{r}
+n_1 <- 50
+n_2 <- 40
+y_1 <- 100000
+y_2 <- 120000
+# Mean salary overall
+salary_ave <-  (n_1*y_1 + n_2*y_2)/(n_1+n_2)
+salary_ave
+# highlight. ctrl + enter
+```
+# average salary for both female and male is 108888.9
+
+# Case-scenario 3
+
+The frequency distribution below lists the results of a test given in Professor Wang's String theory class.
+
+Score   |   Number of students
+--------|----------------------
+10      | 5
+9       | 10
+8       | 6
+7       | 8
+6       | 3
+5       | 2
+
+1. Find the mean,the median and the standard deviation of the scores.
+
+2. What percentage of the data lies within one standard deviation of the mean?
+
+3. What percentage of the data lies within two standard deviations of the mean?
+
+4. What percent of the data lies within three standard deviations of the mean? 
+
+5. Draw a histogram to illustrate the data. 
+
+## Solution
+
+The `allScores.csv` file contains all the students' scores in the quiz. We can read this file in `R` using the `read.csv()` function (hint:First create a csv file with 6 rows and 2 columns)
+
+```{r}
+# read.table function is used to read a file that contains tabular data
+# read.table assumes there is no header row so what true to have a header
+# and we use sep as a delimiter
+scores <- read.table("allScores.csv", header = TRUE, sep = ",")
+WangScores <- scores$Score
+# highlight. ctrl + enter
+```
+
+Make comments about the code we just ran above.  
+
+1. To find the mean and the standard deviation
+
+```{r}
+# Mean 
+# mean function is for average
+Scores_mean  <- mean(WangScores)
+Scores_mean
+# Median function is for middle value
+Scores_median <- median(WangScores)
+Scores_median
+# Find number of observations
+# length function can find the length for n
+Scores_n <- length(WangScores)
+Scores_n
+# Find standard deviation
+# sd gives me the standard deviation
+Scores_sd <- sd(WangScores)
+Scores_sd
+# highlight. ctrl + enter
+```
+[1] 8 - mean
+[1] 8 - median
+[1] 34 - n
+[1] 1.435481 -sd
+
+2. What percentage of the data lies within one standard deviation of the mean?
+
+```{r}
+scores_w1sd <- sum((WangScores - Scores_mean)/Scores_sd < 1)/ Scores_n
+# so here we have formula for 1sd of the mean
+# Percentage of observation within one standard deviation of the mean
+scores_w1sd
+## Difference from empirical 
+# The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w1sd - 0.68
+# highlight. ctrl + enter
+```
+[1] 0.8529412 - one standard deviation from the mean 
+[1] 0.1729412 - empirical difference 68% of data values fall within one standard deviation of the mean
+
+3. What percentage of the data lies within two standard deviations of the mean?
+
+```{r}
+## Within 2 sd
+scores_w2sd <- sum((WangScores - Scores_mean)/ Scores_sd < 2)/Scores_n
+scores_w2sd
+## Difference from empirical 
+# The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w2sd - 0.95
+# highlight. ctrl + enter
+```
+[1] 1 - two standard deviations from the mean
+[1] 0.05 - empirical difference 95% of data values fall within one standard deviation of the mean
+
+4. What percent of the data lies within three standard deviations of the mean?
+
+```{r}
+## Within 3 sd 
+scores_w3sd <- sum((WangScores - Scores_mean)/ Scores_sd < 3)/Scores_n
+scores_w3sd
+## Difference from empirical # The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w3sd - 0.9973
+# highlight. ctrl + enter
+```
+[1] 1
+[1] 0.0027 - empirical difference 99.7% of data values fall within one standard deviation of the mean
+Explain the implications of the results obtained in this problem. In addition, create a similar query but this time addressing Frank_Scores
+
+5. Draw a histogram
+
+```{r}
+# Create histogram
+# hist function is used to create a histogram
+hist(WangScores)
+# highlight. ctrl + enter
+```
+Explain the output: 
+# from the output i can see that wangs 8 to 9 score happens most frequently at 10
+
+Create a similar histogram for Frank_Scores:
+
+1(frank). To find the mean and the standard deviation?
+
+```{r}
+# Mean 
+# mean function is for average
+Scores_mean  <- mean(frank_grades)
+Scores_mean
+# Median function is for middle value
+Scores_median <- median(frank_grades)
+Scores_median
+# Find number of observations
+# length function can find the length for n
+Scores_n <- length(frank_grades)
+Scores_n
+# Find standard deviation
+# sd gives me the standard deviation
+Scores_sd <- sd(frank_grades)
+Scores_sd
+# highlight. ctrl + enter
+```
+[1] 70 - mean
+[1] 66 - median
+[1] 6 - n
+[1] 22.64509 - sd
+
+2(frank). What percentage of the data lies within one standard deviation of the mean?
+
+```{r}
+scores_w1sd <- sum((frank_grades - Scores_mean)/Scores_sd < 1)/ Scores_n
+# so here we have formula for 1sd of the mean
+# Percentage of observation within one standard deviation of the mean
+scores_w1sd
+## Difference from empirical 
+# The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w1sd - 0.68
+# highlight. ctrl + enter
+```
+[1] 0.6666667 - one sd
+[1] -0.01333333 - # 68% of data values fall within one standard deviation of the mean
+
+3(frank). What percentage of the data lies within two standard deviations of the mean?
+
+```{r}
+## Within 2 sd
+scores_w2sd <- sum((frank_grades - Scores_mean)/ Scores_sd < 2)/Scores_n
+scores_w2sd
+## Difference from empirical 
+# The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w2sd - 0.95
+# highlight. ctrl + enter
+```
+[1] 1 - 2 sd
+[1] 0.05 - # 95% of data values fall within two standard deviations of the mean.
+
+4(frank). What percent of the data lies within three standard deviations of the mean?
+
+```{r}
+## Within 3 sd 
+scores_w3sd <- sum((frank_grades - Scores_mean)/ Scores_sd < 3)/Scores_n
+scores_w3sd
+## Difference from empirical # The Empirical Rule, sometimes called the 68-95-99.7 rule, states that for a given dataset with a normal distribution:
+# 68% of data values fall within one standard deviation of the mean.
+# 95% of data values fall within two standard deviations of the mean.
+# 99.7% of data values fall within three standard deviations of the mean.
+scores_w3sd - 0.9973
+# highlight. ctrl + enter
+```
+[1] 1 - 3 sd
+[1] 0.0027 - # 99.7% of data values fall within three standard deviations of the mean.
+
+5(frank). Draw a histogram
+
+```{r}
+# Create histogram
+# hist function is used to create a histogram
+hist(frank_grades)
+# highlight. ctrl + enter
+```
+
+## Histograms shows that frank grades are evenly distributed?

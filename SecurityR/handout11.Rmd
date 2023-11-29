@@ -1,0 +1,215 @@
+---
+title: "Handout_11"
+output:
+  html_document:
+    df_print: paged
+---
+
+ctrl+alt+r
+read all
+
+```{r}
+data<-read.csv("quiz2.csv",header = TRUE,sep = ",")
+data
+```
+
+read the csv file quiz2 with the headers
+by just putting the name of created variable data
+it gives me a readout i think is better than View() 
+
+```{r}
+summary(data)
+```
+
+use summary() with data to get a read out 
+subregion and region are chars
+the rest are int
+
+```{r}
+str(data)
+```
+
+i get another read out which i like str()
+i can see the data types associated to each var
+29 obs of 7 vars
+
+```{r}
+head(data)
+```
+
+head() will give me a readout of the top rows of the dataset
+
+```{r}
+model1<-lm(infections~income+pop,data = data)
+summary(model1)
+```
+
+get anova read out with income and pop as x
+infections as the DV
+assign to model1
+
+```{r}
+confint(model1)
+```
+
+i can use confint()
+?confint
+
+Computes confidence intervals for one or more parameters in a fitted model. There is a default and a method for objects inheriting from class "lm"
+
+Let us proceed to remove regions and subregions and test for multicolinearility. 
+
+
+```{r}
+data1<-data[,c(3,4,5,6,7)]
+data1
+```
+
+i removed the first 2 columns by not including them when i assigned the df to new var
+data1
+i like this way much better than Vew()
+
+```{r}
+cor.data<-cor(data1)
+cor.data
+```
+cor() computes the correlation of x and y 
+assign to cor.data
+get the read out
+the values closest to 1 have the strongest positive relationship
+
+```{r}
+#install.packages("Correlplot")
+
+install.packages("contrib.url")
+install.packages("corrplot")
+```
+
+```{r}
+library(corrplot)
+```
+
+R package corrplot provides a visual exploratory tool on correlation matrix that supports automatic variable reordering to help detect hidden patterns among variables.
+
+corrplot is very easy to use and provides a rich array of plotting options in visualization method, graphic layout, color, legend, text labels, etc. It also provides p-values and confidence intervals to help users determine the statistical significance of the correlations.
+
+```{r}
+corrplot(cor.data,method = "ellipse")
+```
+
+**Visualization methods in corrplot**
+
+There are seven visualization methods (parameter method) in corrplot package, named "circle", "square", "ellipse", "number", "shade", "color", "pie".
+
+Positive correlations are displayed in blue and negative correlations in red color. Color intensity and the size of the circle are proportional to the correlation coefficients.
+
+Let us now proceed to install the leap package in order to do further analysis of the model. 
+
+closest to one is the correlation between ip address and ufo 2010 sightings
+
+```{r}
+install.packages("leaps")
+library("leaps")
+```
+
+install packages leaps
+
+leaps() performs an exhaustive search for the best subsets of the variables in x for predicting y in
+linear regression, using an efficient branch-and-bound algorithm. It is a compatibility wrapper for
+regsubsets does the same thing better.
+Since the algorithm returns a best model of each size, the results do not depend on a penalty model
+for model size: it doesn’t make any difference whether you want to use AIC, BIC, CIC, DIC, ...```{r}
+model2<-lm(infections~.,data = data1)
+summary(model2)
+
+Let us proceed to use regsubsets (a function for model selection)
+
+```{r}
+submodel2<-regsubsets(infections~.,data = data1)
+best.summary<-summary(submodel2)
+best.summary
+```
+
+?regsubsets
+Model selection by exhaustive search, forward or backward stepwise, or sequential replacement
+
+use the regsubsets to see which predictors will display correlations with * 
+the more * the stronge the relationship
+
+ufo2010 has the most *
+ranked 1
+
+```{r}
+names(best.summary)
+```
+
+?names
+Functions to get or set the names of an object.
+
+use names() to get the best available functions to get or set names of a var
+
+```{r}
+which.min(best.summary$rss)
+```
+
+which.min() will give me the min value for the calculated residual sum of squares 
+which is 4
+
+```{r}
+par(mfrow=c(1,2))
+```
+
+?par
+par can be used to set or query graphical parameters. Parameters can be set by specifying them as arguments to par in tag = value form, or by passing them as a list of tagged values
+
+?mfrow
+The mfrow and mfcol parameters allow you to create a matrix of plots in one plotting space. Both parameters take a vector of length two as an argument, corresponding to the number of rows and columns in the resulting plotting matrix. 
+
+```{r}
+plot(best.summary$cp,xlab = "number of features",ylab = "cp")
+```
+
+plotting the chart with number of feature on the x axis
+plotting the chart with cp on the y axis
+using the best.summary variable
+
+```{r}
+which.min(best.summary$bic)
+```
+
+The Bayesian Information Criterion, often abbreviated BIC, is a metric that is used to compare the goodness of fit of different regression models
+
+In practice, we fit several regression models to the same dataset and choose the model with the lowest BIC value as the model that best fits the data
+
+adjusted best.summary with bic which is a metric that is used to compare the goodness of fit of different regression models 
+
+use which.min() to find the min value = 1
+
+```{r}
+which.max(best.summary$adjr2)
+```
+
+adjR2: Adjusted coefficient of determination
+
+Calculates the adjusted coefficient of determination of a multiple linear regression model
+
+adjusted best.summary with adjr2 which calculates the adjusted coefficient of determination of a multiple linear regression model
+
+use which(max) to find the max value =2
+
+```{r}
+bestsummary.fit1<-lm(infections~income+ufo2010,data = data1)
+```
+
+use lm() to use anova with infections as DV(y) and income(x) + ufo2010(x)
+
+```{r}
+summary(bestsummary.fit1)
+```
+
+Make a decision that you think can help us get the best results out of this model.
+
+with the read out i see Ho the null hypothesis as being correct beacuse no p-value is lower than alpha
+
+so i think i need to add more x(predictors) to the equation
+

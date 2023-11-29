@@ -1,0 +1,204 @@
+---
+title: "RANSOMWARE_RANSOMBO"
+output: html_notebook
+---
+
+Please be aware that the comments below are for those groups in which the response variable has only one category, Ransomware.
+
+At this point, most teams are working with datasets whose response variables have two different categories e.g (benign and defacement).
+
+
+Every output obtained is for the label **RANSOMWARE_RANSOMBO**. Therefore any potential research question should start with the inclusion of the phrase **Given that the label is RANSOMWARE_RANSOMBO we predict (or we think) that.....**. I would like to mention that the two clusters obtained at the end of this tutorial will need further analysis and/or correction and/or customization.
+
+We first read the file and explore the number of columns present in the dataset
+
+```{r}
+final_2<-read.csv("group5.csv",sep = ",",header = TRUE)
+print(final_2)
+```
+
+I now decided to work certain group of columns. You can make a totally different decision.
+
+```{r}
+final_22<-final_2[,c(2,3,4,5,6,8,9,10,11,12)]
+```
+
+I now want to inspect the new data set
+
+```{r}
+print(final_22)
+```
+
+
+Let us run the function summary in order to get more details about our partial dataset.
+
+```{r}
+summary(final_22)
+```
+
+```{r}
+str(final_22)
+```
+
+Based on the result of the lines of code ran above I nwo want to explore two variables, Destination.Port and Protocol.
+
+```{r}
+print(final_22$Destination.Port)
+```
+
+The mode for the field Destination.Port seems to be 443. Therefore, let us create a categorical variable because R is reading this fied as continuous.
+
+Let us now apply some data manipulation techniques in order to have two classes for Destination.Port and Protocol. As I mentioned above, you can take  a totally different path.
+
+```{r}
+# Check if there are any rows with Destination.Port == "443"
+if (any(final_22$Destination.Port == "443")) {
+  final_22$Destination.Port <- ifelse(final_22$Destination.Port == "443", 1, 10708)
+} else {
+  # Handle the case when there are no matches
+  final_22$Destination.Port <- NA  # or any other default value
+}
+```
+
+
+```{r}
+# final_22$Destination.Port <- ifelse(final_22$Destination.Port == "443", 1, 10708)
+```
+
+
+
+```{r}
+final_22$Destination.Port <- factor(final_22$Destination.Port)
+```
+
+Let us confirm that the tasks just completed above ended in success by running the View function.
+
+```{r}
+View(final_22$Destination.Port)
+```
+
+
+```{r}
+# final_22$Protocol <- ifelse(final_22$Protocol == "6", 1, 0)
+# Check if there are any non-NA elements with the value "6" in the Destination.Port column
+if (any(final_22$Destination.Port == "6", na.rm = TRUE)) {
+  # Replace "6" with 1, and all other non-NA values with 10708
+  final_22$Destination.Port <- ifelse(final_22$Destination.Port == "6", 1, 10708)
+} else {
+  # Handle the case when there are no matches or all values are NA
+  final_22$Destination.Port <- NA  # or any other default value
+}
+
+```
+
+```{r}
+final_22$Protocol <- factor(final_22$Protocol)
+```
+
+
+Let us confirm the output is the one we are looking for the variable Protocol.
+
+```{r}
+View(final_22$Protocol)
+```
+
+Let us install (if necessary)the packages needed for this activity.
+
+```{r}
+pkg <- c("ggplot2", "RColorBrewer")
+new.pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)  
+}
+```
+
+
+Let us use ggplot to analyze the Packets flow as a function of the Destination.Port knowing the label is **RANSOMWARE_RANSOMBO**.
+
+```{r}
+library(ggplot2)
+gg <- ggplot(final_22, aes(final_22$Total.Fwd.Packets, final_22$Total.Backward.Packets, color=Destination.Port))
+gg <- gg + scale_color_brewer(palette="Set2")
+gg <- gg + geom_point(size=3) + theme_bw()
+print(gg)
+```
+
+You would need to add a title, to properly label the axis and also include a regression line if possible. In invite you to make comments and discuss the output in detail.
+
+
+
+```{r}
+library(ggplot2)
+gg <- ggplot(final_22, aes(final_22$Total.Fwd.Packets, final_22$Total.Backward.Packets, color=Protocol))
+gg <- gg + scale_color_brewer(palette="Set2")
+gg <- gg + geom_point(size=3) + theme_bw()
+print(gg)
+```
+
+
+You would need to add a title, to properly label the axis and also include a regression line if possible. It is important to mention that I am expecting you to include as much information as possible regarding the information security fields used for this project.
+
+Before starting the clusters analysis let us set the number of data points to a comfortable range. In other words, we do not find the default conditions for this particular problem sufficient.
+
+```{r}
+options(max.print=1000000)
+```
+
+We are using fields 7 and 8 from our dataset and we are clustering by Destination.Port (two levels). Please make as many comments as possible about this.
+
+```{r}
+set.seed(20)
+project_cluster <- kmeans(final_22[, 7:8], 2, nstart = 20)
+project_cluster
+```
+
+
+Make comments about the output obtained above. Find as much documentation as possible and/or consult the instructor (myself) in order to support your answers.
+
+```{r}
+table(project_cluster$cluster, final_22$Destination.Port)
+```
+
+
+```{r}
+project_cluster$cluster <- as.factor(project_cluster$cluster)
+ggplot(final_22, aes(final_22$Total.Fwd.Packets, final_22$Total.Backward.Packets, color = project_cluster$cluster)) + geom_point()+ggtitle(paste( "clusters"))
+```
+
+
+
+I encourage you to add a a reasonable title, properly label the axis and include as much information as possible about the output.
+
+ I remind you this is just some general approach to the problem. I encourage you to improve the accuracy of every tool we have used in this unsupervised machine learning example.
+ 
+I am again exploring the two classes we used to support our decision.
+
+```{r}
+summary(final_22$Destination.Port)
+```
+
+```{r}
+summary(final_22$Protocol)
+```
+
+Let us now cluster by Protocol.
+
+```{r}
+table(project_cluster$cluster, final_22$Protocol)
+```
+
+
+```{r}
+project_cluster$cluster <- as.factor(project_cluster$cluster)
+ggplot(final_22, aes(final_22$Total.Fwd.Packets, final_22$Total.Backward.Packets, color = project_cluster$cluster)) + geom_point()+
+ ggtitle(paste( "clusters"))
+  
+
+```
+
+
+
+In order to make corrections to the output obtained in the cluster above we can redefine both  Protocol and Destination Port in order to obtain a reasonble results. Otherwise, we could subset our dataset in order to obtain a more accurate output. The idea of this tutorial is to get you started and/or contribute to the work you have done already.
+
+
+

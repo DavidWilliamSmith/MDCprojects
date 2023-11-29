@@ -1,0 +1,406 @@
+---
+title: "Handout 6"
+output: html_notebook
+---
+
+```{r}
+# set working directory to chapter location
+# (change for where you set up files in ch 2)
+setwd("~/book/ch04")
+# make sure the packages for this chapter
+# are installed, install if necessary
+pkg <- c("bitops", "ggplot2", "mapproj", "stringr", "maps",
+         "grid", "gridExtra", "RColorBrewer", "igraph",
+         "colorspace", "scales", "stringr", "reshape2")
+new.pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)) {
+  install.packages(new.pkg)  
+}
+```
+
+
+```{r}
+# requires packages: bitops
+library(bitops) # load the bitops functions
+
+# Define functions for converting IP addresses to/from integers
+# take an IP address string in dotted octets (e.g. "192.168.0.1")
+# and convert it to a 32-bit long integer (e.g. 3232235521)
+ip2long <- function(ip) {
+  # convert string into vector of characters
+  ips <- unlist(strsplit(ip, '.', fixed=TRUE))
+  # set up a function to bit-shift, then "OR" the octets
+  octet <- function(x,y) bitOr(bitShiftL(x, 8), y)
+  # Reduce applys a function cumulatively left to right
+  Reduce(octet, as.integer(ips))
+}
+
+```
+
+
+
+
+```{r}
+# take an 32-bit integer IP address (e.g. 3232235521)
+# and convert it to a (e.g. "192.168.0.1").
+long2ip <- function(longip) {
+  # set up reversing bit manipulation
+  octet <- function(nbits) bitAnd(bitShiftR(longip, nbits), 0xFF)
+  # Map applys a function to each element of the argument
+  # paste converts arguments to character and concatenates them
+  paste(Map(octet, c(24,16,8,0)), sep="", collapse=".")
+}
+```
+
+
+
+```{r}
+long2ip(ip2long("192.168.0.0"))
+```
+
+
+
+```{r}
+long2ip(ip2long("192.168.100.6"))
+```
+
+
+
+```{r}
+# Define function to test for IP CIDR membership
+# take an IP address (string) and a CIDR (string) and
+# return whether the given IP address is in the CIDR range
+ip.is.in.cidr <- function(ip, cidr) {
+  long.ip <- ip2long(ip)
+  cidr.parts <- unlist(strsplit(cidr, "/"))
+  cidr.range <- ip2long(cidr.parts[1])
+  cidr.mask <- bitShiftL(bitFlip(0), (32-as.integer(cidr.parts[2])))
+  return(bitAnd(long.ip, cidr.mask) == bitAnd(cidr.range, cidr.mask))
+}
+```
+
+
+```{r}
+ip.is.in.cidr("10.0.1.15","10.0.1.3/24")
+```
+
+
+
+```{r}
+ip.is.in.cidr("10.0.1.15","10.0.2.255/24")
+```
+
+
+
+
+```{r}
+# R code to extract longitude/latitude pairs from AlienVault data
+# read in the AlienVault reputation data
+avRep <- "data/reputation.data"
+av.df <- read.csv(avRep, sep="#", header=FALSE)
+colnames(av.df) <- c("IP", "Reliability", "Risk", "Type",
+                     "Country", "Locale", "Coords", "x")
+```
+
+
+
+```{r}
+# create a vector of lat/long data by splitting on ","
+av.coords.vec <- unlist(strsplit(as.character(av.df$Coords), ","))
+```
+
+
+```{r}
+# convert the vector in a 2-column matrix
+av.coords.mat <- matrix(av.coords.vec, ncol=2, byrow=TRUE)
+```
+
+
+
+```{r}
+# project into a data frame
+av.coords.df <- as.data.frame(av.coords.mat)
+```
+
+
+```{r}
+# name the columns 
+colnames(av.coords.df) <- c("lat","long")
+```
+
+
+```{r}
+# convert the characters to numeric values
+av.coords.df$long <- as.double(as.character(av.coords.df$long))
+av.coords.df$lat <- as.double(as.character(av.coords.df$lat))
+```
+
+```{r}
+# requires packages: ggplot2, maps, RColorBrewer, scales
+# requires object: av.coords.df (4-3)
+# R code to extract longitude/latitude pairs from AlienVault data
+# need plotting and mapping functions plus colors
+library(ggplot2)
+library(maps)
+library(RColorBrewer)
+library(scales)
+```
+
+Which of the libraries listed above was previously used in this course?
+
+```{r}
+# extract a color palette from the RColorBrewer package
+set2 <- brewer.pal(8,"Set2")
+```
+
+```{r}
+# extract the polygon information for the world map, minus Antarctica
+world <- map_data('world')
+world <- subset(world, region != "Antarctica")
+```
+
+Do you see the utility of the code ran above?Please explain.
+
+```{r}
+# plot the map with the points marking lat/lon of the geocoded entries
+# plotting ~200K takes a bit of time
+gg <- ggplot()
+gg <- gg + geom_polygon(data=world, aes(long, lat, group=group), 
+                        fill="white")
+gg <- gg + geom_point(data=av.coords.df, aes(x=long, y=lat),  
+                      color=set2[2], size=1, alpha=0.1)
+gg <- gg + labs(x="", y="")
+gg <- gg + theme(panel.background=element_rect(fill=alpha(set2[3],0.2), 
+                                              colour='white'))
+gg
+```
+
+
+Make comments about the output as well as the syntax used in the previous task.
+
+```{r}
+# requires packages: stringr
+# requires object: av.df (4-3)
+# R code to incporporate IANA IPv4 allocations
+# retrieve IANA prefix list
+library(stringr)
+
+ianaURL <- "http://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.csv"
+ianaData <- "data/ipv4-address-space.csv"
+if (file.access(ianaData)) {
+  download.file(ianaURL, ianaData) 
+}
+```
+
+
+
+```{r}
+# read in the IANA table
+iana <- read.csv(ianaData)
+```
+
+
+
+```{r}
+# clean up the iana prefix since it uses the old/BSD-
+# number formatting (i.e. allows leading zeroes and
+# we do not need to know the CIDR component.
+iana$Prefix <- sub("^(00|0)", "", iana$Prefix, perl=TRUE)
+iana$Prefix <- sub("/8$", "", iana$Prefix, perl=TRUE)
+```
+
+
+
+```{r}
+# define function to strip 'n' characters from a string
+# (character vector) and return the shortened string.
+# note that this function is 'vectorized' (you can pass it a single
+# string or a vector of them)
+rstrip <- function(x, n){
+  substr(x, 1, nchar(x)-n)
+}
+```
+
+
+
+```{r}
+# extract just the prefix from the AlienVault list
+av.IP.prefix <- rstrip(str_extract(as.character(av.df$IP),
+                                  "^([0-9]+)\\."), 1)
+```
+
+
+
+```{r}
+# there are faster ways than 'sapply()' but we wanted you to 
+# see the general "apply" pattern in action as you will use it
+# quite a bit throughout your work in R
+av.df$Designation <- sapply(av.IP.prefix, function(ip) {
+  iana[iana$Prefix == ip, ]$Designation
+})
+```
+
+```{r}
+# summarize, order & review the findings
+summary(factor(av.df$Designation))
+```
+
+
+```{r}
+# requires packages: ggplot2, maps, RColorBrewer
+# requires object: av.coords.df (4-3), iana (4-5)
+# Code to extract IANA block assignments & compare w/AlienVault groups
+# create a new data frame from the iana designation factors
+iana.df <- data.frame(table(iana$Designation))
+colnames(iana.df) <- c("Registry", "IANA.Block.Count")
+
+# make a data frame of the counts of the av iana
+# designation factor
+tmp.df <- data.frame(table(factor(av.df$Designation)))
+colnames(tmp.df) <- c("Registry", "AlienVault.IANA.Count")
+```
+
+
+
+```{r}
+# merge (join) the data frames on the "reg" column
+combined.df <- merge(iana.df, tmp.df)
+print(combined.df[with(combined.df, order(-IANA.Block.Count)),],
+      row.names=FALSE)
+```
+
+
+
+```{r}
+# requires packages: reshape, grid, gridExtra, ggplot2, RColorBrewer
+# requires object: combined.df (4-6), set2 (4-4)
+# generates Figure 4-3
+# plot charts from IANA data
+# flatten the data frame by making one entry per "count" type
+# versus having the counts in individual columns
+# need the 'melt()' function from the reshape package
+# to transform the data frame shape
+library(reshape2) 
+library(grid)
+library(gridExtra)
+```
+
+
+
+```{r}
+# normalize the IANA and AV values to % so bar chart scales
+# match and make it easier to compare
+combined.df$IANA.pct <- 100 * (combined.df$IANA.Block.Count / 
+                                 sum(combined.df$IANA.Block.Count))
+combined.df$AV.pct <- 100 * (combined.df$AlienVault.IANA.Count / 
+                               sum(combined.df$AlienVault.IANA.Count))
+
+combined.df$IANA.vs.AV.pct <- combined.df$IANA.pct - combined.df$AV.pct
+```
+
+
+
+
+```{r}
+melted.df <- melt(combined.df)
+# plot the new melted data frame values
+```
+
+
+
+```{r}
+gg1 <- ggplot(data=melted.df[melted.df$variable=="IANA.pct",], 
+              aes(x=reorder(Registry, -value), y=value))
+# set min/max for axis so scale is same for both charts
+gg1 <- gg1 + ylim(0,40)
+gg1 <- gg1 +  geom_bar(stat="identity", fill=set2[3]) # using bars
+
+# make a better label for the y axis
+gg1 <- gg1 + labs(x="Registry", y="%", title="IANA %") 
+# make bar chart horizontal
+gg1 <- gg1 + coord_flip()
+# rotate the x-axis labels and remove the legend
+gg1 <- gg1 + theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+                   panel.background = element_blank(),
+                   legend.position = "none")
+gg1
+```
+
+
+
+```{r}
+gg2 <- ggplot(data=melted.df[melted.df$variable=="AV.pct",], 
+              aes(x=reorder(Registry,-value), y=value))
+gg2 <- gg2 + geom_bar(stat="identity", fill=set2[4]) # using bars
+gg2 <- gg2 + ylim(0,40)
+gg2 <- gg2 + labs(x="Registry", y="%", title="AlienVault IANA %") 
+gg2 <- gg2 + coord_flip()
+gg2 <- gg2 + theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+                   panel.background = element_blank(),
+                   legend.position = "none")
+gg2
+```
+
+
+
+
+```{r}
+# grid.arrange makes it possible to do very precise placement of 
+# multiple ggplot objects
+grid.arrange(gg1, gg2, ncol=1, nrow=2)
+```
+
+
+I would like you to explain the output as well as the syntax.In addition, make comments about the possibility to redefine the functions gg1 and gg2 in such a way that the y-axis shows a more clear description of the problem.
+
+
+```{r}
+# requires packages: ggplot2
+# requires object: combined.df (4-7), set2 (4-4)
+gg <- ggplot(data=combined.df, 
+             aes(x=reorder(Registry, -IANA.Block.Count), y=AV.pct ))
+gg <- gg + geom_bar(stat="identity", fill=set2[2])
+gg <- gg + labs(x="Registry", y="Count",
+                title="AlienVault/IANA sorted by IANA (low-to-high") 
+gg <- gg + coord_flip()
+gg <- gg + theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+                 panel.background = element_blank(),
+                 legend.position = "none")
+gg
+```
+
+Explain the output as well as the syntax used in the task we just completed above.
+
+In order to fully understand the task we are perfoming in the query below as well as the output, we would need to run the code listed in Handout7. Handouts 6 and 7 are to be completed within the same time frame so that our findings and conclusions can be more solid.
+
+```{r}
+# requires packages: ggplot2, scales
+# requires object: combined.df (4-7), set2 (4-4)
+# generates figure 4-6
+library(scales)
+gg <- ggplot(data=combined.df)
+gg <- gg + geom_point(aes(x=IANA.Block.Count, 
+                          y=AlienVault.IANA.Count),
+                      color=set2[2], size=4)
+gg <- gg + labs(x="IANA Block Count", y="AlienVault IANA Count",
+                title="IANA ~ AlienVault")
+gg <- gg + theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+                 legend.position = "none")
+gg <- gg + theme(panel.background=element_rect(fill=alpha(set2[3],0.2),
+                                               colour='white'))
+gg
+```
+
+
+
+Explain the output as well as the syntax we included in the chunk above. Use Handout 7 and class discussion to support your answers.
+
+
+```{r}
+cor(combined.df$IANA.Block.Count,
+    combined.df$AlienVault.IANA.Count, method="spearman")
+```
+
+Make comments about both the output and the syntax.
+
+

@@ -1,0 +1,133 @@
+---
+title: "Simple Linear Regression"
+output: html_notebook
+---
+
+### Example
+
+#### Let’s find an equation to predict medv based on lstat
+
+To be able to use the objects included in an R library, you need to load the library. Let's load the MASS library:
+
+```{r}
+
+library (MASS)
+
+```
+
+After the MASS library is loaded, you can access all its built-in objects (e.g., data sets, functions). Today, we only want to access the Boston data set part of MASS. Let's take a look at the Boston data set:
+
+```{r}
+
+str(Boston)
+head(Boston)
+
+```
+Let's define the variables we are working with:
+
+Y: medv (median house value in the neighborhood) (IT IS GIVEN IN UNITS OF $1000) 
+
+X: lstat (percent of households with low socioeconomic status in the neighborhood)
+
+<br>
+
+#### Check if the linear relationship is reasonable
+
+```{r}
+
+# Obtain the sample correlation coefficient between X and Y
+
+cor (Boston$lstat, Boston$medv)
+
+# alternative code
+
+with (Boston, cor (lstat, medv))
+
+```
+```{r}
+
+# Scatter plot of Y vs X
+
+with(Boston, plot (lstat,medv))
+
+# alternative code: plot (Boston$lstat, Boston$medv))
+
+# If you want to include the least square line in the plot, do the following:
+
+abline(lm(medv ~ lstat, data = Boston), col = "blue")
+
+```
+
+__Interpretation of r and scatterplot___
+
+The value of r suggests a fairly strong negative linear relationship between medv and lstat.
+
+We can check in the scatterplot that the relationship is indeed negative. 
+
+The scatterplot shows us that the linear relationship is acceptable (it fits the data points quite well), especially, in the range from 5< lstat< 30. However, towards the two endings, the linear model does not fit the data very well. A closer look at the graph shows that this non-linearity is because there is some curvature in the data (maybe a negative exponential relationship, or.. a polynomial)
+
+But for sure, it is reasonable to continue with the linear regression analysis. Even if a linear might not be the BEST, it might give us good results based on the r and scatterplot analysis.
+
+<br>
+
+#### Apply Simple Linear Regression
+
+```{r}
+
+# We apply regression by using the lm() function, where lm stands for linear model.
+# It is customary to save the result of applying lm() in a user-defined object
+
+medv_simple_out= lm(medv ~ lstat, data=Boston)
+
+# Then, we call the summary() function on the defined object
+
+summary (medv_simple_out)
+
+```
+```{r}
+# If you want to get the equation coefficients only, then:
+
+medv_simple_out$coefficients
+
+```
+__Is this equation good?__
+
+__Statistical significance__
+
+Test for B1:
+
+Ho: B1 = 0 (the slope of the real equation is zero; thus, there is no linear relationship between X and Y)
+
+Ha: B1 != 0 (the slope of the real equation is different from zero; thus, there is a linear relationship between X and Y)
+
+The t test statistic for the b1 coefficient is -24.53 (huge = very far from zero). Therefore, naturally, the PV is very small (PV < 2e-16). This PV is less than alpha. Therefore, we can reject Ho and support Ha. 
+
+The data give us evidence to conclude that there is a statistically significant relationship between medv (Y) and lstat (X). 
+
+OPTIONAL: You could also (optionally !!!) analyze the ANOVA table and the PV related to the F statistic. To get the ANOVA table, you would use the command: anova (medv_simple_out)
+
+You would get to the same conclusion as we did wit the t test for B1.
+
+
+__Interpret the slope of the equation (this interpretation is only done after we already showed statistical significance)__
+
+The equation we got was:
+
+Average medv of the neighborhood = 34.55 - 0.95*(lstat of the neighborhood)
+
+Interpretation the slope: When thepercent of households with low socioeconomic status in a neighborhood increases by one percent, we expect the median household income to decrease on average by 950 dollars (0.95 = 950 because the medv values are given in units of 1000 dollars)
+
+
+__Practical significance__ 
+
+R squared is 0.5441 (54.4 %)
+
+If we use the linear equation that we obtained instead of the sample mean to make predictions of Y, we can reduce 54.4 % of the variability (error level) in the values of Y (medv values). Since we reduce a little more than 50% of the variability compared to using the sample mean, using the equation is better than using the sample mean to make predictions.
+
+On Monday, we continue by analyzing RSE ...
+
+
+
+
+
+

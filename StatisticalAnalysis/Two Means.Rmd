@@ -1,0 +1,180 @@
+---
+title: "Comparison of Two Means"
+output: html_notebook
+---
+
+# Introduction
+
+__We are comparing populations mean (which values are unknown to us) based on sample means__
+
+__Let's do a quick simulation to remind us of that__
+
+We have a variable x1 that follows a Normal distribution and we are assuming that we know its population mean and standard deviation (an unrealistic assumption just for educational purposes). They are mean= 20.50 and sd =2.50
+
+Let's generate a sample of 10 values from this variable and let's compute the mean of the sample
+
+```{r}
+set.seed(1)
+sample_of_x1= rnorm (n=10, mean= 20.5, sd= 2.5)
+sample_of_1= rnorm (n=35, mean= 10, sd= 1)
+
+# The sample mean is:
+
+round (mean(sample_of_1), 2)
+
+
+```
+```{r}
+sample_of_2: rnorm (n=35, mean=12, sd=1)
+round (mean(sample_of_2), 2)
+
+
+```
+
+
+Nothing surprising here, the sample mean is different from the population... DUH!
+
+
+Let's generate a sample of 10 values from another variable, X2, with the same population mean and SD as X1 (mean= 20.50 and sd =2.50). Then, let's compute the mean of the sample
+
+```{r}
+
+set.seed(2)
+sample_of_x2= rnorm (n=10, mean= 20.5, sd= 2.5)
+
+# The sample mean is:
+
+round (mean(sample_of_x2), 2)
+
+```
+Conclusions:
+
+1) The sample mean is a variable (it changes from sample to sample); thus it is different from the population mean
+
+2) The sample means from two variables with the same population mean WILL BE DIFFERENT!
+
+__Corollary: We CANNOT claim__ that the means of two variables are different simply because sample means taken from these variables are different!
+
+# Example 1: Plastic bottles volume
+
+Two machines are used for filling plastic bottles. The quality engineering department suspects that there is a difference in the volume produced by these machines. The QE department wanted to make conclusions about it and for this purpose took a random sample from the output of these machines. The volume data can be assumed to follow a Normal distribution. The volume (in fluid ounces) obtained from each machine are stored in the following two vectors:
+
+```{r}
+
+vol_mach1= c(15.97, 16.05, 16.07, 16.05, 16.02, 16.15, 15.96, 15.98, 16.06, 15.99)
+vol_mach2= c(16.02, 15.97, 15.96, 16.01, 15.99, 16.03, 16.04, 16.02, 16.01, 16.00)
+
+```
+
+Compute the mean for each sample and answer the following question:
+
+__Is the average volume obtained from each machine different?__
+
+```{r}
+# Machine 1
+round(mean(vol_mach1), 3)
+# Machine 2
+round(mean(vol_mach2), 3)
+
+```
+__Answer__: The average volume from the samples is different. However, that does not mean that if we compare the average from both populations (or even the average from really large samples (e.g., n> 10,000 bottles)) we will observe such a difference. We need a statistical procedure that tells us whether the observed sample difference is statistically significant (in other words, if the difference observed in the sample can be safely assumed to happen at the population level too)
+
+<br>
+#### GO BACK TO THE SLIDES !!!!!
+
+__Obtain a 95% CI for the difference between the mean volume for machine 1 and the mean volume for machine 2__
+
+```{r}
+
+t.test (vol_mach1, vol_mach2, var.equal = T, conf.level = 0.95)
+
+```
+
+__Interpret the CI__
+
+What does the CI tell you about the difference between the mean volume for machine 1 and the mean volume for machine 2?
+
+First, we need to understand what the 95% means. 
+
+It means that 95% of the confidence __intervals (in plural)__ that we compute using this formula will __contain__ the __true difference between the two means__. 
+
+__Clarifications:__
+
+a) The 95% needs to be interpreted considering what would happen if we computed multiple confidence intervals, not only the one we obtained.
+
+b) Contain = The true difference between the two means will be within the lower and upper limit of the interval.
+
+__End of clarifications__
+
+Therefore, __for example__, if we take 1000 samples and compute a CI with each sample, we can expect that 950 of those intervals will contain the true difference between the two means. So, we expect 50 intervals to miss the target (= not to contain the true difference within its limits)
+
+A couple of points of consideration so far:
+
+a) The goal with a CI is that it contains __the true difference between the two means__. However, remember THAT WE WILL NEVER KNOW what this true difference is.
+
+So, __what we do is we ASSUME that the DIFFERENCE between the two means is ZERO (= the two means are equal) and we interpret the CI based ON THIS ASSUMPTION__
+
+b) Although the interpretation of a CI intervals needs us to think about what happens when we compute many intervals, in practice, we do not compute 100 intervals, or 1000 intervals ... __we only compute one single interval__ and make the decision based on it.
+
+In short, the most practical interpretation we can give to a CI goes as follows ...
+
+Because we assume that the means are equal (the differnce between them is zero) and we know that 95% of the CIs that we compute will contain the true difference between the means, we expect the CI that we computed to include zero within its limits. Makes sense, right?
+
+So, if the CI that we computed does not include zero within its limits, we conclude that our assumption is not backed up by the data... And again, our assumption is that the means are equal (the differnce between them is zero). In other words, if we are quite confident that the interval that we compute will include the true difference and we observe that this interval does not include zero... well, what's the logical conclusion?  The difference should not be zero.
+
+In more simple terms:
+
+If the CI includes zero, we conclude that the two means are equal
+
+If the CI  does not include zero, we conclude that the two means are different
+
+
+__Note__: "we conclude" does not mean "we know" or "we are sure of"... It is just a logical conclusion based on the analytic strategy we are following. But remember that in Statistics, there is always the possibility that our conclusions is incorrect.
+
+__Interpreation of the CI for this example__
+
+In this example, the interval does include zero. The interval is:
+
+ (-0.01716409 , 0.06716409)
+
+Therefore, we conclude that the difference between the mean volume for machine 1 and the mean volume for machine 2 is zero (the mean volume for both machines is equal)
+
+Let's try to answer this question again: __Is the average volume obtained from each machine different?__
+
+Based on the 95% CI (which a statistical procedure) we conclude that the means are the same. So, the difference between the samples means is not statistically significant meaning that we should not expect a difference between the means at the population level.
+
+
+<br>
+__Obtain a 99% CI for the difference between the mean volume for machine 1 and the mean volume for machine 2. What's the effect of increasing the confidence level on the interval ?__
+
+```{r}
+
+t.test (vol_mach1, vol_mach2, var.equal = T, conf.level = 0.99)
+
+```
+The 95% CI was (-0.01716409 , 0.06716409)
+
+The 99% CI is (-0.03276836, 0.08276836)
+
+Increasing the confidence level from 95 to 99 has resulted in an increase of the interval width. The interval has become wider and you can be more confident that the true difference is inside the interval. However, a wider interval means it is less precise (your estimation has less precision). There is a trade of between confidence and precision.
+
+<br>
+__Obtain a 90% CI for the difference between the mean volume for machine 1 and the mean volume for machine 2. What's the effect of decreasing the confidence level on the interval?__
+
+```{r}
+t.test (vol_mach1, vol_mach2, var.equal = T, conf.level = 0.90)
+
+```
+The 95% CI was (-0.01716409 , 0.06716409)
+
+The 90% CI is (-0.009801485 , 0.059801485)
+
+Decreasing the confidence level decreases the width, so, our interval is more precise. However, we are less confidence that the interval contains the true difference... Again, thee trade-off showing up!
+
+<br>
+__Is there any way to tilt the trade off on our side? Can we keep a good confidence level and have a good precision?__
+
+Yes, we can keep a high confidence (95% or 99%) and still reduce the width of the interval (and make it more precise) by increase the sample sizes (in this example, this means taking more plastic bottles to analyze)
+
+
+

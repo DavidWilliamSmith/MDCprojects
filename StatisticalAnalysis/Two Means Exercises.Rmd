@@ -1,0 +1,114 @@
+---
+title: "Comparison of Two Means. Exercises"
+output: html_notebook
+---
+
+__Note:__ To get the data for the two practice exercises, do the following:
+
+1) Download the files “Two_Means_Ex1.rda” and “Two_Means_Ex2.rda” from Blackboard and do one of the following:
+
+Option1: If you created an R project as I suggested at the beginning of the semester, move these two files __to the folder where this project is.__
+
+Option 2: If you did not create a project, then move these two files to your working directory.
+ 
+
+2) Load the files in R by running the following two statements in the Console:
+
+load("Two_Means_Ex1.rda")
+
+load("Two_Means_Ex2.rda")
+
+After loading the files, the following vectors will be available in your R session:
+
+domestic_rate, foreign_rate, coffeA, coffeeB
+
+
+__Exercise 1)__ A study examined whether the perception of the quality of service at a five-star hotel in Jamaica differed by the type of guest (domestic vs foreign). Hotel guests were randomly selected and asked to rate 10 service-related items. Each item was rated on a five-point scale (the higher the score, the higher the perceived quality of service). A score for each guest was obtained by adding the ratings s/he gave for all items. The scores for domestic and foreign guests are recorded in the vectors “domestic_rate” and “foreign_rate”, which you already read into R.
+
+Test whether the mean service rating given by domestic guests is higher than the mean service rating given by foreign guests using a 0.10 level of significance. Conduct this test step by step answering the following questions:
+
+a) Define the two variables involved in this problem. 
+
+Answer:
+
+X1:
+
+X2:
+
+b) Check whether the assumptions needed for the test to be valid are satisfied.
+
+Answer:
+
+
+c) State the hypotheses (Ho and Ha)
+
+Mx1:
+Mx2:
+
+Ho:
+Ha: 
+
+d) Conduct the relevant test in R to reach a decision. Assume the standard deviations of the two variables defined in part a) are the same.
+
+DO INDIVIDUALLY. WORK ON IT INDIVIDUALLY FOR THREE MINS!
+
+Hint: One of the arguments you have to pass to the function you need to use is: alternative = c("greater")
+
+
+
+e) Compute the test statistic and P value for this problem without using the t.test () function. Use any other R built-in function but the t.test() function.
+
+```{r}
+
+# Here is the formula to get the Sp:
+
+sp= sqrt ( ( 42*var(domestic_rate)+40*var(foreign_rate) ) / (43+41-2) )
+
+
+```
+
+
+f) What kind of error could you be making after you made the decision in part d)?
+
+
+g) Estimate the effect size for this problem. In other words, estimate the magnitude of the effect that domestic guests have on the average rating when compared to foreign guests.
+
+Note: DO PART G LATER, AFTER WE HAVE COVERED WHAT THE TERM "EFFECT SIZE" MEANS.
+
+
+__Exercise 2)__ A Starbucks manager suspects that the coffee at two of her stores (stores A and B) yield different caffeine content. To test whether this is true, she takes a random sample of large coffees from both stores and measures the amount of caffeine content in each coffee cup (in mg). The amount of mg in a cup of coffee is a random variable that follows a Normal distribution. The results are stored in the variables “coffeeA” and coffeeB”. Conduct a hypothesis test to check if the manager’s concern is reasonable. Use a significance level of 0.05. Conduct the test following these steps:
+
+- Define the two variables involved in this problem
+
+A: 
+B: 
+
+
+- State the hypotheses (Ho and Ha)
+
+
+- Use t.test () function to conduct the test
+
+
+- State your decision 
+
+
+
+b) What kind of error could you be making after you made that decision?
+
+
+
+b1) What is the probability of committing such an error IF in reality the difference in the average caffeine content in the coffee from the two stores is 1 mg.
+
+
+```{r}
+
+#Share with students. Useful for b1):
+
+spcoffe= sqrt ( ( 19*var(coffeeA)+ 19*var(coffeeB) ) / (38) )
+
+
+```
+
+
+

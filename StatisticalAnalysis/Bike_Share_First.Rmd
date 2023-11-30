@@ -1,0 +1,152 @@
+---
+title: "Bike Share Analysis"
+output: html_notebook
+---
+
+
+```{r}
+
+file_names_bike_share= dir("C:\\Users\\dsmit\\OneDrive\\Documents\\MDC Data Analytics\\Capstone\\Bike_Share_First.Rmd", full.names=TRUE)
+
+```
+```{r}
+install.packages("tidyverse")
+```
+
+
+```{r}
+
+library ("tidyverse")
+
+```
+
+
+```{r}
+library("readxl")
+```
+
+
+
+```{r}
+
+bike_share_raw_Oct22Feb23 <- do.call(rbind,lapply(file_names_bike_share,read_excel))
+
+```
+
+
+Take a look at the data frame:
+
+
+```{r}
+
+str(bike_share_raw_Oct22Feb23)
+
+```
+
+### Are there missing values?
+
+```{r}
+sum (complete.cases(bike_share_raw_Oct22Feb23))
+```
+
+Get a count of missing values per column (alternative 1):
+
+```{r}
+
+sapply(bike_share_raw_Oct22Feb23, function(x) {sum(is.na(x))})
+
+```
+
+
+Get a count of missing values per column (alternative 2):
+
+```{r}
+
+bike_share_raw_Oct22Feb23 %>% select(everything()) %>%summarise_all(funs(sum(is.na(.))))
+
+```
+
+
+How to handle the missing values?
+
+a) Can we find a way of finding and entering the missing values?
+b) Remove rows and find new rows if sample size is a concerned
+c) Remove rows and use the reduced data frame (THIS WILL BE OUR APPROACH)
+
+Other methods to handle missing values are:
+Mean imputation (discuss)
+Model imputation (discuss)
+Regression imputation (discuss)
+
+Are any of these last three methods applicable here?
+
+
+```{r}
+
+bike_share_Oct22Feb23 <- bike_share_raw_Oct22Feb23[complete.cases(bike_share_raw_Oct22Feb23), ]
+
+```
+
+
+Checking that the new data frame has no missing values:
+
+```{r}
+nrow(bike_share_Oct22Feb23)
+sum (complete.cases(bike_share_Oct22Feb23))
+
+```
+
+
+### Check for incorrect values
+
+
+```{r}
+str(bike_share_Oct22Feb23)
+```
+
+Any strange values in the qualitative variables?
+
+Check rideable_type and member_casual.
+
+ASK STUDENTS: What am I trying to accomplish with the following code?
+
+```{r}
+ table (bike_share_Oct22Feb23$rideable_type)
+ table (bike_share_Oct22Feb23$member_casual)
+
+
+```
+
+I do not think we need to worry about strange values in ride_id. What do you think?
+
+Also, because we are not going to use started_at and ended_at, we can ignore checking for strange values in them.
+
+
+Check ride_length:
+
+```{r}
+summary(bike_share_Oct22Feb23$ride_length)
+```
+
+Something is wrong, the values in ride_lenght were supposed to be in the format hh:mm:ss, but we are getting a date value as well.
+
+
+```{r}
+
+head (bike_share_Oct22Feb23$ride_length, 10)
+
+```
+
+```{r}
+
+ride_length_temp= separate (bike_share_Oct22Feb23, ride_length, into= c("date_ride", "time_ride"), sep=" ")$time_ride
+
+```
+
+```{r}
+head (ride_length_temp, 10)
+```
+
+Now, grab the hours and minutes (ignore seconds???) and convert them to an integer
+
+

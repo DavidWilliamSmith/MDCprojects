@@ -1,0 +1,1050 @@
+---
+title: "R Basics"
+output:
+  html_document:
+    df_print: paged
+---
+
+R is a programming language used for statistical computing and graphical presentation.
+
+Its most common use is to analyze and visualize data.
+
+Why Use R?
+It is a great resource for data analysis, data visualization, data science and machine learning
+It provides many statistical techniques (such as statistical tests, classification, clustering and data reduction)
+It is easy to draw graphs in R, like pie charts, histograms, box plot, scatter plot, etc++
+It works on different platforms (Windows, Mac, Linux)
+It is open-source and free
+It has a large community support
+It has many packages (libraries of functions) that can be used to solve different problems
+
+```{r}
+# Generate random data
+x <- 1:10
+y <- runif(10)
+
+# Create scatter plot with colors and formatting
+plot(x, y, type = "p", pch = 16, col = "blue", cex = 2,
+     xlab = "X", ylab = "Y", main = "Scatter Plot")
+```
+
+# Comments
+
+Comments can be used to explain R code, and to make it more readable. It can also be used to prevent execution when testing alternative code.
+
+Comments starts with a #. When executing code, R will ignore anything that starts with #.
+
+In RStudio a code cell needs to be created and then ran.
+
+This example uses a comment before a line of code:
+
+```{r}
+# This is a comment
+"Hello Universe!"
+```
+
+This example uses a comment at the end of a line of code:
+
+```{r}
+"Hello Universe!" # This is a comment
+```
+
+Comments does not have to be text to explain the code, it can also be used to prevent R from executing the code:
+
+```{r}
+# "Good morning!"
+"Good night!"
+```
+
+# Multiline Comments
+
+Unlike other programming languages, such as Java, there are no syntax in R for multiline comments. However, we can just insert a # for each line to create multiline comments:
+
+```{r}
+# This is a comment
+# written in
+# more than just one line
+"Hello World!"
+```
+# Creating Variables in R
+
+Variables are containers for storing data values.
+
+R does not have a command for declaring a variable. A variable is created the moment you first assign a value to it. To assign a value to a variable, use the <- sign. To output (or print) the variable value, type the variable name:
+
+```{r}
+name <- "John Carpenter"
+age <- 75
+profession <- "Director"
+
+name   # output "John Carpenter"
+age    # output 75
+profession   # output "Director"
+```
+
+# Concatenate Elements
+
+You can concatenate, or join, two or more elements, by using paste().
+
+To combine both text and a variable, R uses comma (,):
+
+```{r}
+text <- "awesome"
+
+paste("John Carpenter's", text)
+```
+You can also use , to add a variable to another variable:
+
+```{r}
+text1 <- "John Carpenter's"
+text2 <- "awesome"
+
+paste(text1, text2)
+```
+For numbers, the + character works as a mathematical operator, If you try to combine a string (text) and a number, R will give you an error:
+
+```{r}
+num1 <- 5
+num2 <- 10
+
+num1 + num2
+```
+
+# Multiple Variables
+
+R allows you to assign the same value to multiple variables in one line:
+
+```{r}
+# Assign the same value to multiple variables in one line
+var1 <- var2 <- var3 <- "Halloween"
+
+# Print variable values
+var1
+var2
+var3
+```
+
+In R, variables do not need to be declared with any particular type, and can even change type after they have been set.
+
+# Basic Data Types
+
+Basic data types in R can be divided into the following types:
+
+numeric - (10.5, 55, 787)
+integer - (1L, 55L, 100L, where the letter "L" declares this as an integer)
+complex - (9 + 3i, where "i" is the imaginary part)
+character (a.k.a. string) - ("k", "R is exciting", "FALSE", "11.5")
+logical (a.k.a. boolean) - (TRUE or FALSE)
+Use the class() function to check the data type of a variable:
+
+```{r}
+# numeric
+num <- 10.5
+class(num)
+
+# integer
+int <- 1000L
+class(int)
+
+# complex
+comp <- 9i + 3
+class(comp)
+
+# character/string
+chr <- "R is exciting"
+class(chr)
+
+# logical/boolean
+bool <- TRUE
+class(bool)
+```
+
+# Type Conversion
+
+You can convert from one type to another with the following functions:
+
+as.numeric()
+as.integer()
+as.complex()
+
+```{r}
+x <- 1L # integer
+y <- 2 # numeric
+
+# convert from integer to numeric:
+a <- as.numeric(x)
+
+# convert from numeric to integer:
+b <- as.integer(y)
+
+# print values of x and y
+x
+y
+
+# print the class name of a and b
+class(a)
+class(b)
+```
+
+# Simple Math
+
+In R, you can use operators to perform common mathematical operations on numbers.
+
+The + operator is used to add together two values:
+```{r}
+# Addition
+5 + 5
+```
+
+```{r}
+# Subtraction
+5 - 3
+```
+
+```{r}
+# Division
+2 / 4
+```
+
+```{r}
+# Multiplication
+3 * 3
+```
+
+# Built-in Math Functions
+
+R also has many built-in math functions that allows you to perform mathematical tasks on numbers.
+
+For example, the min() and max() functions can be used to find the lowest or highest number in a set:
+
+```{r}
+max(5, 10, 15)
+
+min(5, 10, 15)
+```
+
+# sqrt()
+
+The sqrt() function returns the square root of a number:
+
+```{r}
+sqrt(16)
+```
+
+# abs()
+
+The abs() function returns the absolute (positive) value of a number:
+
+```{r}
+abs(-4.7)
+```
+
+# ceiling() and floor()
+
+The ceiling() function rounds a number upwards to its nearest integer, and the floor() function rounds a number downwards to its nearest integer, and returns the result:
+
+```{r}
+ceiling(1.4)
+
+floor(1.4)
+```
+
+#String Literals
+
+Strings are used for storing text.
+
+A string is surrounded by either single quotation marks, or double quotation marks:
+
+"hello" is the same as 'hello':
+
+```{r}
+"Freddy"
+'Krueger'
+```
+
+# Assign a String to a Variable
+
+Assigning a string to a variable is done with the variable followed by the <- operator and the string:
+
+```{r}
+str <- "Hello"
+str # print the value of str
+```
+
+# Multiline Strings
+
+You can assign a multiline string to a variable like this:
+
+```{r}
+str <- "Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+sed do eiusmod tempor incididunt
+ut labore et dolore magna aliqua."
+
+str # print the value of str
+```
+
+However, note that R will add a "\n" at the end of each line break. This is called an escape character, and the n character indicates a new line.
+
+If you want the line breaks to be inserted at the same position as in the code, use the cat() function:
+
+```{r}
+str <- "Lorem ipsum dolor sit amet,
+consectetur adipiscing elit,
+sed do eiusmod tempor incididunt
+ut labore et dolore magna aliqua."
+
+cat(str)
+```
+
+# String Length
+
+There are many usesful string functions in R.
+
+For example, to find the number of characters in a string, use nchar():
+
+```{r}
+str <- "Hello Universe!"
+
+nchar(str)
+```
+
+# Check a String
+
+Use the grepl() function to check if a character or a sequence of characters are present in a string:
+
+```{r}
+str <- "Hello Universe!"
+
+grepl("H", str)
+grepl("Hello", str)
+grepl("X", str)
+```
+
+# Combine Two Strings
+
+Use the paste() function to merge/concatenate two strings:
+
+```{r}
+str1 <- "Hello"
+str2 <- "Universe"
+
+paste(str1, str2)
+```
+
+# Escape Characters
+
+To insert characters that are illegal in a string, you must use an escape character.
+
+An escape character is a backslash \ followed by the character you want to insert.
+
+An example of an illegal character is a double quote inside a string that is surrounded by double quotes:
+
+```{r}
+# str <- "We are the so-called "Vikings", from the north."
+# Error: unexpected symbol in "str <- "We are the so-called "Vikings"
+```
+
+To fix this problem, use the escape character \":
+
+```{r}
+str <- "We are the so-called \"Vikings\", from the north."
+
+str
+cat(str)
+```
+
+Other escape characters in R:
+
+Code	Result
+\\	  Backslash
+\n  	New Line
+\r	  Carriage Return
+\t	  Tab
+\b	  Backspace
+
+# Booleans (Logical Values)
+
+In programming, you often need to know if an expression is true or false.
+
+You can evaluate any expression in R, and get one of two answers, TRUE or FALSE.
+
+When you compare two values, the expression is evaluated and R returns the logical answer:
+
+```{r}
+10 > 2   # TRUE because 10 is greater than 2
+10 == 3   # FALSE because 10 is not equal to 3
+10 < 4    # FALSE because 10 is greater than 4
+```
+
+You can also compare two variables:
+
+```{r}
+a <- 10
+b <- 3
+
+a > b
+```
+
+You can also run a condition in an if statement, which you will learn much more about in the if..else chapter.
+
+```{r}
+a <- 2342
+b <- 95345
+
+if (b > a) {
+  print ("b is greater than a")
+} else {
+  print("b is not greater than a")
+}
+```
+
+# Operators
+
+R divides the operators in the following groups:
+
+Arithmetic operators
+Assignment operators
+Comparison operators
+Logical operators
+Miscellaneous operators
+R Arithmetic Operators
+Arithmetic operators are used with numeric values to perform common mathematical operations:
+
+Operator	Name	                            Example	
++       	Addition	                        x + y	
+-	        Subtraction	                      x - y	
+*	        Multiplication	                  x * y	
+/	        Division	                        x / y	
+^	        Exponent	                        x ^ y	
+%%	      Modulus (Remainder from division)	x %% y	
+%/%	      Integer Division	                x%/%y	
+
+# R Assignment Operators
+Assignment operators are used to assign values to variables:
+
+```{r}
+my_var <- 3
+
+my_var <<- 3
+
+3 -> my_var
+
+3 ->> my_var
+
+my_var # print my_var
+```
+
+# R Comparison Operators
+
+Comparison operators are used to compare two values:
+
+Operator	Name	                    Example
+==	      Equal                     x == y	
+!=	      Not equal	                x != y	
+>	        Greater than	            x > y	
+<	        Less than	                x < y	
+>=	      Greater than or equal to	x >= y	
+<=	      Less than or equal to   	x <= y
+
+# R Logical Operators
+
+Logical operators are used to combine conditional statements:
+
+Operator	Description
+&	        Element-wise Logical AND operator. It returns TRUE if both elements are TRUE
+&&	      Logical AND operator - Returns TRUE if both statements are TRUE
+|	        Elementwise- Logical OR operator. It returns TRUE if one of the statement is TRUE
+||	      Logical OR operator. It returns TRUE if one of the statement is TRUE.
+!	        Logical NOT - returns FALSE if statement is TRUE
+
+# R Miscellaneous Operators
+
+Miscellaneous operators are used to manipulate data:
+
+Operator	Description	                                Example
+:	        Creates a series of numbers in a sequence	  x <- 1:10
+%in%	    Find out if an element belongs to a vector	x %in% y
+%*%	      Matrix Multiplication	                      x <- Matrix1 %*% Matrix2
+
+# Conditions and If Statements
+
+R supports the usual logical conditions from mathematics:
+
+Operator	Name	                    Example	
+==	      Equal	                    x == y	
+!=	      Not equal	                x != y	
+>	        Greater than	            x > y	
+<	        Less than	                x < y	
+>=	      Greater than or equal to	x >= y	
+<=	      Less than or equal to	    x <= y
+
+These conditions can be used in several ways, most commonly in "if statements" and loops
+
+# The if Statement
+
+An "if statement" is written with the if keyword, and it is used to specify a block of code to be executed if a condition is TRUE:
+
+```{r}
+a <- 33
+b <- 20009000000000000
+
+if (b > a) {
+  print("b is greater than a")
+}
+```
+
+In this example we use two variables, a and b, which are used as a part of the if statement to test whether b is greater than a. As a is 33, and b is 200, we know that 200 is greater than 33, and so we print to screen that "b is greater than a".
+
+# Else If
+
+The else if keyword is R's way of saying "if the previous conditions were not true, then try this condition":
+
+```{r}
+a <- 333333333
+b <- 333333333
+
+if (b > a) {
+  print("b is greater than a")
+} else if (a == b) {
+  print ("a and b are equal")
+}
+```
+
+In this example a is equal to b, so the first condition is not true, but the else if condition is true, so we print to screen that "a and b are equal".
+
+You can use as many else if statements as you want.
+
+# If Else
+
+The else keyword catches anything which isn't caught by the preceding conditions:
+
+```{r}
+a <- 200000000000000000000000000
+b <- 3300324123546
+
+if (b > a) {
+  print("b is greater than a")
+} else if (a == b) {
+  print("a and b are equal")
+} else {
+  print("a is greater than b")
+}
+```
+
+In this example, a is greater than b, so the first condition is not true, also the else if condition is not true, so we go to the else condition and print to screen that "a is greater than b".
+
+You can also use else without else if:
+
+```{r}
+a <- 200576956795679579
+b <- 3346784768
+
+if (b > a) {
+  print("b is greater than a")
+} else {
+  print("b is not greater than a")
+}
+```
+
+# Nested If Statements
+
+You can also have if statements inside if statements, this is called nested if statements.
+
+```{r}
+x <- 360
+
+if (x > 10) {
+  print("Above ten")
+  if (x > 2000) {
+    print("and also above 20!")
+  } else {
+    print("but not above 20.")
+  }
+} else {
+  print("below 10.")
+}
+```
+
+# AND
+
+The & symbol (and) is a logical operator, and is used to combine conditional statements:
+
+```{r}
+# Test if a is greater than b, AND if c is greater than a
+a <- 2023
+b <- 333
+c <- 5000
+
+if (a > b & c > a) {
+  print("Both conditions are true")
+}
+```
+
+# OR
+
+The | symbol (or) is a logical operator, and is used to combine conditional statements:
+
+
+```{r}
+# Test if a is greater than b, or if c is greater than a
+
+a <- 2002453352
+b <- 335235
+c <- 50052235235235
+
+if (a > b | a > c) {
+  print("At least one of the conditions is true")
+}
+```
+
+# Loops
+
+Loops can execute a block of code as long as a specified condition is reached.
+
+Loops are handy because they save time, reduce errors, and they make code more readable.
+
+R has two loop commands:
+
+while loops
+for loops
+
+# R While Loops
+
+With the while loop we can execute a set of statements as long as a condition is TRUE:
+
+```{r}
+#Print i as long as i is less than 6:
+
+i <- 1
+while (i < 6) {
+  print(i)
+  i <- i + 1
+}
+```
+
+In the example above, the loop will continue to produce numbers ranging from 1 to 5. The loop will stop at 6 because 6 < 6 is FALSE.
+
+The while loop requires relevant variables to be ready, in this example we need to define an indexing variable, i, which we set to 1.
+
+Note: remember to increment i, or else the loop will continue forever.
+
+# Break
+
+With the break statement, we can stop the loop even if the while condition is TRUE:
+
+```{r}
+# Exit the loop if i is equal to 4
+
+i <- 1
+while (i < 6) {
+  print(i)
+  i <- i + 1
+  if (i == 4) {
+    break
+  }
+}
+```
+
+The loop will stop at 3 because we have chosen to finish the loop by using the break statement when i is equal to 4 (i == 4).
+
+# Next
+
+With the next statement, we can skip an iteration without terminating the loop:
+
+```{r}
+# Skip the value of 3
+
+i <- 0
+while (i < 6) {
+  i <- i + 1
+  if (i == 3) {
+    next
+  }
+  print(i)
+}
+```
+
+When the loop passes the value 3, it will skip it and continue to loop.
+
+# If .. Else Combined with a While Loop
+
+To demonstrate a practical example, let us say we play a game of Yahtzee!
+
+```{r}
+# Print "Money!" If the dice number is 6
+
+dice <- 1
+while (dice <= 6) {
+  if (dice < 6) {
+    print("No Money")
+  } else {
+    print("Money!")
+  }
+  dice <- dice + 1
+}
+```
+
+#For Loops
+
+A for loop is used for iterating over a sequence:
+
+```{r}
+for (x in 1:10) {
+  print(x)
+}
+```
+
+This is less like the for keyword in other programming languages, and works more like an iterator method as found in other object-orientated programming languages.
+
+With the for loop we can execute a set of statements, once for each item in a vector, array, list, etc..
+
+You will learn about lists and vectors, etc in a later chapter.
+
+```{r}
+# Print every item in a list
+
+movies <- list("The Thing", "Halloween", "Escape From New York")
+
+for (x in movies) {
+  print(x)
+}
+```
+
+```{r}
+# Print the number of dices
+
+dice <- c(1, 2, 3, 4, 5, 6)
+
+for (x in dice) {
+  print(x)
+}
+```
+
+The for loop does not require an indexing variable to set beforehand, like with while loops.
+
+# Break
+
+With the break statement, we can stop the loop before it has looped through all the items:
+
+```{r}
+# Stop the loop at "The Thing"
+
+movies <- list("The Thing", "Halloween", "Escape From New York")
+
+for (x in movies) {
+  if (x == "The Thing") {
+    break
+  }
+  print(x)
+}
+```
+
+The loop will stop at "The Thing" because we have chosen to finish the loop by using the break statement when x is equal to "The Thing" (x == "The Thing").
+
+# Next
+
+With the next statement, we can skip an iteration without terminating the loop:
+
+```{r}
+#Skip "Halloween":
+
+movies <- list("The Thing", "Halloween", "Escape From New York")
+
+for (x in movies) {
+  if (x == "Halloween") {
+    next
+  }
+  print(x)
+}
+```
+
+When the loop passes "Halloween", it will skip it and continue to loop.
+
+# If .. Else Combined with a For Loop
+
+To demonstrate a practical example, let us say we play a game of Yahtzee!
+
+```{r}
+# Print "Yahtzee!" If the dice number is 6:
+
+dice <- 1:6
+
+for(x in dice) {
+  if (x == 6) {
+    print(paste("The dice number is", x, "Yahtzee!"))
+  } else {
+    print(paste("The dice number is", x, "Not Yahtzee"))
+  }
+}
+```
+
+# Nested Loops
+
+It is also possible to place a loop inside another loop. This is called a nested loop:
+
+```{r}
+# Print the adjective of each fruit in a list:
+
+adj <- list("red", "big", "tasty")
+
+fruits <- list("apple", "banana", "cherry")
+  for (x in adj) {
+    for (y in fruits) {
+      print(paste(x, y))
+  }
+}
+```
+
+# Functions
+
+A function is a block of code which only runs when it is called.
+
+You can pass data, known as parameters, into a function.
+
+A function can return data as a result.
+
+# Creating a Function
+
+To create a function, use the function() keyword:
+
+```{r}
+my_function <- function() { # create a function with the name my_function
+  print("Hello Universe!")
+}
+```
+
+# Call a Function
+
+To call a function, use the function name followed by parenthesis, like my_function():
+
+```{r}
+my_function <- function() {
+  print("Hello Universe!")
+}
+
+my_function() # call the function named my_function
+```
+
+# Arguments
+
+Information can be passed into functions as arguments.
+
+Arguments are specified after the function name, inside the parentheses. You can add as many arguments as you want, just separate them with a comma.
+
+The following example has a function with one argument (fname). When the function is called, we pass along a first name, which is used inside the function to print the full name:
+
+```{r}
+my_function <- function(fname) {
+  paste(fname, "Bundy")
+}
+
+my_function("AL")
+my_function("Peggy")
+my_function("Bud")
+my_function("Kelly")
+```
+
+# Parameters or Arguments?
+
+The terms "parameter" and "argument" can be used for the same thing: information that are passed into a function.
+
+From a function's perspective:
+
+A parameter is the variable listed inside the parentheses in the function definition.
+
+An argument is the value that is sent to the function when it is called.
+
+# Number of Arguments
+
+By default, a function must be called with the correct number of arguments. Meaning that if your function expects 2 arguments, you have to call the function with 2 arguments, not more, and not less:
+
+```{r}
+# This function expects 2 arguments, and gets 2 arguments:
+
+my_function <- function(fname, lname) {
+  paste(fname, lname)
+}
+
+my_function("AL", "Bundy")
+```
+
+# Default Parameter Value
+
+The following example shows how to use a default parameter value.
+
+If we call the function without an argument, it uses the default value:
+
+```{r}
+my_function <- function(planet = "Mars") {
+  paste("I am from", planet)
+}
+
+my_function("Jupiter")
+my_function("Saturn")
+my_function() # will get the default value, which is Mars
+my_function("Pluto")
+```
+
+# Return Values
+
+To let a function return a result, use the return() function:
+
+```{r}
+my_function <- function(x) {
+  return (100 * x)
+}
+
+print(my_function(300))
+print(my_function(500))
+print(my_function(900))
+```
+
+# Nested Functions
+
+There are two ways to create a nested function:
+
+Call a function within another function.
+Write a function within a function.
+
+```{r}
+# Call a function within another function:
+
+Nested_function <- function(x, y) {
+  a <- x + y
+  return(a)
+}
+
+Nested_function(Nested_function(24,24), Nested_function(35,35))
+```
+
+Example Explained
+The function tells x to add y.
+
+The first input Nested_function(24,24) is "x" of the main function.
+
+The second input Nested_function(35,35) is "y" of the main function.
+
+The output is therefore (24+24) + (35+35) = 118.
+
+```{r}
+# Write a function within a function:
+
+Outer_func <- function(x) {
+  Inner_func <- function(y) {
+    a <- x + y
+    return(a)
+  }
+  return (Inner_func)
+}
+output <- Outer_func(5) # To call the Outer_func
+output(10)
+```
+
+
+Example Explained
+You cannot directly call the function because the Inner_func has been defined (nested) inside the Outer_func.
+
+We need to call Outer_func first in order to call Inner_func as a second step.
+
+We need to create a new variable called output and give it a value, which is 3 here.
+
+We then print the output with the desired value of "y", which in this case is 5.
+
+The output is therefore 8 (3 + 5).
+
+# Recursion
+
+R also accepts function recursion, which means a defined function can call itself.
+
+Recursion is a common mathematical and programming concept. It means that a function calls itself. This has the benefit of meaning that you can loop through data to reach a result.
+
+The developer should be very careful with recursion as it can be quite easy to slip into writing a function which never terminates, or one that uses excess amounts of memory or processor power. However, when written correctly, recursion can be a very efficient and mathematically-elegant approach to programming.
+
+In this example, tri_recursion() is a function that we have defined to call itself ("recurse"). We use the k variable as the data, which decrements (-1) every time we recurse. The recursion ends when the condition is not greater than 0 (i.e. when it is 0).
+
+To a new developer it can take some time to work out how exactly this works, best way to find out is by testing and modifying it.
+
+```{r}
+tri_recursion <- function(k) {
+  if (k > 0) {
+    result <- k + tri_recursion(k - 1)
+    print(result)
+  } else {
+    result = 0
+    return(result)
+  }
+}
+tri_recursion(6)
+```
+
+# Global Variables
+
+Variables that are created outside of a function are known as global variables.
+
+Global variables can be used by everyone, both inside of functions and outside.
+
+```{r}
+# Create a variable outside of a function and use it inside the function:
+
+txt <- "rules"
+my_function <- function() {
+  paste("Hendrix", txt)
+}
+
+my_function()
+```
+
+If you create a variable with the same name inside a function, this variable will be local, and can only be used inside the function. The global variable with the same name will remain as it was, global and with the original value.
+
+```{r}
+# Create a variable inside of a function with the same name as the global variable:
+
+txt <- "global variable"
+my_function <- function() {
+  txt = "deadly"
+  paste("Freddy is", txt)
+}
+
+my_function()
+
+txt # print txt
+```
+
+If you try to print txt, it will return "global variable" because we are printing txt outside the function.
+
+# The Global Assignment Operator
+
+Normally, when you create a variable inside a function, that variable is local, and can only be used inside that function.
+
+To create a global variable inside a function, you can use the global assignment operator <<-
+
+```{r}
+#If you use the assignment operator <<-, the variable belongs to the global scope:
+
+my_function <- function() {
+txt <<- "slimey"
+  paste("Slimer is", txt)
+}
+
+my_function()
+
+print(txt)
+```
+
+Also, use the global assignment operator if you want to change a global variable inside a function:
+
+```{r}
+# To change the value of a global variable inside a function, refer to the variable by using the global assignment operator <<-:
+
+txt <- "tubular"
+my_function <- function() {
+  txt <<- "calming"
+  paste("Music can be", txt)
+}
+
+my_function()
+
+paste("Music can be", txt)
+```
+

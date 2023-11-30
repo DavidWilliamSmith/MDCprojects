@@ -1,0 +1,581 @@
+---
+title: "Bike Share Analysis"
+output: html_notebook
+---
+
+
+```{r}
+
+file_names_bike_share= dir("C:\\Users\\jheredi2\\Documents\\CAP4910_Class_Rwork\\CAP4910_Spring2023\\Bike_Share_DataFixed", full.names=TRUE)
+
+```
+
+
+```{r}
+
+library ("tidyverse")
+
+```
+
+
+```{r}
+
+library("readxl")
+
+```
+
+
+```{r}
+
+bike_share_raw_Oct22Feb23 <- do.call(rbind,lapply(file_names_bike_share,read_excel))
+
+```
+
+
+Take a look at the data frame:
+
+```{r}
+
+str(bike_share_raw_Oct22Feb23)
+
+```
+
+
+## Data Preparation
+
+### Are there missing values?
+
+```{r}
+sum (complete.cases(bike_share_raw_Oct22Feb23))
+```
+
+
+Get a count of missing values per column (alternative 1):
+
+```{r}
+
+sapply(bike_share_raw_Oct22Feb23, function(x) {sum(is.na(x))})
+
+```
+
+Get a count of missing values per column (alternative 2):
+
+```{r}
+
+bike_share_raw_Oct22Feb23 %>% select(everything()) %>%summarise_all(funs(sum(is.na(.))))
+
+```
+
+
+How to handle the missing values?
+
+a) Can we find a way of finding and entering the missing values?
+
+Maybe yes. Maybe from the start long and lat we can identify the station name and then from that the station ID.
+
+Also, it looks like some rows have the value for the station name but not for the station ID (and the other way around). In those cases, we can fill out the value of one from the other.
+
+
+b) Remove rows with missing data and find new rows without missing values IF sample size is a concerned
+
+c) Remove rows with missing data and use the reduced data frame IF sample size is not a concerned (THIS WILL BE OUR APPROACH)
+
+
+Other methods to handle missing values are:
+Mean imputation (discuss)
+Mode imputation (discuss)
+Regression imputation (discuss)
+
+Are any of these last three methods applicable here?
+
+
+```{r}
+
+bike_share_Oct22Feb23 <- bike_share_raw_Oct22Feb23[complete.cases(bike_share_raw_Oct22Feb23), ]
+
+```
+
+
+Checking that the new data frame has no missing values:
+
+```{r}
+nrow(bike_share_Oct22Feb23)
+sum (complete.cases(bike_share_Oct22Feb23))
+
+```
+
+
+### Check for possible incorrect values in the columns
+
+
+```{r}
+str(bike_share_Oct22Feb23)
+```
+
+Any strange/erroneous values in the qualitative variables?
+
+Check the columns rideable_type and member_casual.
+
+ASK STUDENTS: What am I trying to accomplish with the following code?
+
+```{r}
+
+ table (bike_share_Oct22Feb23$rideable_type)
+ table (bike_share_Oct22Feb23$member_casual)
+
+```
+
+I do not think we need to worry about strange values in ride_id. What do you think? 
+
+And, what would it mean to check for strange values in ride_id? 
+
+```{r}
+
+length (unique (bike_share_Oct22Feb23$ride_id))
+
+```
+
+The number of unique values in ride_id coincides with the number of obs in the data frame. Thus, no duplicates.
+
+
+Are we going to use started_at, ended_at, and the latitude and longitude columns?
+
+
+
+Check ride_length for erroneous data:
+
+```{r}
+
+summary(bike_share_Oct22Feb23$ride_length)
+
+```
+
+Something is wrong, the values in ride_length were supposed to be in the format hh:mm:ss, but we are getting a date value as well.
+
+```{r}
+
+head (bike_share_Oct22Feb23$ride_length, 10)
+
+```
+
+I am going to solve this issue using a long and probably not the most efficient approach. You can also try using R functions to handle dates such as those part of the "lubridate" package.
+
+
+```{r}
+
+ride_length_temp= separate (bike_share_Oct22Feb23, ride_length, into= c("date_ride", "time_ride"), sep=" ")$time_ride
+
+```
+
+```{r}
+head (ride_length_temp, 10)
+```
+
+
+```{r}
+
+mode(ride_length_temp)
+
+```
+
+Now, grab the hours, minutes, and seconds and convert them to an integer. 
+
+Then, record the ride length in minutes (i.e., length= how many minutes the ride lasted)
+
+Getting hours:
+
+```{r}
+
+ride_length_temp_hours= substr(ride_length_temp, start = 1, stop = 2)
+
+```
+
+
+```{r}
+
+table (ride_length_temp_hours)
+
+```
+
+```{r}
+
+ride_length_temp_hours_int = as.integer (ride_length_temp_hours)
+  
+```
+
+
+```{r}
+# Sanity check
+
+table (ride_length_temp_hours_int)
+
+```
+
+Getting minutes:
+
+```{r}
+
+ride_length_temp_mins= substr(ride_length_temp, start = 4, stop = 5)
+
+```
+
+
+```{r}
+table (ride_length_temp_mins)
+
+```
+
+```{r}
+
+ride_length_temp_mins_int = as.integer (ride_length_temp_mins)
+
+```
+
+
+```{r}
+# Sanity check
+
+table (ride_length_temp_mins_int)
+
+```
+
+Getting seconds: 
+
+```{r}
+
+ride_length_temp_secs= substr(ride_length_temp, start = 7, stop = 8)
+ride_length_temp_secs_int = as.integer (ride_length_temp_secs)
+table (ride_length_temp_secs_int)
+
+```
+
+
+```{r}
+
+head (ride_length_temp_secs_int)
+
+head ((ride_length_temp_secs_int>30)*1)
+
+mode ((ride_length_temp_secs_int>30)*1)
+
+```
+
+
+```{r}
+
+ride_length_mins_vector= ride_length_temp_hours_int*60 + ride_length_temp_mins_int + (ride_length_temp_secs_int>30)*1
+
+```
+
+
+```{r}
+summary (ride_length_mins_vector)
+```
+
+How can there be rides with length=0? 
+
+Reasons:ride lasted less than 30 seconds or ... any other reason?
+
+
+```{r}
+
+table (ride_length_mins_vector)
+
+```
+
+I am suspicious of the accuracy of the data for very short rides. How can a ride last 1 or 2 minutes? If I were doing this case study in a real-life application,I would probably look deeper into it to see if these data points are misleading or represent erroneous data. If they are, I would not include them in the analysis.
+
+As a practice, let's just remove the observations where ride_length=0.
+
+
+```{r}
+
+index_ride_nonzero= ride_length_mins_vector!=0
+
+```
+
+
+```{r}
+
+all (ride_length_mins_vector [index_ride_nonzero]!=0)
+
+min (ride_length_mins_vector [index_ride_nonzero])
+
+```
+
+Now, if you feel satisfied with the result of this transformation, you can add 'ride_length_mins_vector' as a new column in your data frame
+
+
+```{r}
+
+bike_share_Oct22Feb23_cleaned= bike_share_Oct22Feb23 [index_ride_nonzero, ]
+
+```
+
+
+```{r}
+
+bike_share_Oct22Feb23_cleaned$ride_length_mins= ride_length_mins_vector [index_ride_nonzero]
+
+```
+
+
+```{r}
+
+head (bike_share_Oct22Feb23_cleaned)
+```
+
+
+Check day_of_week for erroneous data:
+
+```{r}
+ table (bike_share_Oct22Feb23_cleaned$day_of_week)
+```
+
+
+## Insights and patterns search
+
+How do annual members and casual riders use Cyclistic bikes differently?
+
+Find differences between these two groups with respect to as many variables as possible.
+
+What variables can be used to find differences between these two groups?
+
+ANSWER: With the exception of ride_id, it seems that all other variables can be explored for differences between the two groups.
+
+```{r}
+str (bike_share_Oct22Feb23_cleaned)
+```
+
+__Association between rideable type and the two groups:__
+
+```{r}
+chisq.test(bike_share_Oct22Feb23_cleaned$member_casual, bike_share_Oct22Feb23_cleaned$rideable_type)
+
+```
+
+```{r}
+round(prop.table(table(bike_share_Oct22Feb23_cleaned$member_casual, bike_share_Oct22Feb23_cleaned$rideable_type), margin=1),2)
+
+```
+
+Casual riders are more heavily linked to electric bikes
+Members are are more heavily linked to classic bikes
+
+
+
+__Association between day of the week and the two groups__
+
+```{r}
+chisq.test(bike_share_Oct22Feb23_cleaned$member_casual, bike_share_Oct22Feb23_cleaned$day_of_week)
+
+```
+
+```{r}
+
+round(prop.table(table(bike_share_Oct22Feb23_cleaned$member_casual, bike_share_Oct22Feb23_cleaned$day_of_week), margin=1),2)
+
+```
+
+Reminder: 1 is Sunday and 7 is Saturday.
+
+Casual riders are more active on Saturdays
+Members seems more active from M to Th
+
+
+Let's explore the difference between weekends and weekdays
+
+```{r}
+
+# sanity check
+
+head (ifelse(bike_share_Oct22Feb23_cleaned$day_of_week>=2 & bike_share_Oct22Feb23_cleaned$day_of_week<=6, "weekday", "weekend"), 15)
+
+head (bike_share_Oct22Feb23_cleaned$day_of_week, 15)
+
+```
+
+```{r}
+
+weekday_weekend=ifelse(bike_share_Oct22Feb23_cleaned$day_of_week>=2 & bike_share_Oct22Feb23_cleaned$day_of_week<=6, "weekday", "weekend")
+  
+```
+
+```{r}
+
+chisq.test(bike_share_Oct22Feb23_cleaned$member_casual, weekday_weekend)
+
+```
+
+```{r}
+
+cramerV(table (bike_share_Oct22Feb23_cleaned$member_casual, weekday_weekend))
+
+```
+
+```{r}
+
+sqrt (22655/(length(weekday_weekend)))
+
+```
+
+```{r}
+
+round(prop.table(table(bike_share_Oct22Feb23_cleaned$member_casual, weekday_weekend), margin=1),2)
+
+```
+
+60-40 (casual) VS 75-25 (members)?????
+
+Casual riders do around 60% of their rides on weekdays, in contrast to member, who do around 75% of their rides on weekdays. Weekdays rides are more prevalent among members.
+
+Using the same type of analysis, we can state that Weekdays rides are more prevalent among casual riders.
+
+
+
+__Association between ride_length and the two groups__
+
+```{r}
+
+t.test(bike_share_Oct22Feb23_cleaned$ride_length_mins~bike_share_Oct22Feb23_cleaned$member_casual)
+
+```
+
+Longer rides (timewise) for casual riders. One reason for this could be because casual riders' rides are longer (distance-wise), assuming both groups ride at the same approximate average speed. Or maybe the average distance is the same for both groups and casual riders are just slower riders. 
+
+
+
+Does the difference in ride length between the two groups change after adjusting for rideable_type?
+
+```{r}
+summary (aov(ride_length_mins ~ member_casual + rideable_type, data=bike_share_Oct22Feb23_cleaned))
+```
+
+```{r}
+
+with (bike_share_Oct22Feb23_cleaned, tapply (ride_length_mins,member_casual,mean))
+
+with (bike_share_Oct22Feb23_cleaned, tapply (ride_length_mins,list (member_casual, rideable_type),mean))
+
+
+```
+
+For both classic bikes and electric bikes, we still observe that the ride length in minutes is greater for casual riders. 
+
+
+
+Does the difference in ride length between the two groups change after adjusting for day of the week?
+
+Members' activity is more prevalent on weekdays. Casual riders' activity is more prevalent on weekends.
+Could this have any impact in time? (again, the most likely explanation for this is a diference in distance between the two groups)
+
+```{r}
+summary (aov(bike_share_Oct22Feb23_cleaned$ride_length_mins ~ bike_share_Oct22Feb23_cleaned$member_casual + weekday_weekend))
+```
+
+```{r}
+
+tapply (bike_share_Oct22Feb23_cleaned$ride_length_mins,list (bike_share_Oct22Feb23_cleaned$member_casual, weekday_weekend),mean)
+
+```
+
+On both weekdays and weekends, casual take longer riders (timewise)
+
+
+ALTHOUGH WE COULD DO DOZENS OF ADDITIONAL ANALYSES AND EXPLORE MANY MORE IDEAS such as the ones you suggested in previous sessions (e.g., find differences in the groups according to the routes they follow, the distances they cover, etc), let's wrap this up. Thus, let's just find a possible difference with respect to __where__ (starting station) and __at what time of the day__ both groups __START their rides__ (the same analysis can be done for the END of the ride)
+
+
+__Time of the day__
+
+```{r}
+
+head (bike_share_Oct22Feb23_cleaned$started_at, 20)
+
+```
+
+```{r}
+
+head (substr(bike_share_Oct22Feb23_cleaned$started_at, start = 12, stop = 13), 20)
+
+```
+
+```{r}
+table (substr(bike_share_Oct22Feb23_cleaned$started_at, start = 12, stop = 13))
+```
+
+What info does the next result give you? (the numbers are %)
+
+```{r}
+round ((table (substr(bike_share_Oct22Feb23_cleaned$started_at, start = 12, stop = 13))/
+   sum (table (substr(bike_share_Oct22Feb23_cleaned$started_at, start = 12, stop = 13))))*100, 2)
+        
+```
+
+
+```{r}
+
+time_day_start_vector= as.integer (substr(bike_share_Oct22Feb23_cleaned$started_at, start = 12, stop = 13))
+
+```
+
+
+```{r}
+table (time_day_start_vector)
+```
+
+Let's use a nice function, case_when(), from the dplyr package (which is part of the tidyverse):
+
+```{r}
+
+time_day_start_categories_vector=
+  case_when(
+  time_day_start_vector >= 0 & time_day_start_vector <=3 ~ "overnight",
+  time_day_start_vector >= 4 & time_day_start_vector <=11 ~ "morning",
+  time_day_start_vector >= 12 & time_day_start_vector <=18  ~ "afternoon",
+  time_day_start_vector >= 19 & time_day_start_vector <=23  ~ "evening"
+)
+
+```
+
+```{r}
+
+table (time_day_vector, time_day_start_categories_vector)
+
+```
+
+
+```{r}
+
+chisq.test(bike_share_Oct22Feb23_cleaned$member_casual, time_day_start_categories_vector)
+
+```
+
+
+```{r}
+round(prop.table(table(bike_share_Oct22Feb23_cleaned$member_casual, time_day_start_categories_vector), margin=1),2)
+```
+
+Anything interesting here?
+
+
+__Starting station__
+
+```{r}
+length(unique (bike_share_Oct22Feb23_cleaned$start_station_name))
+```
+
+```{r}
+
+length (table (bike_share_Oct22Feb23_cleaned$start_station_name))
+
+```
+```{r}
+
+length (table (bike_share_Oct22Feb23_cleaned$start_station_id))
+
+```
+
+
+
+
+

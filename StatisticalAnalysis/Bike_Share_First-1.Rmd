@@ -1,0 +1,238 @@
+---
+title: "Bike Share Analysis"
+output: html_notebook
+---
+
+
+```{r}
+
+file_names_bike_share= dir("C:\\Users\\dsmit\\OneDrive\\Documents\\MDC Data Analytics\\Capstone\\Bike_Share_First-1.Rmd", full.names=TRUE)
+
+```
+
+
+```{r}
+
+library ("tidyverse")
+
+```
+
+
+```{r}
+
+library("readxl")
+
+```
+
+
+```{r}
+
+bike_share_raw_Oct22Feb23 <- do.call(rbind,lapply(file_names_bike_share,read_excel))
+
+```
+
+
+Take a look at the data frame:
+
+```{r}
+
+str(bike_share_raw_Oct22Feb23)
+
+```
+
+### Are there missing values?
+
+```{r}
+sum (complete.cases(bike_share_raw_Oct22Feb23))
+```
+
+
+Get a count of missing values per column (alternative 1):
+
+```{r}
+
+sapply(bike_share_raw_Oct22Feb23, function(x) {sum(is.na(x))})
+
+```
+
+
+Get a count of missing values per column (alternative 2):
+
+```{r}
+
+bike_share_raw_Oct22Feb23 %>% select(everything()) %>%summarise_all(funs(sum(is.na(.))))
+
+```
+
+
+How to handle the missing values?
+
+a) Can we find a way of finding and entering the missing values?
+b) Remove rows and find new rows without missing values IF sample size is a concerned
+c) Remove rows and use the reduced data frame IF sample size is not a concerned(THIS WILL BE OUR APPROACH)
+
+Other methods to handle missing values are:
+Mean imputation (discuss)
+Model imputation (discuss)
+Regression imputation (discuss)
+
+Are any of these last three methods applicable here?
+
+
+```{r}
+
+bike_share_Oct22Feb23 <- bike_share_raw_Oct22Feb23[complete.cases(bike_share_raw_Oct22Feb23), ]
+
+```
+
+
+Checking that the new data frame has no missing values:
+
+```{r}
+nrow(bike_share_Oct22Feb23)
+sum (complete.cases(bike_share_Oct22Feb23))
+
+```
+
+
+
+### Check for possible incorrect values in the columns
+
+
+```{r}
+str(bike_share_Oct22Feb23)
+```
+
+Any strange/erroneous values in the qualitative variables?
+
+Check the columns rideable_type and member_casual.
+
+ASK STUDENTS: What am I trying to accomplish with the following code?
+
+```{r}
+
+ table (bike_share_Oct22Feb23$rideable_type)
+ table (bike_share_Oct22Feb23$member_casual)
+
+```
+
+I do not think we need to worry about strange values in ride_id. What do you think? And, what would it mean to check for strange values in ride_id?
+
+
+Are we going to use started_at, ended_at, and the latitude and longitude columns?
+
+
+Check ride_length for erroneous data:
+
+```{r}
+
+summary(bike_share_Oct22Feb23$ride_length)
+
+```
+
+Something is wrong, the values in ride_lenght were supposed to be in the format hh:mm:ss, but we are getting a date value as well.
+
+```{r}
+
+head (bike_share_Oct22Feb23$ride_length, 10)
+
+```
+
+I am going to solve this issue using a long and probably not the most efficient approach. You can also try using R functions to handle dates such as those part of the "lubridate" package.
+
+
+```{r}
+
+ride_length_temp= separate (bike_share_Oct22Feb23, ride_length, into= c("date_ride", "time_ride"), sep=" ")$time_ride
+
+```
+
+```{r}
+head (ride_length_temp, 10)
+```
+
+```{r}
+
+mode(ride_length_temp)
+
+```
+
+Now, grab the hours and minutes (ignore seconds? Yes, I think it is safe to do so) and convert them to an integer. Then, record the ride lenght in minutes (i.e., length= how many minutes the ride lasted)
+
+
+Getting hours:
+
+```{r}
+
+ride_length_temp_hours= substr(ride_length_temp, start = 1, stop = 2)
+
+```
+
+
+```{r}
+
+table (ride_length_temp_hours)
+
+```
+
+```{r}
+
+ride_length_temp_hours_int = as.integer (ride_length_temp_hours)
+  
+```
+
+
+```{r}
+# Sanity check
+
+table (ride_length_temp_hours_int)
+
+```
+
+Getting minutes
+
+```{r}
+
+ride_length_temp_mins= substr(ride_length_temp, start = 4, stop = 5)
+
+```
+
+
+```{r}
+table (ride_length_temp_mins)
+
+```
+
+```{r}
+
+ride_length_temp_mins_int = as.integer (ride_length_temp_mins)
+
+```
+
+
+```{r}
+# Sanity check
+
+table (ride_length_temp_mins_int)
+
+```
+
+```{r}
+
+ride_length_mins_vector= ride_length_temp_hours_int*60 + ride_length_temp_mins_int
+
+```
+
+```{r}
+summary (ride_length_mins_vector)
+```
+
+Now, if you feel satisfied with the result of this transformation, you can add 'ride_length_mins_vector' as a new column in your data frame
+
+
+Check day_of_week for erroneous data:
+
+```{r}
+ table (bike_share_Oct22Feb23$day_of_week)
+```
+

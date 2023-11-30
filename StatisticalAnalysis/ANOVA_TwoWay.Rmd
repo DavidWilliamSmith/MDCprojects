@@ -1,0 +1,219 @@
+---
+title: "Two-way ANOVA Practice"
+output: html_notebook
+---
+
+__Exercise 1__
+
+Download the CSV file “Growth” from Blackboard and read it in R. Read Diet and Supplement as factors as we have done in class previously.
+
+The data comes from a farm-scale trial of animal diets. There are two factors: diet and supplement. Diet is a factor with three levels: barley, oats and wheat. Supplement is a factor with four levels: agrimore, control, supergain, and supersupp. The outcome variable is weight gain after 6 weeks. Analyze the data and conclude about the effects of diet and supplement on the animals’ weight gain. And, if possible, propose the best diet(s) and supplement(s)
+
+
+```{r}
+
+# After reading the csv file, take a look at the data frame that was created:
+# its a structure function, to check to see if the factors are being read correctly
+str(growth)
+
+```
+
+Before running ANOVA, let’s answer a few questions:
+
+Number of treatments?
+
+12 treatments ( 3 * 4 )
+
+3 diets
+
+4 supplements
+
+
+Number of replicates (number of animals that we are testing per treatment)?
+
+Total observations = # treatments * # replicates
+
+48 observations = 12 treatments * # replicates
+
+Number of replicates = 48/ 12= 4
+
+
+```{r}
+
+# Run ANOVA
+
+twoway_growth= aov(gain ~ diet * supplement, data=growth)
+
+# An alternative to the previous statement is: aov(growth$gain ~ growth$diet * growth$supplement)
+
+summary (twoway_growth)
+
+```
+
+Interpret the results of ANOVA
+
+- The diet effect interpretation: The PV for diet is really tiny (3.00e-14 = 3*10^-14); therefore, it is less than any reasonable alpha that we can think of (for ex, it is less than 0.05 if you choose this value to be alpha). We reject Ho and support Ha. In this case, we can claim that at least two diets yield a different weight gain.
+
+- The supplement effect interpretation: The PV for supplement is really tiny (2.95e-07 = 2.95*10^-7); therefore, it is less than any reasonable alpha that we can think of (for ex, it is less than 0.05 if you choose this value to be alpha). We reject Ho and support Ha. In this case, we can claim that at least two supplements yield a different weight gain.
+
+- The interaction effect interpretation: The PV for the interaction is 0.917, much bigger than alpha 0.05. Therefore, we do not reject Ho and cannot support Ha in case of the interaction effect.
+
+Since the interaction effect is not significant, WE DO NOT NEED TO DO AN INTERACTION PLOT. However, just to illustrate how such a plot looks like in R, I will do it:
+
+```{r}
+
+interaction.plot (growth$diet, growth$supplement, growth$gain)
+
+```
+
+```{r}
+interaction.plot (growth$supplement, growth$diet, growth$gain)
+```
+
+__Propose the best diet(s) and supplement(s)__
+
+Since the interaction is not significant, all you have to do to propose the best diet and supplement is to run pairwise tests individually for diet and supplement. From these tests, you choose the best diet (s), and independently, you choose the best supplement(s). In short, you run separate analyses to select the best diet and supplement.
+
+Before we apply pairwise, lets get the sample means:
+
+```{r}
+
+# The sample mean weight gain for the three diets
+
+sort(tapply(growth$gain, growth$diet, mean))
+
+# The sample mean weight gain for the four supplements
+
+sort(tapply(growth$gain, growth$supplement, mean))
+
+```
+Now we apply Tukey to see which of these sample means are statistically different. Let's use a family-wise error of 0.05.
+
+```{r}
+
+# Tukey for diet
+
+TukeyHSD(twoway_growth, which = "diet")
+
+```
+__Analysis of Tukey for diets__
+
+All PVs are less than alpha. Therefore, all diets are different from each other with respect to weight gain. This is an easy case then... What's the best diet? What's the second best diet? What's the worst diet?
+
+The best diet is barley
+
+The second best diet is oats
+
+The worst diet is wheat
+
+```{r}
+
+# Tukey for supplement
+sort(tapply(growth$gain, growth$supplement, mean))
+TukeyHSD(twoway_growth, which = "supplement")
+
+```
+__Analysis of Tukey for supplements__
+
+__NOTE__: AS I HAVE ALREADY MENTIONED, YOU WON'T BE REQUIRED TO DO AN ANALYSIS LIKE THIS FOR THE HW/EXAM.
+
+```{r}
+sort(tapply(growth$gain, growth$supplement, mean))
+
+```
+In this case, not all PVs are less than alpha; therefore, some differences are not significant.
+
+In these situations, I like to start by comparing the largest sample mean to rest and see which means are statistically different from the largest one.
+
+The largest sample mean is obtained with agrimore. Agrimore is statistically higher than control and supergain, but has no difference with supersupp.
+
+Then, I repeat this analysis with the second largest mean. The second largest mean is supersupp. Supersupp is statistically higher than control and supergain, but has no difference with agrimore.
+
+I can also see that control and supergain are not statistically different from each other.
+
+At this point, I can make a reasonable suggestion about what is the most reasonable supplement (s) to propose, and that is either agrimore or supersupp since they are better than the other two (supergain and control) and we did not find a difference between them.
+
+Overall suggestion: Feed the animals with barley and either agrimore or supersupp.
+
+<br>
+__Exercise 2__
+
+Download the CSV file “BatterriesTemperature” from Blackboard and read it in R (WAIT FOR MY EXPLANATION ABOUT HOW TO READ THIS FILE). Read Material and Temperature as factors as we have done in class previously. Call the dataframe Batteries2 (since you already called a previous dataframe Batteries)
+
+An engineer is designing a battery for a device that could be deployed at different temperatures. Three choices of material are available to build the battery. Three temperatures levels (15, 70, and 125 F) are considered because they are consistent with the product end-use environment. Four batteries are tested at each combination of material and temperature, and the resulting observed battery lifetime is recorded. Analyze the data using R and conclude about the influence of the two factors on the DV.
+
+```{r}
+
+# Check that the dataframe was read correctly
+
+str(Batteries2)
+
+nrow(Batteries2)
+
+```
+
+<br>
+Before running ANOVA, answer a few questions:
+
+- Outcome (dependent) variable: Battery lifetime
+
+
+- Factors and their levels:
+
+Factor A: Type of material. It has three levels (mat 1, mat2, and mat3)
+
+Factor B: Deployment temperature. It has three levels (15, 70, and 125 F)
+
+- How many treatments?
+
+9 = 3 materials * 3 temperatures
+
+- Number of replicates?
+
+Total observations = # treatments * # replicates
+
+36= 9 * # replicates
+
+Number replicates= 36/9= 4
+
+```{r}
+
+# Run ANOVA
+
+anova_batt_twoway= aov (lifetime ~ material*temperature, data= Batteries2) 
+
+summary (anova_batt_twoway)
+
+```
+Interpretation of the three effects:
+
+The PVs for both the material and the temperatures are less than alpha (0.05). Therefore, we can reject Ho in both cases and conclude:
+
+- At least two materials yield different mean lifetime
+- At least two temperatures yield different mean lifetime
+
+In this case, the interaction effect is also significant because the PV for the interaction is less than alpha. This suggests that the effect of the temperature on the lifetime DEPENDS on the type of material. We should expect to see the temperature affecting the lifetime differently depending on the material.
+
+How does the interaction effect look like? because it is significant PV is lower than alpha
+
+```{r}
+
+interaction.plot (Batteries2$temperature, Batteries2$material, Batteries2$lifetime)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

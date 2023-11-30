@@ -1,0 +1,204 @@
+---
+title: "One Way ANOVA. Practice"
+output: html_notebook
+---
+
+__Exercise 1__
+
+Download the CSV file “Batteries” from Blackboard and then read it in R.
+
+Four brands of flashlight batteries are to be compared by testing each brand in six flashlights. Twenty four flashlights are randomly selected and divided randomly into four groups of six flashlights each. Then each group of flashlights uses a different brand of battery. The lifetimes of the batteries (to the nearest days) can be found in the column named “battlife” of the data frame “Batteries”. The column “battbrand” includes the brand of each of the 24 batteries tested. You can assume that the three conditions needed for the application of ANOVA to be valid are satisfied.
+
+
+a) Identify the outcome (dependent) variable as well as the factor and its levels.
+
+Answer:
+
+Outcome (dependent) variable: Lifetime of batteries (to the nearest day)
+
+Factor: Brand of the battery
+
+From the description, we can interpret that they are trying to study if the brand of the battery influences its lifetime (in other words, if some brands are better than others)
+
+Levels: The four brands under investigation (Brand A, B, C and D)
+
+b) Run an ANOVA and obtain:
+
+A measure of the variability within groups (i.e., the variability of the values of a battery lifetime when the same brand is considered = how different (variable) are the values of lifetime for the same battery brand)
+
+MSE= MS Residuals= 9.14 
+
+A measure of the variability between groups (i.e., the variability of the values of a battery lifetime when different brands are compared = how changing (variable) are the values of lifetime across brands)
+
+MS Factor= MS Treatment= MS Brand= 41.71 
+
+
+```{r}
+DV = battlife
+factor = battbrand 
+
+aov(DV~factor)
+
+anova_bat_brands= aov(Batteries$battlife ~ Batteries$battbrand)
+
+summary(anova_bat_brands)
+
+```
+
+c) At the 5% significance level, does there appear to be a difference in mean lifetime among the four brands of batteries?
+
+Ho: Ma= Mb= Mc= Md (All the brands result in the same mean lifetime)
+
+Ha: At least two of the four means are different (at least two brands result in different mean lifetime)
+
+The PV is 0.0136, which is less than alpha (0.05); therefore, the data is giving us evidence to reject Ho and support Ha. We have evidence to conclude that at least two brands result in different mean lifetime. We should expect that some brands are better than others.
+
+d) Would you propose any brand over the others? Would you consider any brand to be worse than the others?
+
+```{r}
+
+# tapply(Batteries$battlife, Batteries$battbrand, mean)
+
+sort(tapply(Batteries$battlife, Batteries$battbrand, mean))
+
+```
+## not equiped to answer this question
+## logical perspective looking at the difference between the min and max which can be obtained with the sort(function) as seen above
+
+<br>
+#### Pairwise comparisons (post-hoc tests) for Exercise 1
+
+Let's use a family-wise error of 0.05.
+
+Rule to apply pairwise comparisons: When the adjusted PV (from either Bonferroni or Tukey) is less than the family-wise error, we conclude that the two means under comparison are significantly different.
+
+
+```{r}
+
+# Bonferroni
+
+pairwise.t.test (Batteries$battlife, Batteries$battbrand ,p.adjust.method = "bonferroni")
+
+```
+
+Bonferroni only detects one significant difference. In this case, between B and C. Based on Bonferroni, all we can say is that brand C is better than brand B (because its mean lifetime is significantly higher).
+
+```{r}
+
+# Tukey
+
+TukeyHSD (anova_bat_brands)
+
+```
+Similarly to Bonferroni, Tukey only detects as significant the difference between C and B.
+
+Overall conclusion:
+
+All we can say is that brand C is better than brand B (because its mean lifetime is significantly higher). Based on practical grounds, since we found B to be dominated by another brand, I would not use B. 
+
+Now, in terms of what is the best brand???? Not clear... You can choose C, D, or A.
+
+<br>
+__Exercise 2__
+
+Evaluate the effect of the type of supplement on the weight of chickens. 
+
+For exercise 2, we are going to use a dataset that comes with R: the _chickwts_ dataframe. To load this dataset, run the following line in code chunk:
+
+```{r}
+
+data()
+
+# Running this line loads many dataframes that come with R. One of those dataframes is the chickwts dataframe.
+
+```
+
+Get familiar with the chickwts dataframe by running the following statements:
+
+```{r}
+
+# str() provides useful info about the columns that form the dataframe
+str (chickwts)
+
+# table () creates a table summarizing the counts for each value of a categorical variable
+
+table (chickwts$feed)
+
+```
+
+Answer the following questions:
+
+a) Does the supplement used to feed the chicken influence the chicken's weight?
+
+To answer this question, we need to see if the chicken's weight is different for any of the supplements (because if the weight is the same for all the supplement, then, the supplement used does not influence at all). This requires comparing the weight obtained for the different supplements. Since we have six supplements, the appropriate way of doing such as a comparison is by running an ANOVA that compares the average weight obtained with each supplement.
+
+The hypotheses that we need to test with ANOVA are:
+
+Ho: Mc = Mh = Ml = Mm = Ms = Msf (The average weight is the same for all supplements)
+
+Ha: At least two supplements yield a different average weight (some supplements are better than the others)
+
+```{r}
+
+# Using the aov() function to run ANOVA
+
+anova_chickens= aov (chickwts$weight ~ chickwts$feed)
+
+summary (anova_chickens)
+
+```
+The PV from the ANOVA test is 5.94 x 10^-10 (that's a really small PV!). This PV is smaller than any alpha that we can reasonably think of; therefore, we should reject Ho and support Ha. The data is giving us evidence to conclude that at least two supplements yield different average weight. In other words, the supplement used matters because some supplements are different than others.
+
+b) If the answer to a) is Yes, then, propose one or more supplements to use for feeding the chickens.
+
+Since the answer to part a) was positive, we could conduct a post-hoc test to answer part b (i.e., to propose one or more supplements to use for feeding the chickens). Before applying the post-hoc test, let's obtain the sample mean weight for each of the supplements. I will sort the sample means from least to highest.
+
+Note: The higher the weight the better since we assume that we want chickens that weight more.
+
+```{r}
+
+sort (tapply (chickwts$weight, chickwts$feed, mean))
+
+```
+__AS WE ALWAYS SAY__, we cannot say much about these sample means just because they are different. __We know the sample means will always be different__. The real question is which one of them are __statistically different__. To know this answer, we will applying a post-hoc test. Let's apply Tukey's test.
+
+```{r}
+
+TukeyHSD(anova_chickens)
+
+```
+IMPORTANT NOTE: __You are not expected to do a comparison like this in either the assignment or the exam__.
+
+We are using a family-wise alpha of 0.05. Therefore, __to know which pairs of means are statistically different, all we have to do is compare the PV shown on the last column from the previous table with 0.05.__
+
+- The highest sample mean is obtained with sunflower. The average weight with sunflower is statistically higher than the average weight with the first three supplements (horsebean, linseed, and soybean), but is not statistically higher than the average with meatmeal or casein. 
+
+- The same pattern that happens with sunflower occurs with casein.
+
+- Meatmeal and soybean are statistically different (higher in this case) only than horsebean (horsebean has the lowest sample mean). The difference between meatmeal and the other four supplements (or between meatmeal and the other four supplements) is not statistically significant.
+
+- The two supplements leading to the smallest mean weight, linseed and horsebean,are not significantly different from each other.
+
+What can we "reasonably" conclude from all of this? (notice that we can only conclude something reasonable based on practical considerations. It does mean that we are going to conclude something that is definitively true and without objections)
+
+1) Linseed and horsebean seem to be two supplements to avoid since they are dominated by the other four supplements and there is not statistically significant difference between them.
+
+2) Meatmeal and Soybean are kind of in the middle of all the supplements in terms of the weight gain that it yields. They are the average kind of supplement. The only thing we can say about them is that they yield statistically higher mean weight than horsbean. That's all we can say about them!
+
+3) It seems that the best supplement options are sunflower and casein because:
+
+a) They are not stastistically different from each other
+b) They are statistically higher than the mean of three other supplements. So, casein and sunflower are the supplements that dominate (= are better) the largest number of supplements.
+
+Short conclusion: Do not use horsebean and linseed if possible. Try to use casein and sunflower whenever possible. If casein and sunflower are not available (e.g., if supply for them is not available), use soybean or meatmeal.
+
+
+
+
+
+
+
+
+
+
+

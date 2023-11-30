@@ -1,0 +1,282 @@
+---
+title: "Data frames"
+output: html_notebook
+---
+
+# Data frames
+
+A data frame is a matrix-like object with columns that can have different data types.
+
+A data frame is different from a matrix (an R data structure that we will not cover). Matrices, like vectors, only accept columns with the same data type. This is a limitation because, what if we want the person’s name in column 1 and the person’s salary in column 2? A matrix cannot handle this, but a data frame can.
+
+__Example__: Create a data frame with the presidents’ height data. Download the file "Data Winners&Opponents" from Blackboard.
+
+```{r}
+# Just copy the data in the file and paste it here. Then, run this code chunk to create the vectors
+
+presid_name= c("Obama","Bush","Bush","Clinton","Clinton","Bush Father","Reagan","Reagan","Carter","Nixon","Nixon","Johnson","Kennedy","Eisenhower","Eisenhower","Truman")
+
+winner = c(185, 182, 182, 188, 188, 188, 185, 185, 177, 182, 182, 193, 183, 179, 179, 175)
+
+opponent = c(175, 193, 185, 187, 188, 173, 180, 177, 183, 185, 180, 180, 182, 178, 178, 173)
+
+
+```
+
+Let's say we want to create another vector to store the election year. The year starts in 2008 and goes all the way back until 1948.
+
+Use the next code chunk to create a vector called year with the year values that satisfy this problem.
+
+```{r}
+
+year= seq (from= 2008, to= 1948, by=-4)
+
+```
+
+Create a vector called “isWinnerTaller”, which is True when Winner > Opponent and False otherwise. Then, use “isWinnerTaller” to count how many times the winner has been taller than the opponent.
+
+```{r}
+
+isWinnerTaller= winner > opponent
+
+isWinnerTaller
+
+```
+
+```{r}
+# Count how many times the winner has been taller than the opponent.
+
+sum(isWinnerTaller)
+
+```
+
+Use all the previous vectors to create a data frame with all the data. We can use the data.frame() function to create R data frames.
+
+```{r}
+
+df_presidents= data.frame(presid_name, year, winner, opponent, isWinnerTaller)
+df_presidents
+
+```
+
+Let's learn some handy functions to work with data frames
+
+```{r}
+head(df_presidents)
+
+```
+
+```{r}
+str (df_presidents)
+
+```
+
+```{r}
+colnames(df_presidents)
+
+```
+
+```{r}
+ncol(df_presidents)
+nrow(df_presidents)
+```
+
+Let's learn how to add a new column to an existing data frame.
+
+For example, add a column named _difference_ as the last column. This column stores the difference in height between winners and opponents.
+
+```{r}
+df_presidents$difference = winner - opponent
+
+```
+
+```{r}
+df_presidents
+```
+
+Now, let's learn how to delete a column by using the index of the column in the data frame.
+
+For example, delete the difference column by using its index.
+
+```{r}
+df_presidents [ , -6]
+
+
+```
+
+```{r}
+
+df_presidents
+
+```
+
+The right way is to re-assign the deletion to the data frame
+
+```{r}
+df_presidents = df_presidents [, -6]
+```
+
+```{r}
+df_presidents
+
+```
+
+A better way of deleting the last column of a data frame IF you want to do it more programmatically is:
+
+df_presidents = df_presidents [, -ncol(df_presidents)]
+
+DO NOT RUN THIS STATEMENT. I just want you to know that this is an alternative way of deleting the the last column of a data frame.
+
+
+Let's add the column _difference_ again, so we can delete it one more time using a different method.
+
+```{r}
+df_presidents$difference = winner - opponent
+
+```
+
+```{r}
+
+df_presidents
+```
+
+
+Before, we deleted the column difference by using its index. Now, let's delete by using its name:
+
+```{r}
+
+df_presidents[ , colnames(df_presidents) != 'difference' ]
+
+```
+
+```{r}
+
+df_presidents= df_presidents[ , colnames(df_presidents) != 'difference' ]
+
+```
+
+```{r}
+
+df_presidents
+
+```
+
+### Indexing a data frame
+
+Get the second column
+
+```{r}
+
+df_presidents[ , 2]
+
+# alternative 2: df_presidents [, 'year']
+
+# alternative 3: df_presidents$year
+
+```
+
+Get the last column
+
+```{r}
+df_presidents[ , ncol(df_presidents)]
+
+# alternative: df_presidents[ , 5]
+
+```
+
+
+Get the winner’s and the opponent’s heights, only for the first three rows in the data set. 
+
+```{r}
+df_presidents [c(1,2,3), c(3,4)]
+
+# alternative: df_presidents [1:3 , c(3,4)]
+
+```
+
+### Some useful functions to work with data frames
+
+The subset() function
+
+Example: Use the subset() function to get the rows from the data frame where the Winner > Opponent
+
+```{r}
+
+subset (df_presidents, df_presidents$isWinnerTaller==TRUE)
+
+# or, more succinct: subset (df_presidents, isWinnerTaller)
+
+```
+
+Example: Get the winners’ names only for cases when Winner > Opponent
+
+```{r}
+subset (df_presidents$presid_name, df_presidents$isWinnerTaller==TRUE)
+
+```
+
+Other useful functions are apply() and tapply(). To be able to practice these functions, lets' add a column with the party of the winner (i.e., the party of the president).
+
+```{r}
+
+party= c("Dem", "Rep", "Rep", "Dem", "Dem", "Rep", "Rep", "Rep", "Dem","Rep","Rep","Dem","Dem","Rep","Rep","Dem")
+  
+```
+
+```{r}
+
+df_presidents$presid_party= party
+df_presidents
+
+```
+
+
+Use tapply() to compute the mean height for the presidents from each party
+
+```{r}
+tapply (df_presidents$winner, df_presidents$presid_party, mean)
+
+```
+
+Use tapply() to compute the max height for the presidents from each party
+
+```{r}
+tapply (df_presidents$winner, df_presidents$presid_party, max)
+
+```
+
+Use apply() to compute the mean height for the winners and opponents
+
+```{r}
+apply (df_presidents [, c("winner", "opponent")] ,2, mean)
+
+# The 2 means that we want to apply the mean by columns
+
+```
+
+We can also use the colMeans () function
+
+```{r}
+colMeans (df_presidents [, c("winner", "opponent")])
+```
+
+Use apply() to compute the sd of the height for the winners and opponents
+
+```{r}
+apply (df_presidents [, c("winner", "opponent")] , 2, sd)
+
+```
+```{r}
+sd(df_presidents [, "winner"])
+
+```
+
+```{r}
+sd(df_presidents [, "opponent"])
+```
+
+
+
+
+
+

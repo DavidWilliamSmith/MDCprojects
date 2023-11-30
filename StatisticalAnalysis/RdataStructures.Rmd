@@ -1,0 +1,814 @@
+---
+title: "R Data Structures"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Vectors
+
+A vector is a list of items that are of the same type.
+
+To combine the list of items to a vector, use the c() function and separate the items by a comma.
+
+Create a vector variable called sports, that combine strings:
+```{r}
+# Vector of strings
+sports <- c("basketball", "baseball", "football")
+
+# Print sports
+sports
+```
+
+Create a vector that combines numerical values:
+```{r}
+# Vector of numerical values
+numbers <- c(12344,1234081345,51345345134515)
+
+# Print numbers
+numbers
+```
+
+To create a vector with numerical values in a sequence, use the : operator:
+```{r}
+# Vector with numerical values in a sequence
+numbers <- 1:120
+
+# Print numbers
+numbers
+```
+
+You can also create numerical values with decimals in a sequence, but note that if the last element does not belong to the sequence, it is not used:
+```{r}
+# Vector with numerical decimals in a sequence
+numbers1 <- 2.5:12.5
+numbers1
+
+# Vector with numerical decimals in a sequence where the last element is not used
+numbers2 <- 1.9:7.8
+numbers2
+```
+
+In the example below, we create a vector of logical values:
+```{r}
+# Vector of logical values
+log_values <- c(TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE)
+
+log_values
+
+```
+
+# Vector Length
+
+To find out how many items a vector has, use the length() function:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men")
+
+length(movies)
+```
+
+# Sort a Vector
+
+To sort items in a vector alphabetically or numerically, use the sort() function:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men", "Doom", "The Thing")
+numbers <- c(133, 323, 57457, 7456345247, 202473656, 226457, 24555)
+
+sort(movies)  # Sort a string
+sort(numbers) # Sort numbers
+```
+
+# Access Vectors
+
+You can access the vector items by referring to its index number inside brackets []. The first item has index 1, the second item has index 2, and so on:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men")
+
+# Access the first item (DUne)
+movies[1]
+```
+
+You can also access multiple elements by referring to different index positions with the c() function:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men", "Doom", "The Thing")
+
+# Access the first and third item (banana and orange)
+movies[c(1, 3)]
+```
+
+You can also use negative index numbers to access all items except the ones specified:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men", "Doom", "The Thing")
+
+# Access all items except for the first item
+movies[c(-1)]
+```
+
+# Change an Item
+
+To change the value of a specific item, refer to the index number:
+```{r}
+movies <- c("Aliens", "DUne", "X-Men", "Doom", "The Thing")
+
+# Change "Aliens" to "Feast"
+movies[1] <- "Feast"
+
+# Print fruits
+movies
+```
+
+# Repeat Vectors
+
+To repeat vectors, use the rep() function:
+```{r}
+# Repeat each value:
+
+repeat_each <- rep(c(112,21345135,3132451365164), each = 3)
+
+repeat_each
+```
+
+```{r}
+# Repeat the sequence of the vector:
+
+repeat_times <- rep(c(152345146,21346134,361346), times = 3)
+
+repeat_times
+```
+
+```{r}
+# Repeat each value independently:
+
+repeat_indepent <- rep(c(141,21235,31516), times = c(5,2,1))
+
+repeat_indepent
+```
+
+# Generating Sequenced Vectors
+
+One of the examples on top, showed you how to create a vector with numerical values in a sequence with the : operator:
+```{r}
+numbers <- 1:115
+
+numbers
+```
+
+To make bigger or smaller steps in a sequence, use the seq() function:
+```{r}
+numbers <- seq(from = 0, to = 100, by = 20)
+
+numbers
+```
+
+Note: The seq() function has three parameters: from is where the sequence starts, to is where the sequence stops, and by is the interval of the sequence.
+
+# Lists
+
+A list can contain many different data types inside. A list is a collection of data which is ordered and changeable.
+
+To create a list, use list():
+```{r}
+# List of strings
+
+movies <- list("Alien", "Terminator", "Robocop")
+
+# Print the list
+movies
+```
+
+# Access Lists
+
+You can access the list items by referring to its index number, inside brackets. The first item has index 1, the second item has index 2, and so on:
+```{r}
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+
+movies[1]
+```
+
+# Change Item Value
+
+To change the value of a specific item, refer to the index number:
+```{r}
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+movies[1] <- "Alien"
+
+# Print the updated list
+movies
+```
+
+# List Length
+
+To find out how many items a list has, use the length() function:
+```{r}
+movies <- list("Alien 3", "Terminator 2", "Robocop", "Total Recall")
+
+length(movies)
+```
+
+# Check if Item Exists
+
+To find out if a specified item is present in a list, use the %in% operator:
+```{r}
+# Check if "aAlien 3" is present in the list
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+
+"Alien 3" %in% movies
+```
+
+# Add List Items
+
+To add an item to the end of the list, use the append() function:
+```{r}
+# Add "Avatar" to the list
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+
+append(movies, "Avatar")
+```
+
+To add an item to the right of a specified index, add "after=index number" in the append() function:
+```{r}
+# Add "X-Files" to the list after "Terminator 2" (index 2)
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+
+append(movies, "X-Files", after = 2)
+```
+
+# Remove List Items
+
+You can also remove list items. The following example creates a new, updated list without an "Alien 3" item:
+```{r}
+# Remove "Alien 3" from the list:
+
+movies <- list("Alien 3", "Terminator 2", "Robocop")
+
+new_movies_list <- movies[-1]
+
+# Print the new list
+new_movies_list
+```
+
+# Range of Indexes
+
+You can specify a range of indexes by specifying where to start and where to end the range, by using the : operator:
+```{r}
+# Return the second, third, fourth and fifth item:
+
+movies <- list("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline")
+
+(movies)[2:5]
+```
+
+Note: The search will start at index 2 (included) and end at index 5 (included).
+
+Remember that the first item has index 1.
+
+# Loop Through a List
+
+You can loop through the list items by using a for loop:
+```{r}
+# Print all items in the list, one by one:
+
+movies <- list("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline")
+
+for (x in movies) {
+  print(x)
+}
+```
+
+# Join Two Lists
+
+There are several ways to join, or concatenate, two or more lists in R.
+
+The most common way is to use the c() function, which combines two elements together:
+```{r}
+list1 <- list("abc", "def", "ghi")
+list2 <- list(111,222,333)
+list3 <- c(list1,list2)
+
+list3
+```
+
+#Matrices
+
+A matrix is a two dimensional data set with columns and rows.
+
+A column is a vertical representation of data, while a row is a horizontal representation of data.
+
+A matrix can be created with the matrix() function. Specify the nrow and ncol parameters to get the amount of rows and columns:
+```{r}
+# Create a matrix
+matrix1 <- matrix(c(1,2,3,4,5,6,7,8,9), nrow = 3, ncol = 2)
+
+# Print the matrix
+matrix1
+```
+
+Note: Remember the c() function is used to concatenate items together.
+
+You can also create a matrix with strings:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+movies_matrix
+```
+
+# Access Matrix Items
+
+You can access the items by using [ ] brackets. The first number "1" in the bracket specifies the row-position, while the second number "2" specifies the column-position:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+movies_matrix[1, 2]
+```
+
+The whole row can be accessed if you specify a comma after the number in the bracket:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+movies_matrix[2, 1]
+```
+The whole column can be accessed if you specify a comma before the number in the bracket:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+movies_matrix[, 2]
+```
+
+# Access More Than One Row
+
+More than one row can be accessed if you use the c() function:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline", "Back to the Future", "X-Men" ), nrow = 3, ncol = 3)
+
+movies_matrix[c(1,2),]
+```
+
+# Access More Than One Column
+
+More than one column can be accessed if you use the c() function:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline", "Back to the Future", "X-Men" ), nrow = 3, ncol = 3)
+
+movies_matrix[, c(1,2)]
+```
+
+# Add Rows and Columns
+
+Use the cbind() function to add additional columns in a Matrix:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline", "Back to the Future", "X-Men" ), nrow = 3, ncol = 3)
+
+new_movie_matrix <- cbind(movies_matrix, c("Existenz", "12 Monkeys", "Scanners"))
+
+# Print the new matrix
+new_movie_matrix
+```
+
+Note: The cells in the new column must be of the same length as the existing matrix.
+
+Use the rbind() function to add additional rows in a Matrix:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th", "Coraline", "Back to the Future", "X-Men" ), nrow = 3, ncol = 3)
+
+new_movie_matrix <- rbind(movies_matrix, c("Existenz", "12 Monkeys", "Scanners"))
+
+# Print the new matrix
+new_movie_matrix
+```
+Note: The cells in the new row must be of the same length as the existing matrix.
+
+# Remove Rows and Columns
+
+Use the c() function to remove rows and columns in a Matrix:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss", "Nightmare on Elm Street", "Friday the 13th"), nrow = 3, ncol =2)
+
+#Remove the first row and the first column
+movies_matrix <- movies_matrix[-c(1), -c(1)]
+
+movies_matrix
+```
+
+# Check if an Item Exists
+
+To find out if a specified item is present in a matrix, use the %in% operator:
+```{r}
+# Check if "Halloween" is present in the matrix:
+
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+"Halloween" %in% movies_matrix
+```
+
+# Number of Rows and Columns
+
+Use the dim() function to find the number of rows and columns in a Matrix:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+dim(movies_matrix)
+```
+
+# Matrix Length
+
+Use the length() function to find the dimension of a Matrix:
+```{r}
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+length(movies_matrix)
+```
+
+Total cells in the matrix is the number of rows multiplied by number of columns.
+
+In the example above: Dimension = 2*2 = 4.
+
+# Loop Through a Matrix
+
+You can loop through a Matrix using a for loop. The loop will start at the first row, moving right:
+```{r}
+# Loop through the matrix items and print them:
+
+movies_matrix <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+
+for (rows in 1:nrow(movies_matrix)) {
+  for (columns in 1:ncol(movies_matrix)) {
+    print(movies_matrix[rows, columns])
+  }
+}
+```
+
+# Combine two Matrices
+
+Again, you can use the rbind() or cbind() function to combine two or more matrices together:
+
+```{r}
+# Combine matrices
+Matrix1 <- matrix(c("Halloween", "The Goonies", "Total Recall", "The Abyss"), nrow = 2, ncol = 2)
+Matrix2 <- matrix(c("Nightmare on Elm Street", "Friday the 13th", "Coraline", "Back to the Future"), nrow = 2, ncol = 2)
+
+# Adding it as a rows
+Matrix_Combined <- rbind(Matrix1, Matrix2)
+Matrix_Combined
+
+# Adding it as a columns
+Matrix_Combined <- cbind(Matrix1, Matrix2)
+Matrix_Combined
+```
+
+# Arrays
+
+Compared to matrices, arrays can have more than two dimensions.
+
+We can use the array() function to create an array, and the dim parameter to specify the dimensions:
+```{r}
+# An array with one dimension with values ranging from 1 to 24
+my_array <- c(1:48)
+my_array
+
+# An array with more than one dimension
+multi_array <- array(my_array, dim = c(4, 3, 2))
+multi_array
+```
+
+# Example Explained
+
+In the example above we create an array with the values 1 to 48.
+
+How does dim=c(4,3,2) work?
+
+The first and second number in the bracket specifies the amount of rows and columns.
+
+The last number in the bracket specifies how many dimensions we want.
+
+Note: Arrays can only have one data type.
+
+# Access Array Items
+
+You can access the array elements by referring to the index position. You can use the [] brackets to access the desired elements from an array:
+```{r}
+my_array <- c(1:48)
+multi_array <- array(my_array, dim = c(4, 3, 2))
+
+multi_array[2, 3, 2]
+```
+
+The syntax is as follow: array[row position, column position, matrix level]
+
+You can also access the whole row or column from a matrix in an array, by using the c() function:
+```{r}
+my_array <- c(1:48)
+
+# Access all the items from the first row from matrix one
+multi_array <- array(my_array, dim = c(4, 3, 2))
+multi_array[c(1),,1]
+
+# Access all the items from the first column from matrix one
+multi_array <- array(my_array, dim = c(4, 3, 2))
+multi_array[,c(1),1]
+```
+
+A comma (,) before c() means that we want to access the column.
+
+A comma (,) after c() means that we want to access the row.
+
+# Check if an Item Exists
+
+To find out if a specified item is present in an array, use the %in% operator:
+```{r}
+# Check if the value "2" is present in the array:
+
+my_array <- c(1:48)
+multi_array <- array(my_array, dim = c(4, 3, 2))
+
+2 %in% multi_array
+```
+
+# Amount of Rows and Columns
+
+Use the dim() function to find the amount of rows and columns in an array:
+```{r}
+my_array <- c(1:48)
+multi_array <- array(my_array, dim = c(4, 3, 2))
+
+dim(multi_array)
+```
+
+# Array Length
+
+Use the length() function to find the dimension of an array:
+```{r}
+my_array <- c(1:48)
+multi_array <- array(my_array, dim = c(4, 3, 2))
+
+length(multi_array)
+```
+
+# Loop Through an Array
+
+You can loop through the array items by using a for loop:
+```{r}
+my_array <- c(1:48)
+multi_array <- array(my_array, dim = c(4, 3, 2))
+
+for(x in multi_array){
+  print(x)
+}
+```
+
+# Data Frames
+
+Data Frames are data displayed in a format as a table.
+
+Data Frames can have different types of data inside it. While the first column can be character, the second and third can be numeric or logical. However, each column should have the same type of data.
+
+Use the data.frame() function to create a data frame:
+```{r}
+# Create a data frame
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+# Print the data frame
+df
+```
+
+# Summarize the Data
+
+Use the summary() function to summarize the data from a Data Frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+df
+
+summary(df)
+```
+
+You will learn more about the summary() function in the statistical part of the R tutorial.
+
+#Access Items
+
+We can use single brackets [ ], double brackets [[ ]] or $ to access columns from a data frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+df[1]
+
+df[["franchise"]]
+
+df$franchise
+```
+
+# Add Rows
+
+Use the rbind() function to add new rows in a Data Frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+# Add a new row
+New_row_df <- rbind(df, c("AvP", 5, 101))
+
+# Print the new row
+New_row_df
+```
+
+# Add Columns
+
+Use the cbind() function to add new columns in a Data Frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+# Add a new column
+New_col_df <- cbind(df, years = c(1979, 1986, 1992, 1997))
+
+# Print the new column
+New_col_df
+```
+
+# Remove Rows and Columns
+Use the c() function to remove rows and columns in a Data Frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+# Remove the first row and column
+df_New <- df[-c(1), -c(1)]
+
+# Print the new data frame
+df_New
+```
+
+# Amount of Rows and Columns
+
+Use the dim() function to find the amount of rows and columns in a Data Frame:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+dim(df)
+```
+
+You can also use the ncol() function to find the number of columns and nrow() to find the number of rows:
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+ncol(df)
+nrow(df)
+```
+
+# Data Frame Length
+Use the length() function to find the number of columns in a Data Frame (similar to ncol()):
+```{r}
+df <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+length(df)
+```
+
+# Combining Data Frames
+Use the rbind() function to combine two or more data frames in R vertically:
+```{r}
+df1 <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+df2 <- data.frame (
+  franchise = c("AvP", "AvP: Requiem"),
+  order = c(5,6),
+  duration = c(101, 94)
+)
+
+New_df <- rbind(df1, df2)
+New_df
+```
+
+And use the cbind() function to combine two or more data frames in R horizontally:
+```{r}
+df3 <- data.frame (
+  franchise = c("Alien", "Aliens", "Alien 3", "Alien: Resurrection"),
+  order = c(1,2,3,4),
+  duration = c(117, 237, 116, 109)
+)
+
+df4 <- data.frame (
+  release_year = c(1979, 1986, 1992, 1997),
+  director = c("Ridley Scott", "James Cameron", "David Fincher", "Jean-Pierre Jeunet")
+)
+
+New_df1 <- cbind(df3, df4)
+New_df1
+```
+
+# Factors
+
+Factors are used to categorize data. Examples of factors are:
+
+Demography: Male/Female
+Music: Metal, Hip Hop, Classic, Jazz, Alternative, Reggae, IDM
+Movies: Evil Dead, Hellraiser, Candyman
+
+To create a factor, use the factor() function and add a vector as argument:
+```{r}
+# Create a factor
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"))
+
+# Print the factor
+music_genre
+```
+
+Levels: Metal, Hip Hop, Classic, Jazz, Alternative, Reggae, IDM
+
+You can see from the example above that that the factor has 7 levels (categories): Metal, Hip Hop, Classic, Jazz, Alternative, Reggae, IDM.
+
+To only print the levels, use the levels() function:
+```{r}
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"))
+
+levels(music_genre)
+```
+
+You can also set the levels, by adding the levels argument inside the factor() function:
+```{r}
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"), levels = c("Jazz", "Alternative", "Classic",  "Hip Hop",  "Metal", "Hard Core", "Rap", "Country"))
+
+levels(music_genre)
+```
+
+# Factor Length
+
+Use the length() function to find out how many items there are in the factor:
+```{r}
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"))
+
+length(music_genre)
+```
+
+# Access Factors
+
+To access the items in a factor, refer to the index number, using [] brackets:
+
+Access the third item:
+```{r}
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"))
+
+music_genre[3]
+```
+
+# Change Item Value
+
+To change the value of a specific item, refer to the index number:
+```{r}
+# Change the value of the third item:
+
+music_genre <- factor(c("Jazz", "Alternative", "Classic", "Classic", "Hip Hop", "Jazz", "Alternative", "Jazz", "Metal"))
+
+music_genre[3] <- "Slap Funk"
+
+music_genre[3]
+
+```
+
+
+Note that you cannot change the value of a specific item if it is not already specified in the factor. The following example will produce an error:
+
+Example
+Trying to change the value of the third item ("Classic") to an item that does not exist/not predefined ("Funk"):
+
+```{r}
+music_genre <- factor(c("Jazz", "Rock", "Classic", "Classic", "Pop", "Jazz", "Rock", "Jazz"), levels = c("Classic", "Jazz", "Pop", "Rock", "Funk"))
+
+music_genre[3] <- "Funk"
+
+music_genre[3]
+```

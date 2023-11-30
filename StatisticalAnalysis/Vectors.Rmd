@@ -1,0 +1,372 @@
+---
+title: "Introduction to R vectors"
+output: html_notebook
+---
+
+# Introduction
+
+A vector is a type of object in R that allows us to store data in it. __All the data stored in a vector must have the same type__. Basic data types are integer, numeric, logical, and character.
+
+__How to create a vector?__
+
+a) Using the combine function: c()
+
+```{r}
+a= c(1,2,3,4,5)
+a
+a1= c(10,20,30)
+a1
+
+plot(a1)
+
+```
+
+You can use the combine function to create a new vector by combining multiple existing vectors
+
+```{r}
+
+a2= c(a, a1, 1000)
+
+a2
+
+```
+
+b) Using the : function
+
+```{r}
+
+b= 10:20
+b
+
+d= 5:1
+d
+
+```
+
+c) Using the seq () function
+
+```{r}
+e= seq(from=1, to=5)
+e
+
+```
+
+Using the “by” argument with seq()
+
+```{r}
+f= seq(from=0, to=10, by=2)
+f
+
+```
+
+What if you want the sequence 10, 8, 6,..., 0?
+
+```{r}
+f= seq(from=10, to=0, by= -2)
+f
+
+```
+
+d) Using the rep () function
+
+Let’s say you want to create a vector that contains the vector "a" (which we created earlier) repeated three times. 
+
+```{r}
+# One way of creating this vector is:
+
+h= c(a,a,a)
+h
+
+```
+
+```{r}
+# A better way is to use the function rep()
+
+h= rep (x=a, times=3)
+h
+
+```
+
+```{r}
+rep (x=c(a,a1), times=3)
+
+```
+
+Let’s say I want a new vector k to contain f repeated three times followed by the numbers 10 and 11. How to get it? Think for a minute about it
+
+```{r}
+
+k= c(rep(x=f, times=3), 10, 11)
+
+k
+
+```
+
+Let’s use of the argument “each” in the function rep ()
+
+```{r}
+a
+h1= rep (x=a, each=3)
+h1
+
+```
+
+Using the arguments “times” and “each” together
+
+```{r}
+a
+h2= rep (x=a, each=6, times= 3)
+h2
+
+```
+
+e) Using the scan () function
+
+Example: Create a vector called vectorx that contains the numbers 34, 56, and 66. Use the scan () function to create it.
+
+```{r}
+vectorx = scan()
+vectorx
+
+```
+
+__Some Properties of a Vector__
+
+The number of elements of a vector: length()
+The data type of a vector: mode()
+
+```{r}
+a
+length(a)
+mode (a)
+
+```
+
+What happens if we added a character to the vector a?
+
+```{r}
+
+a= c(a,"w")
+a
+mode (a)
+
+```
+
+```{r}
+b
+b=c(b,"t")
+b *2
+
+```
+
+What happened with the vector “a” was called “coercion”. Coercion is the process whereby R makes sure all the elements of a vector have the same datatype. Some common coercion examples:
+
+* If you add a character to a numeric vector, all elements of the vector become character.
+
+* If you add numbers to a vector with True or False values (i.e., a vector which type if Logical), the True or False are converted to numeric  (False = 0 and True =1); thus, the vector's data type changes from logical to numeric.
+
+
+__Indexing a vector__
+
+Indexing refers to the process of retrieving the elements at the different positions of a vector
+
+Example: Let us create a new vector, with length 6. With positive and negative numbers. Call it vector_y
+
+```{r}
+
+vector_y= c(23, 5, 60, 4, -2, -9)
+
+```
+
+
+Get first element of vector_y
+
+```{r}
+vector_y[1]
+```
+
+Get the last element 
+
+```{r}
+
+vector_y[length(vector_y)]
+
+```
+
+Get first 3 elements 
+
+```{r}
+# Two possible alternatives
+vector_y [c(1,2,3)]
+
+vector_y [1:3]
+
+```
+
+Get the first and fifth elements
+
+```{r}
+vector_y [c(1,5)]
+```
+
+Get all but the second element of vector_y (long way)
+
+```{r}
+
+vector_y [ c(1, 3:length(vector_y)) ]   
+
+# 3:length(vector_y... gives from position 3 and on
+
+```
+
+Easier way to retrieve all but the second element
+
+```{r}
+vector_y [-2]
+
+```
+
+Get all but the second and fifth elements
+
+```{r}
+
+vector_y [c(-2,-5)]
+
+```
+
+
+You can use one vector to index another vector
+
+```{r}
+
+i= c(3,4)
+vector_y [i]
+
+```
+
+__Vectorized operations__
+
+Many operations executed on vectors are vectorized, which means that a function applied to a vector is actually applied individually to each element of that vector.
+
+Many (not all) R built-in functions are vectorized. For example, sqrt (), +, -, *, / … and others. Some functions are not vectorized since they return a single summary value, for example, sum () and min ().
+
+```{r}
+
+vector_y
+vector_y + 2
+
+```
+
+```{r}
+
+vector_y > 1
+
+```
+
+Two handy functions to apply on vectors:  all (), any ()
+
+```{r}
+
+any (vector_y > 1)
+
+```
+
+```{r}
+
+all (vector_y > 1)
+
+all (vector_y < 100)
+
+```
+
+__Vector Recycling__
+
+Recycling: When you are applying an operation to two vectors, if this operation requires them to be the same length, R automatically recycles, or repeats, the shorter one, until it is long enough to match the longer one.
+
+```{r}
+
+c(1,2,3) + c(6,0,9,20,22)
+
+# In the background, R does this: c(1,2,3,1,2) + c(6,0,9,20,22)
+
+```
+
+## Exercise: Practice with vectors
+
+We are going to generate a sample of 10 values. These 10 values are going to be 10 random numbers from 1 to 50.
+
+a) We are going to use the R built-in function sample() to generate these values
+b) We are going to save these 10 values in a vector called random_sample
+c) We are going to compute the mean of these values using the mean() function
+d) We are going to compute the standard deviation of these values using the sd() function
+e) We are going to compute the mean of these values WITHOUT using the mean() function
+f) We are going to compute the standard deviation of these values WITHOUT using the sd() function
+
+a) We are going to use the R built-in function sample() to generate these values
+
+```{r}
+# The next two lines allow us to generate 10 random values taken from the interval from 1 to 50
+
+set.seed (1)
+sample(x=1:50, size= 10)
+
+```
+
+b) We are going to save these 10 values in a vector called random_sample
+
+```{r}
+
+set.seed (1)
+random_sample= sample(x=1:50, size= 10)
+random_sample
+
+```
+
+c) We are going to compute the mean (average) of these values using the mean() function
+
+```{r}
+
+mean(random_sample)
+
+```
+
+d) We are going to compute the standard deviation of these values using the sd() function
+
+```{r}
+
+sd (random_sample)
+
+```
+
+e) We are going to compute the mean (average) of these values WITHOUT using the mean() function
+
+```{r}
+
+sum(random_sample) / length(random_sample)
+
+# Mean= Sum of all the values / number of values
+
+```
+
+f) We are going to compute the standard deviation of these values WITHOUT using the sd() function
+
+```{r}
+topSD= sum( (random_sample - mean(random_sample)) ^ 2 ) 
+bottomSD= length(random_sample) - 1
+sqrt(topSD / bottomSD)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

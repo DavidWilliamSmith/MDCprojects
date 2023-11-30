@@ -1,0 +1,171 @@
+---
+title: "Multiple LR Notebook"
+output: html_notebook
+---
+
+We continue with the Boston example
+
+DV: medv (median house value)
+
+IVs: 13 quantitative variables
+
+
+```{r}
+
+library (MASS)
+
+```
+
+```{r}
+# Correlation matrix (correlation between each pair of variables)
+cor(Boston)
+
+```
+
+```{r}
+# Correlation between medv and each predictor
+cor(Boston)[,"medv"]
+
+```
+
+Let's apply the Best Subset Selection method to find a good multiple regression equation.
+
+The R function to apply this method is __regsubsets()__, which is part of the __leaps__ package. This package is not built-in in R; so, we need to install the package first.
+
+Once installed, we need to load the package unsing the __library()__ function:
+
+```{r}
+
+library(leaps)
+
+```
+Now, we can apply the __regsubsets()__ to get a good multiple regression equation:
+
+```{r}
+
+
+best_subset_medv= regsubsets(medv~.,data=Boston,nvmax=13)
+
+summary (best_subset_medv)
+
+```
+From the previous outcome, we can get the best equations with different number of predictors. 
+
+For example, the best equation with one predictor is the one that includes lstat as predictor.
+
+The best equation with two predictors, is the one that includes lstat and rm (average number of rooms per house) as predictors
+
+And so on...
+
+This information is nice, but we only need one equation. What's the best among all these equations?
+
+__These equations have different number of predictors; therefore, we should not compare them based on R squared... (we will go over the explanation for this later. Accept it as a fact for now!)... We should compare them based on Adjusted R squared, or the test prediction error or other appropriate metrics__
+
+Today, we are going to use Adjusted R Squared to compare the equations
+
+```{r}
+
+summary (best_subset_medv)$adjr2
+
+```
+Let's round to two number after the decimal place
+
+```{r}
+
+adj_r2_values= round (summary (best_subset_medv)$adjr2, 2)
+
+adj_r2_values
+
+```
+
+To make the decision about the "best" model based on Adjusted R squared, we do the following:
+
+a) Observe when (at what number of predictors) Adjusted R squared stops increasing (stays the same or decreases)
+
+b) Choose the number of predictors before this happens (before Adjusted R squared stop increasing)
+
+```{r}
+
+# What's the size of the equation (# of predictors) at which adjusted R squared reaches its highest peak (= its max value)?
+
+which.max(adj_r2_values)
+
+```
+
+```{r}
+
+# What's the size of the equation (# of predictors), IF ANY, when adjusted R squared stays the same (= it does not change from the previous value)
+
+min(which(duplicated(adj_r2_values)))
+
+```
+You select the minimum from the previous two values, 6 and 9, which is 6. Then, the best size of the equation is 5. Why? Because we detected that changing the number of predictors from 5 to 6 does not produce an increase in adjusted r squared (it stayed the same). Therefore, 5 precitors is a good number to keep in our regression equation.
+
+
+What's the equation with five predictors according to the best subset selection method?
+
+```{r}
+
+coef (best_subset_medv, 5)
+
+```
+What's the R Squared for this equation?
+
+```{r}
+summary (best_subset_medv)$rsq[5]
+
+```
+Using a linear equation based on nox, rm, dis, ptratio, and lstat to predict medv reduces 70 % of the variability that we would have if we predict medv based simply on the sample mean.
+
+What's the residual standard error (RSE) for this equation?
+
+```{r}
+
+summary (lm(medv ~ nox+rm+dis+ptratio+lstat, data=Boston))$sigma
+
+```
+RSE is \$ 4,994 (close to \$ 5,000).
+
+RSE reduces from \$6,200 in simple regression to \$5,000 in multiple regression
+
+
+```{r}
+
+# Let us run a multiple linear regression with all 13 predictors:
+
+medv_multiple_out= lm (medv~.,data=Boston)
+
+summary (medv_multiple_out)
+
+```
+
+<br>
+Interpretation of the multiple linear regression results:
+
+1) The F test statistic (108.1) and its corresponding P value (p-value: < 2.2e-16) give us information about the statistical significance of the regression equation that contains all 13 predictors. In this case, we can see that this equation has a statistically significant relationship with medv (PV less than alpha). 
+
+Note: We usually do not even have to worry about looking at this F statistic since we usually do multiple regression after we already did simple regression and showed that one predictor is significantly related to Y (... If an equation with one predictor is significantly related to Y, adding more predictors to the mix will result in an equation that is also statistically related to Y)
+
+2) The t value and its corresponding PV value
+
+- The first predictor shown in the results is crim (the crime rate in the neighborhood). The PV associated to the t value is 0.001087, very small. We reject Ho, thus, the relationship between crime rate and medv is statistically significant... __However, these t tests are PARTIAL t tests !!!__ What does partial t test mean?
+
+In the case of crim, it means that in a regression equation that already contains all other predictors, the inclusion of crim reduces an amount of variability in medv that is statistically significant (= the amount of variability reduced by adding crim is not random, it is a real amount of variability). 
+
+The PV for the partial t test for crim does not necessarily mean that crim is a good predictor by itself. It means that adding crim to an equation will all other predictors has a non-random positive contribution (it reduces the variability in medv in a real way)  
+
+- Let's analyze the partial t test for age. The p value (0.958) is above 0.05. Thus, we can conclude that when all other predictors are considered, adding age does not produce a statistically significant effect on medv.
+
+Interestingly, when we study age by itself, it has a significant effect on medv. See next:
+
+```{r}
+summary (lm(medv~age, data= Boston))
+
+```
+
+GO BACK TO THE SLIDE WHERE PARTIAL T TEST IS COVERED (SLIDE 9)
+
+
+
+
+

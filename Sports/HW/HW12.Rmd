@@ -1,0 +1,209 @@
+---
+title: "In-class activity #12(HW): Analyzing the Lecture Solution File"
+output:
+  html_document:
+    df_print: paged
+---
+
+# A. How many observations do we have in the training dataset?
+
+- 835 obs. of  20 variables
+
+# B. Is there any chance that a team winning 38 games can make it to the playoffs? Why? 
+
+- Yes, when looking at the table where it shows the sum of wins per team separated out in 0 column for not making it to the playoffs and 1 for making it to the playoffs.
+
+- Teams with 38 wins = 8 (did not make it)  7 (did make it)
+
+- So, there is a chance of making it to the playoff with 38 wins
+
+# C. What is the number of wins that can guarantee for any team a presence in the playoffs based on historical data?
+
+- 49 wins can guarantee any team a playoff, based on historical data. The data shows at 49 wins 0 teams have not made it to the playoffs and 17 has, and the subsequent values always make it to the playoffs as well.
+
+# D. Can you determine (visually) if there is any relationship between the points difference (PTSdiff) and the number of wins (W)?Explain.
+
+- According the scatter plot there is a positive relationship between wins and point difference.
+
+# E. Here we want to determine what aspects of the game affect the number of wins of a team(WingsReg model). Is the predictor variable points difference (PTSdiff) significant at a 5% significance level?
+
+- PTSdiff     3.259e-02  2.793e-04   116.7   <2e-16 ***
+
+- Yes, a p-value of less than 2e-16 (or 2 x 10^-16) is considered to be extremely significant. In statistical hypothesis testing, the p-value is a measure of the strength of evidence against the null hypothesis. A p-value less than a predetermined significance level (commonly 0.05 or 0.01) indicates strong evidence to reject the null hypothesis in favor of the alternative hypothesis. In this case, a p-value of <2e-16 indicates an extremely small probability of obtaining the observed results under the null hypothesis, suggesting strong evidence for the alternative hypothesis.
+
+# F. We also built a linear model to predict the number of points as a function of some aspects of the game. Is the number of blocks (BLK) significant at a 5% significance level?
+
+- A p-value of 0.5256 for blks is not considered statistically significant. In statistical hypothesis testing, the p-value represents the probability of observing the obtained results (or more extreme results) under the assumption that the null hypothesis is true. Typically, a p-value greater than the predetermined significance level (e.g., 0.05) indicates that there is not enough evidence to reject the null hypothesis. 
+
+- In the case of a p-value of 0.5256, it is larger than the common significance level of 0.05. This suggests that the observed results are not statistically significant and do not provide strong evidence against the null hypothesis.
+
+# G. What has been the maximum number of points in a season?
+
+- 10371 is the max number of points in a season 
+
+- max_pts <- max(NBA$PTS)
+
+# H. What is the meaning of the RMSE(Root mean squared error) in the PointsReg model? Are you satisfied with this value?
+
+- RMSE can come down to an average or mean difference
+
+- RMSE = 184.4049
+
+- In the context of the PointsReg model, the RMSE (Root Mean Squared Error) represents the average difference between the predicted points and the actual points in the dataset. It is a measure of the model's performance in terms of how well it predicts the points scored by NBA teams.
+
+- I'm not satisfied because I think 184 pts on average is a lot in baketball. 
+
+- The average points per game for 2022-23 season is 114.2. 184 - 114 = 70 pts
+
+# I. How well did your predictions work on the testing dataset? Report the new R2 and RMSE. 
+
+- Very good prediction percentage
+
+- R2 <- 0.8127142 = 81%
+- RMSE <- 196.3723
+
+```{r}
+# Read in the data
+NBA = read.csv("NBA_train.csv")
+str(NBA)
+```
+
+```{r}
+# How many wins to make the playoffs?
+table(NBA$W, NBA$Playoffs)
+```
+
+```{r}
+# Compute Points Difference
+NBA$PTSdiff = NBA$PTS - NBA$oppPTS
+```
+
+```{r}
+# Check for linear relationship
+plot(NBA$PTSdiff, NBA$W)
+```
+
+```{r}
+# Linear regression model for wins
+WinsReg = lm(W ~ PTSdiff, data=NBA)
+summary(WinsReg)
+```
+
+```{r}
+# Linear regression model for points scored
+PointsReg = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + TOV + STL + BLK, data=NBA)
+summary(PointsReg)
+```
+
+```{r}
+# Sum of Squared Errors
+PointsReg$residuals
+```
+
+```{r}
+SSE = sum(PointsReg$residuals^2)
+SSE
+```
+
+```{r}
+# Root mean squared error
+# average 
+# mean difference
+RMSE = sqrt(SSE/nrow(NBA))
+RMSE
+```
+
+```{r}
+# Average number of points in a season
+mean(NBA$PTS)
+```
+
+```{r}
+# max number of pts in a season
+max_pts = max(NBA$PTS)
+max_pts
+```
+
+```{r}
+# min number of pts in a season
+min_pts = min(NBA$PTS)
+min_pts
+```
+
+```{r}
+# Remove insignificant variables
+summary(PointsReg)
+```
+
+```{r}
+PointsReg2 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + STL + BLK, data=NBA)
+summary(PointsReg2)
+```
+```{r}
+# Compute SSE and RMSE for new model
+SSE_2 = sum(PointsReg2$residuals^2)
+RMSE_2 = sqrt(SSE_2/nrow(NBA))
+SSE_2
+```
+
+```{r}
+RMSE_2
+```
+
+```{r}
+PointsReg3 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL + BLK, data=NBA)
+summary(PointsReg3)
+```
+```{r}
+# Compute SSE and RMSE for new model
+SSE_3 = sum(PointsReg3$residuals^2)
+RMSE_3 = sqrt(SSE_3/nrow(NBA))
+SSE_3
+```
+
+
+```{r}
+RMSE_3
+```
+
+```{r}
+PointsReg4 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL, data=NBA)
+summary(PointsReg4)
+```
+
+```{r}
+# Compute SSE and RMSE for new model
+SSE_4 = sum(PointsReg4$residuals^2)
+RMSE_4 = sqrt(SSE_4/nrow(NBA))
+SSE_4
+```
+
+```{r}
+RMSE_4
+```
+
+```{r}
+# Read in test set
+NBA_test = read.csv("NBA_test.csv")
+```
+
+```{r}
+# Make predictions on test set
+PointsPredictions = predict(PointsReg4, newdata=NBA_test)
+```
+
+```{r}
+# Compute out-of-sample R^2
+SSE = sum((PointsPredictions - NBA_test$PTS)^2)
+SST = sum((mean(NBA$PTS) - NBA_test$PTS)^2)
+R2 = 1 - SSE/SST
+R2
+```
+
+```{r}
+# Compute the RMSE
+RMSE = sqrt(SSE/nrow(NBA_test))
+RMSE 
+```
+
+

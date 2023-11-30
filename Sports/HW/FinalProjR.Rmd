@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+orig columns -> Rk	Player	Pos	Age	Tm	G	MP	PER	TS%	3PAr	FTr	ORB%	DRB%	TRB%	AST%	STL%	BLK%	TOV%	USG%	OWS	DWS	WS	WS/48	MP / G	OBPM	DBPM	BPM	VORP
+
+```{r}
+data = read.csv("finalscsv.csv")
+str(data)
+```
+```{r}
+Power_Ranking = lm(PER ~ Age + G	+	MP + TS. + X2P.+X3P. +	FG. + ORB + DRB +	TRB +	AST + STL+	BLK + TOV+PF+PTS, data=data)
+summary(Power_Ranking)
+```
+
+
+```{r}
+Power_Ranking2 = lm(PER ~	TS. +	X3PAr +	AST. + STL. +	BLK. + TOV. + USG. +	WS.48	+	MP...G, data=data)
+summary(Power_Ranking2)
+```
+
+
+```{r}
+WinShare = lm(WS ~ Age + G	+	MP + TS. + X2P.+X3P. +	FG. + ORB + DRB +	TRB +	AST + STL+	BLK + TOV+PF+PTS, data=data)
+summary(WinShare)
+```
+
+```{r}
+BPM = lm( BPM ~ Age + G	+	MP + TS. + X2P.+X3P. +	FG. + ORB + DRB +	TRB +	AST + STL+	BLK + TOV+PF+PTS, data=data)
+summary(BPM)
+```
+
+```{r}
+VORP = lm( VORP ~ Age + G	+	MP + TS. + X2P.+X3P. +	FG. + ORB + DRB +	TRB +	AST + STL+	BLK + TOV+PF+PTS, data=data)
+summary(VORP)
+```

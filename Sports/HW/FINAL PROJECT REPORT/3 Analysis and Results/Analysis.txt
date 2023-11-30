@@ -1,0 +1,9 @@
+AFter making different charts, we used the three dashboards with the filters to decide on the three players we would be recommending to the Heat. 
+Player 1	
+Domantas Sabonis
+
+Player 2
+Christian Wood
+
+Player 3 
+Clint Capela

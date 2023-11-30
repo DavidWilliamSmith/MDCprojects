@@ -1,0 +1,189 @@
+---
+title: "Moneyball Approach for the NBA"
+output: html_notebook
+---
+
+The Moneyball approach, popularized by the book and film "Moneyball," is a data-driven and analytical approach to building a winning sports team. Originally applied to baseball, this methodology focuses on finding undervalued players and statistics to create a competitive team while operating with a limited budget.
+
+Adapting the Moneyball approach to the NBA involves using advanced analytics and statistics to identify players who provide value that might be overlooked by traditional methods of player evaluation. Here are some key concepts and strategies for applying the Moneyball approach to the NBA:
+
+1. Advanced Statistics:
+   - Player Efficiency Rating (PER): Evaluate players' overall impact on the game.
+   - Win Shares: Assess a player's contributions to their team's wins.
+   - Offensive and Defensive Rating: Measure a player's impact on both ends of the court.
+   - True Shooting Percentage: Evaluate a player's scoring efficiency.
+
+2. Player Selection:
+   - Focus on players with high-value statistics who may be undervalued in the market due to factors like age, injury history, or playing for lower-profile teams.
+   - Identify players who excel in specific areas such as three-point shooting, rebounding, or defensive metrics, which might not receive as much attention as scoring.
+
+3. Player Development:
+   - Invest in player development to enhance the skills and contributions of undervalued players.
+   - Target players with untapped potential and work on improving their weaknesses.
+
+4. Efficient Scouting:
+   - Use data-driven scouting to identify under-the-radar prospects in the draft or free agency.
+   - Leverage analytics to find players whose skills align with team needs.
+
+5. Salary Cap Management:
+   - Maximize the value of player contracts, allocating resources to areas that provide the most impact.
+   - Avoid overpaying for big-name players unless their performance justifies the cost.
+
+6. Team Strategy:
+   - Build a team that complements each other's strengths and weaknesses based on advanced statistics.
+   - Emphasize team play and system-based basketball over individual heroics.
+
+7. Adaptability:
+   - Continuously adjust the team's strategy and roster based on ongoing analysis and performance data.
+   - Be open to change and innovation in response to the evolving landscape of the NBA.
+
+The Moneyball approach in the NBA may not be as straightforward as in baseball due to the complexity of basketball and the impact of superstar players. However, teams can still use data and analytics to identify undervalued talent and optimize their roster while working within salary cap constraints. While it might not guarantee championships, it can certainly provide a competitive edge in the league.
+
+```{r}
+# Read in the data from NBA_train.csv
+NBA = read.csv("NBA_train.csv")
+str(NBA)
+```
+
+The data contains information related to basketball statistics, specifically for NBA teams. The variables are as follows:
+
+1. **SeasonEnd**: An integer representing the end year of the NBA season (e.g., 1980).
+2. **Team**: A character (string) variable that holds the name of the NBA team.
+3. **Playoffs**: An integer indicating whether the team made the playoffs (1 for yes, 0 for no).
+4. **W**: An integer representing the number of wins by the team.
+5. **PTS**: An integer denoting the total points scored by the team.
+6. **oppPTS**: An integer representing the total points scored by the opposing teams.
+7. **FG**: An integer representing the number of field goals made by the team.
+8. **FGA**: An integer representing the number of field goal attempts by the team.
+9. **X2P**: An integer representing the number of two-point field goals made by the team.
+10. **X2PA**: An integer representing the number of two-point field goal attempts by the team.
+11. **X3P**: An integer representing the number of three-point field goals made by the team.
+12. **X3PA**: An integer representing the number of three-point field goal attempts by the team.
+13. **FT**: An integer representing the number of free throws made by the team.
+14. **FTA**: An integer representing the number of free throw attempts by the team.
+15. **ORB**: An integer representing the number of offensive rebounds by the team.
+16. **DRB**: An integer representing the number of defensive rebounds by the team.
+17. **AST**: An integer representing the number of assists by the team.
+18. **STL**: An integer representing the number of steals by the team.
+19. **BLK**: An integer representing the number of blocks by the team.
+20. **TOV**: An integer representing the number of turnovers by the team.
+
+This data is related to NBA team performance and statistics for multiple seasons. The variables capture a wide range of performance metrics and outcomes for each team, which can be analyzed and visualized to gain insights into their performance.
+
+```{r}
+# How many wins will it take to make the playoffs?
+table(NBA$W, NBA$Playoffs)
+```
+The "Playoffs" variable indicates whether a team made the playoffs in a particular season, with 1 indicating they made the playoffs and 0 indicating they did not. The other variables provide various statistical metrics related to team performance during a specific season.
+
+```{r}
+# Compute Points Difference
+NBA$PTSdiff = NBA$PTS - NBA$oppPTS
+```
+
+```{r}
+# Check for linear relationship
+plot(NBA$PTSdiff, NBA$W)
+```
+
+```{r}
+# Linear regression model for wins
+WinsReg = lm(W ~ PTSdiff, data=NBA)
+summary(WinsReg)
+```
+
+```{r}
+# Linear regression model for points scored
+PointsReg = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + TOV + STL + BLK, data=NBA)
+summary(PointsReg)
+```
+
+```{r}
+# Sum of Squared Errors
+PointsReg$residuals
+```
+
+```{r}
+SSE = sum(PointsReg$residuals^2)
+SSE
+```
+
+```{r}
+# Root mean squared error
+RMSE = sqrt(SSE/nrow(NBA))
+RMSE
+```
+
+```{r}
+# Average number of points in a season
+mean(NBA$PTS)
+```
+
+```{r}
+# max number of pts in a season
+max_pts = max(NBA$PTS)
+max_pts
+```
+
+```{r}
+# min number of pts in a season
+min_pts = min(NBA$PTS)
+min_pts
+```
+
+```{r}
+# Remove insignificant variables
+summary(PointsReg)
+```
+
+```{r}
+PointsReg2 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + STL + BLK, data=NBA)
+summary(PointsReg2)
+```
+
+```{r}
+PointsReg3 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL + BLK, data=NBA)
+summary(PointsReg3)
+```
+
+```{r}
+PointsReg4 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL, data=NBA)
+summary(PointsReg4)
+```
+
+```{r}
+# Compute SSE and RMSE for new model
+SSE_4 = sum(PointsReg4$residuals^2)
+RMSE_4 = sqrt(SSE_4/nrow(NBA))
+SSE_4
+```
+
+```{r}
+RMSE_4
+```
+
+```{r}
+# Read in test set
+NBA_test = read.csv("NBA_test.csv")
+```
+
+```{r}
+# Make predictions on test set
+PointsPredictions = predict(PointsReg4, newdata=NBA_test)
+```
+
+```{r}
+# Compute out-of-sample R^2
+SSE = sum((PointsPredictions - NBA_test$PTS)^2)
+SST = sum((mean(NBA$PTS) - NBA_test$PTS)^2)
+R2 = 1 - SSE/SST
+R2
+```
+
+```{r}
+# Compute the RMSE
+RMSE = sqrt(SSE/nrow(NBA_test))
+RMSE 
+```
+
+

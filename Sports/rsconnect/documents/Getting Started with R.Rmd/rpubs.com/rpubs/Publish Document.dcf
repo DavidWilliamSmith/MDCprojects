@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1060222/e4cf410def1d4eff9182930ec41d8bfa
+bundleId: https://api.rpubs.com/api/v1/document/1060222/e4cf410def1d4eff9182930ec41d8bfa
+url: http://rpubs.com/dsmith/1060222
+when: 1688914953.72881
+lastSyncTime: 1688914953.72883

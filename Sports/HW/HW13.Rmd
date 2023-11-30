@@ -1,0 +1,194 @@
+---
+title: "In-class activity #13: Number of Wins and Points Difference"
+output:
+  html_document:
+    df_print: paged
+---
+
+# 13
+Our data shows that a team with 49 wins has never missed the playoffs. What is the expected points difference for a team to make it to the postseason? Use the lecture solution file and more specifically the WingsReg model.
+
+# Answer
+Point Difference of 245 will guarantee a presence in the playoffs for 49 wins minus 41(intercept) divided by point difference (0.03259)
+
+# Check cells below
+
+```{r}
+
+#w <- 41 + 0.03259 * (PD) 
+
+PD <- (49 - 41) / (0.03259)
+PD
+```
+```{r}
+# Read in the data
+NBA = read.csv("NBA_train.csv")
+str(NBA)
+```
+
+```{r}
+# How many wins to make the playoffs?
+table(NBA$W, NBA$Playoffs)
+```
+
+```{r}
+# Compute Points Difference
+NBA$PTSdiff = NBA$PTS - NBA$oppPTS
+```
+
+```{r}
+# Check for linear relationship
+plot(NBA$PTSdiff, NBA$W)
+```
+
+```{r}
+# Linear regression model for wins
+WinsReg = lm(W ~ PTSdiff, data=NBA)
+summary(WinsReg)
+```
+```{r}
+#w <- 41 + 0.03259 * (PD) 
+
+PD <- (49 - 41) / (0.03259)
+PD
+```
+```{r}
+# Sum of Squared Errors
+WinsReg$residuals
+```
+
+```{r}
+SSE = sum(WinsReg$residuals^2)
+SSE
+```
+
+```{r}
+# Root mean squared error
+RMSE = sqrt(SSE/nrow(NBA))
+RMSE
+```
+
+
+```{r}
+# Linear regression model for points scored
+PointsReg = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + TOV + STL + BLK, data=NBA)
+summary(PointsReg)
+```
+
+```{r}
+# Sum of Squared Errors
+PointsReg$residuals
+```
+
+```{r}
+SSE = sum(PointsReg$residuals^2)
+SSE
+```
+
+```{r}
+# Root mean squared error
+RMSE = sqrt(SSE/nrow(NBA))
+RMSE
+```
+
+```{r}
+# Average number of points in a season
+mean(NBA$PTS)
+```
+
+```{r}
+# max number of pts in a season
+max_pts = max(NBA$PTS)
+max_pts
+```
+
+```{r}
+# min number of pts in a season
+min_pts = min(NBA$PTS)
+min_pts
+```
+
+```{r}
+# Remove insignificant variables
+summary(PointsReg)
+```
+
+```{r}
+PointsReg2 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + DRB + STL + BLK, data=NBA)
+summary(PointsReg2)
+```
+```{r}
+# Compute SSE and RMSE for new model
+SSE_2 = sum(PointsReg2$residuals^2)
+RMSE_2 = sqrt(SSE_2/nrow(NBA))
+SSE_2
+```
+
+```{r}
+RMSE_2
+```
+
+```{r}
+PointsReg3 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL + BLK, data=NBA)
+summary(PointsReg3)
+```
+```{r}
+# Compute SSE and RMSE for new model
+SSE_3 = sum(PointsReg3$residuals^2)
+RMSE_3 = sqrt(SSE_3/nrow(NBA))
+SSE_3
+```
+
+```{r}
+RMSE_3
+```
+
+```{r}
+PointsReg4 = lm(PTS ~ X2PA + X3PA + FTA + AST + ORB + STL, data=NBA)
+summary(PointsReg4)
+```
+
+```{r}
+# Compute SSE and RMSE for new model
+SSE_4 = sum(PointsReg4$residuals^2)
+RMSE_4 = sqrt(SSE_4/nrow(NBA))
+SSE_4
+```
+
+```{r}
+RMSE_4
+```
+
+```{r}
+# Read in test set
+NBA_test = read.csv("NBA_test.csv")
+```
+
+```{r}
+# Make predictions on test set
+PointsPredictions = predict(PointsReg4, newdata=NBA_test)
+```
+
+```{r}
+# Compute out-of-sample R^2
+SSE = sum((PointsPredictions - NBA_test$PTS)^2)
+SST = sum((mean(NBA$PTS) - NBA_test$PTS)^2)
+R2 = 1 - SSE/SST
+R2
+```
+
+```{r}
+# Compute the RMSE
+RMSE = sqrt(SSE/nrow(NBA_test))
+RMSE 
+```
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,382 @@
+---
+title: "First Steps with R"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+---
+
+# Basic Calculations
+
+You can use R for basic computations you would perform in a calculator
+```{r}
+#addition
+sum <- 2+3
+sum
+```
+```{r}
+# division 
+divide <- 2/3
+divide
+```
+```{r}
+# Exponentiation
+expo <- 2^3
+expo
+```
+```{r}
+# square root
+sqroot <- sqrt(2)
+sqroot
+```
+```{r}
+# logarithms
+log_2 <- log(2)
+log_2
+```
+```{r}
+# compute the log base 5 of 10 
+log_base_5 <- log(10, base = 5)
+log_base_5
+
+# compute the log of 10
+log_10 <- log(10)
+log_10
+```
+
+Computing some offensive metrics in baseball
+```{r}
+# Batting Average = (No. of Hits)/(No. of At Bats)
+# what is the BA of a player that bats 29 hits in 112 at bats?
+BA = (29)/(112)
+BA
+```
+```{r}
+Batting_Average=round(BA, digits =3)
+Batting_Average
+```
+```{r}
+# what is the BA of a player that bats 42 hits in 212 at bats?
+BA2 = (42)/(212)
+player2_name_BA = round(BA2, digits = 3)
+player2_name_BA
+```
+Batting average for new player is low at 0.20%
+
+```{r}
+#On Base Percentage
+#OBP = (H+BB+HBP)/(At Bats +H+BB+HBP+SF)
+# lets compute the OBP for a player with the following
+#AB = 515,  H = 172, BB = 84, HBP = 5, SF = 6
+OBP = (172+84+5)/(515+172+84+5+6)
+OBP
+```
+```{r}
+On_Base_Percentage = round(OBP, digits = 3)
+On_Base_Percentage
+```
+```{r}
+#OBP = (H+BB+HBP)/(AB+H+BB+HBP+SF)
+# compute the OBP for a player with the following general stats:
+# AB = 565, H = 156, BB = 65, HBP = 3, SF = 7
+OBP2 = (156+65+3)/(565+156+65+3+7)
+On_Base_Percentage2 = round(OBP2, digits = 3)
+On_Base_Percentage2
+```
+New OBP is at 0.281%
+
+Often you will want to test whether something is less than, greater than or equal to something
+```{r}
+3 == 8 # does 3 equal 8?
+```
+```{r}
+3 != 8 # is 3 different from 8?
+```
+```{r}
+3 <= 8 # is 3 less than or equal to 8?
+```
+
+The logical operators are & for logical AND, | for logical OR, and ! for NOT. These are some examples:
+```{r}
+# Logical Disjunction (or)
+FALSE | FALSE # False OR False
+```
+```{r}
+# Logical Conjunction (and)
+TRUE & FALSE #True AND False
+```
+```{r}
+# Negation
+! FALSE # Not False
+```
+```{r}
+# Combination of statements
+2 < 3 | 1 == 5 # 2<3 is True, 1==5 is False, True OR False is True
+```
+
+# Assigning Values to Variables
+
+In R, you create a variable and assign it a value using <- as follows
+```{r}
+Total_Bases <- 6 + 5
+Total_Bases*3
+```
+
+To see the variables that are currently defined, use ls (as in “list”)
+```{r}
+ls()
+```
+
+To delete a variable, use rm (as in “remove”)
+```{r}
+rm(Total_Bases)
+```
+
+Either <- or = can be used to assign a value to a variable, but I prefer <- because is less likely to be confused with the logical operator ==
+
+# Vectors
+
+The basic type of object in R is a vector, which is an ordered list of values of the same type. You can create a vector using the c() function (as in “concatenate”).
+```{r}
+pitches_by_innings <- c(12, 15, 10, 20, 10) 
+pitches_by_innings
+```
+```{r}
+strikes_by_innings <- c(9, 12, 6, 14, 9)
+strikes_by_innings
+```
+```{r}
+# Define two vectors,runs_per_9innings and hits_per_9innings, each with five elements. 
+
+runs_per_9innings <- c(2, 2, 3, 2, 1) 
+runs_per_9innings
+
+hits_per_9innings <- c(4, 5, 1, 2, 8) 
+hits_per_9innings
+```
+
+There are also some functions that will create vectors with regular patterns, like repeated elements.
+```{r}
+# replicate function
+rep(2, 5)
+```
+```{r}
+# consecutive numbers
+1:5
+```
+```{r}
+# sequence from 1 to 10 with a step of 2
+seq(1, 10, by=2)
+```
+
+Many functions and operators like + or - will work on all elements of the vector.
+```{r}
+# add vectors
+pitches_by_innings+strikes_by_innings
+```
+```{r}
+# compare vectors
+pitches_by_innings == strikes_by_innings
+```
+```{r}
+# find length of vector
+length(pitches_by_innings)
+```
+```{r}
+# find minimum value in vector
+min(pitches_by_innings)
+```
+```{r}
+# find average value in vector
+mean(pitches_by_innings)
+```
+
+You can access parts of a vector by using [. Recall what the value is of the vector pitches_by_innings.
+```{r}
+pitches_by_innings
+```
+```{r}
+# If you want to get the first element:
+pitches_by_innings[1]
+```
+```{r}
+# Get the first element of hits_per_9innings?
+hits_per_9innings[1]
+```
+4 hits per inning
+
+If you want to get the last element of pitches_by_innings without explicitly typing the number of elements of pitches_by_innings, make use of the length function, which calculates the length of a vector:
+```{r}
+pitches_by_innings[length(pitches_by_innings)]
+```
+```{r}
+# Get the last element of hits_per_9innings?
+last_element <- hits_per_9innings[length(hits_per_9innings)]
+last_element
+```
+You can also extract multiple values from a vector. For instance to get the 2nd through 4th values use
+```{r}
+pitches_by_innings[c(2, 3, 4)]
+```
+
+Vectors can also be strings or logical values
+```{r}
+player_positions <- c("catcher", "pitcher", "infielders", "outfielders")
+```
+
+# Data Frames
+
+In statistical applications, data is often stored as a data frame, which is like a spreadsheet, with rows as observations and columns as variables.
+
+To manually create a data frame, use the data.frame() function.
+```{r}
+data.frame(bonus = c(2, 3, 1),#in millions 
+           active_roster = c("yes", "no", "yes"), 
+           salary = c(1.5, 2.5, 1))#in millions 
+```
+
+Most often you will be using data frames loaded from a file. For example, load the results of a fan’s survey. The function load or read.table can be used for this.
+
+# How to Make a Random Sample
+
+To randomly select a sample use the function sample(). The following code selects 5 numbers between 1 and 10 at random (without duplication)
+```{r}
+sample(1:10, size=5)
+```
+
+The first argument gives the vector of data to select elements from.
+
+The second argument (size=) gives the size of the sample to select.
+
+Taking a simple random sample from a data frame is only slightly more complicated, having two steps:
+
+Use sample() to select a sample of size n from a vector of the row numbers of the data frame.
+Use the index operator [ to select those rows from the data frame.
+Consider the following example with fake data. First, make up a data frame with two columns. (LETTERS is a character vector of length 26 with capital letters âAâ to âZâ; LETTERS is automatically defined and pre-loaded in R)
+```{r}
+bar <- data.frame(var1 = LETTERS[1:10], var2 = 1:10)
+# Check data frame
+bar
+```
+
+Suppose you want to select a random sample of size 5. First, define a variable n with the size of the sample, i.e. 5
+```{r}
+n <- 5
+```
+
+Now, select a sample of size 5 from the vector with 1 to 10 (the number of rows in bar). Use the function nrow() to find the number of rows in bar instead of manually entering that number.
+
+Use : to create a vector with all the integers between 1 and the number of rows in bar.
+```{r}
+samplerows <- sample(1:nrow(bar), size=n) 
+# print sample rows
+samplerows
+```
+
+The variable samplerows contains the rows of bar which make a random sample from all the rows in bar. Extract those rows from bar with
+```{r}
+# extract rows
+barsample <- bar[samplerows, ]
+# print sample
+print(barsample)
+```
+The code above creates a new data frame called barsample with a random sample of rows from bar.
+
+In a single line of code:
+```{r}
+bar[sample(1:nrow(bar), n), ]
+```
+
+# Using Tables
+
+The table() command allows us to look at tables. Its simplest usage looks like table(x) where x is a categorical variable.
+
+For example, a survey asks people if they support the home team or not. The data is
+
+Yes, No, No, Yes, Yes
+
+We can enter this into R with the c() command, and summarize with the table() command as follows
+```{r}
+x <- c("Yes","No","No","Yes","Yes") 
+table(x)
+```
+
+Numerical measures of center and spread
+Suppose, MLB Teams’ CEOs yearly compensations are sampled and the following are found (in millions)
+
+12 .4 5 2 50 8 3 1 4 0.25
+```{r}
+sals <- c(12, .4, 5, 2, 50, 8, 3, 1, 4, 0.25)
+# the average
+mean(sals) 
+```
+```{r}
+# the variance
+var(sals)
+```
+```{r}
+# the standard deviation
+sd(sals)
+```
+```{r}
+# the median
+median(sals)
+```
+```{r}
+# Tukey's five number summary, usefull for boxplots
+# five numbers: min, lower hinge, median, upper hinge, max
+fivenum(sals)
+```
+```{r}
+# summary statistics
+summary(sals)
+```
+
+# How about the mode?
+
+In R we can write our own functions, and a first example of a function is shown below in order to compute the mode of a vector of observations x
+```{r}
+# Function to find the mode, i.e. most frequent value
+getMode <- function(x) {
+     ux <- unique(x)
+     ux[which.max(tabulate(match(x, ux)))]
+ }
+```
+
+As an example, we can use the function defined above to find the most frequent value of the number of pitches_by_innings
+```{r}
+# Most frequent value in baz
+getMode(pitches_by_innings)
+```
+
+
+```{r}
+# Find the most frequent value of hits_per_9innings using getMode function
+most_frequent_value <- getMode(hits_per_9innings)
+
+# Print the most frequent value
+print(most_frequent_value)
+```
+
+
+```{r}
+# Survey responses 
+survey_responses <- c("Saturday", "Saturday", "Sunday", "Monday", "Saturday", "Tuesday", "Sunday", "Friday", "Friday", "Monday")
+
+# Use table() to summarize the survey responses
+summary_table <- table(survey_responses)
+
+# Print the summary table
+print(summary_table)
+```
+
+
+```{r}
+# Use the getMode function to compute the most frequent answer 
+most_frequent_answer <- getMode(survey_responses)
+
+# Print the most frequent answer
+print(most_frequent_answer)
+```
+

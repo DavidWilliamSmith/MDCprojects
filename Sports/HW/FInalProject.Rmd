@@ -1,0 +1,62 @@
+---
+title: "NBA FINAL PROJECT"
+output: html_notebook
+---
+
+```{r}
+# Read in the data
+NBA = read.csv("merged.csv")
+str(NBA)
+```
+
+```{r}
+# Linear regression model for ranking
+Power_Ranking = lm(PER ~ Age + G + GS + MP+ FG + FGA + FG. + X3P + X3PA + X3P. + X2P + X2PA + X2P. + eFG. + FT + FTA + FT. + AST + ORB + DRB +TRB + TOV + STL + BLK + PF, data=NBA)
+summary(Power_Ranking)
+```
+```{r}
+# Linear regression model for ranking
+Power_Ranking = lm(FACTOR ~ Age + G + GS + MP+ FG + FGA + FG. + X3P + X3PA + X3P. + X2P + X2PA + X2P. + eFG. + FT + FTA + FT. + AST + ORB + DRB +TRB + TOV + STL + BLK + PF, data=NBA)
+summary(Power_Ranking)
+```
+
+```{r}
+# Linear regression model for power ranking for all positions
+Power_Ranking_Ver2 = lm(PER ~ X3P + X3P. + eFG. + FT + FTA + FT. + AST + TOV + STL + BLK, data=NBA)
+summary(Power_Ranking_Ver2)
+```
+
+```{r}
+# Linear regression model for power ranking for all positions
+Power_Ranking_Ver3 = lm(PER ~ X3P + X3P. + eFG. + FT. + AST + TOV + STL + BLK, data=NBA)
+summary(Power_Ranking_Ver3)
+```
+
+
+```{r}
+# Read in the data
+NBAcenters = read.csv("NBA Player Statistics-2022-centers.csv")
+str(NBAcenters)
+```
+
+
+```{r}
+# Linear regression model for ranking
+# need to clean data to use cash and Position
+# interesting case to see how what factors affect the amount of games played
+Centers = lm(GP ~ GS  + FG. + FGM + X3PTM + FTM + FT. + AST + OREB + DREB + REB + TOV + STL + BLK, data=NBAcenters)
+summary(Centers)
+```
+
+```{r}
+Centers2 = lm(GP ~ GS  + FG.  + X3PTM + OREB + STL , data=NBAcenters)
+summary(Centers2)
+```
+
+
+```{r}
+Centers3 = lm(GP ~ FG.  + X3PTM + OREB , data=NBAcenters)
+summary(Centers3)
+```
+
+

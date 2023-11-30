@@ -1,0 +1,35 @@
+---
+title: "In-class activity #14 Three Points Attempts"
+output:
+  html_document:
+    df_print: paged
+---
+
+#14
+
+Consider the following vectors representing the number of three-pointers made and attempted by a basketball player in five games:
+
+Three-Pointers Made: c(4, 5, 3, 6, 7) 
+
+Three-Pointers Attempted: c(9, 10, 8, 11, 12)
+
+Calculate the three-point shooting percentage for each game and select the correct average three-point shooting percentage for the five games.
+
+```{r}
+# Define the vectors representing the number of three-pointers made and attempted
+three_made <- c(4, 5, 3, 6, 7)
+three_attempted <- c(9, 10, 8, 11, 12)
+
+# Calculate the shooting percentage for each game
+shooting_percentage <- (three_made / three_attempted) * 100
+
+# Print the shooting percentage for each game
+cat("Shooting Percentage for each game:", shooting_percentage, "\n")
+
+# Calculate the average shooting percentage for the five games
+avg_shooting_percentage <- mean(shooting_percentage)
+
+
+# Print the average shooting percentage
+cat("Average Shooting Percentage:", avg_shooting_percentage)
+```

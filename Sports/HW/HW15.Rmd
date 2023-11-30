@@ -1,0 +1,264 @@
+---
+title: "World Series"
+output: html_notebook
+---
+
+```{r}
+# read data
+baseball = read.csv("baseball.csv")
+str(baseball)
+```
+
+MLB Glossary
+
+Team: A code for the name of the team
+League: The Major League Baseball league the team belongs to, either AL (American League) or NL (National League)
+Year: The year of the corresponding record
+RS: The number of runs scored by the team in that year
+RA: The number of runs allowed by the team in that year
+W: The number of regular season wins by the team in that year
+OBP: The on-base percentage of the team in that year
+SLG: The slugging percentage of the team in that year
+BA: The batting average of the team in that year
+Playoffs: Whether the team made the playoffs in that year (1 for yes, 0 for no)
+RankSeason: Among the playoff teams in that year, the ranking of their regular season records (1 is best)
+RankPlayoffs: Among the playoff teams in that year, how well they fared in the playoffs. The team winning the World Series gets a RankPlayoffs of 1.
+G: The number of games a team played in that year
+OOBP: The team’s opponents’ on-base percentage in that year
+OSLG: The team’s opponents’ slugging percentage in that year
+
+```{r}
+#Each row in the baseball dataset represents a team in a particular year.How many team/year pairs are there in the whole dataset?
+nrow(baseball)
+```
+
+```{r}
+#Though the dataset contains data from 1962 until 2012, we removed several years with shorter-than-usual seasons. Using the table() function, identify the total number of years included in this dataset.
+table(baseball$Year)
+```
+
+```{r}
+#The baseball dataset contains 47 years (1972, 1981, 1994, and 1995 are missing). We can count the number of years in the table, or use the command length(table(baseball$Year)) directly to get the answer.
+length(table(baseball$Year))
+```
+
+# Limiting to Teams Making the Playoffs 
+
+Because we’re only analyzing teams that made the playoffs, we can use the subset() function to replace baseball with a data frame limited to teams that made the playoffs (so our subsetted data frame should still be called “baseball”). How many team/year pairs are included in the new dataset?
+
+```{r}
+baseball = subset(baseball, Playoffs == 1)
+nrow(baseball)
+```
+
+```{r}
+#Through the years, different numbers of teams have been invited to the playoffs.
+table(baseball$Year)
+```
+
+The number of teams in the postseason has changed.
+
+```{r}
+table(table(baseball$Year))
+```
+
+# Adding an Important Predictor 
+
+It’s much harder to win the World Series if there are 10 teams competing for the championship versus just two. Therefore, we will add the predictor variable NumCompetitors to the baseball data frame. NumCompetitors will contain the number of total teams making the playoffs in the year of a particular team/year pair. For instance, NumCompetitors should be 2 for the 1962 New York Yankees, but it should be 8 for the 1998 Boston Red Sox.
+
+```{r}
+#We start by storing the output of the table() function that counts the number of playoff teams from each year:
+
+PlayoffTable = table(baseball$Year)
+
+#You can output the table with the following command:
+
+PlayoffTable
+```
+
+```{r}
+str(names(PlayoffTable))
+```
+
+```{r}
+ #Which function call returns the number of playoff teams in 1990 and 2001?
+PlayoffTable[c("1990", "2001")]
+```
+
+```{r}
+#Putting it all together, we want to look up the number of teams in the playoffs for each team/year pair in the dataset, and store it as a new variable named NumCompetitors in the baseball data frame.
+baseball$NumCompetitors = PlayoffTable[as.character(baseball$Year)]
+baseball$NumCompetitors
+```
+
+```{r}
+#How many playoff team/year pairs are there in our dataset from years where 8 teams were invited to the playoffs?
+table(baseball$NumCompetitors)
+```
+
+# Bivariate Models for Predicting World Series Winner 
+
+In this problem, we seek to predict whether a team won the World Series; in our dataset this is denoted with a RankPlayoffs value of 1. Add a variable named WorldSeries to the baseball data frame, by typing the following command in your R console:
+
+baseballWorldSeries=as.numeric(baseball
+RankPlayoffs == 1)
+
+WorldSeries takes value 1 if a team won the World Series in the indicated year and a 0 otherwise.
+
+```{r}
+#How many observations do we have in our dataset where a team did NOT win the World Series?
+baseball$WorldSeries = as.numeric(baseball$RankPlayoffs == 1)
+table(baseball$WorldSeries)
+```
+
+# Bivariate Models for Predicting World Series Winner 
+
+When we’re not sure which of our variables are useful in predicting a particular outcome, it’s often helpful to build bivariate models, which are models that predict the outcome using a single independent variable. 
+
+# Which of the following variables is a significant predictor of the WorldSeries variable in a bivariate logistic regression model? 
+
+To determine significance, remember to look at the stars in the summary output of the model. We’ll define an independent variable as significant if there is at least one star at the end of the coefficients row for that variable (this is equivalent to the probability column having a value smaller than 0.05). Note that you have to build 12 models to answer this question! Use the entire dataset baseball to build the models
+
+```{r}
+#Which of the following variables is a significant predictor of the WorldSeries variable in a bivariate logistic regression model?
+#Varibales to use as predictors for each bivariate model(Year, RS, RA, W, OBP, SLG, BA, RankSeason, OOBP,OSLG, NumCompetitors, League)
+model1<-glm(WorldSeries~Year, data=baseball, family="binomial")
+summary(model1)
+```
+
+Year is a significant predictor!
+
+```{r}
+model2<-glm(WorldSeries~RS, data=baseball, family="binomial")
+summary(model2)
+```
+
+RS is not significant
+
+```{r}
+model3<-glm(WorldSeries~RA, data=baseball, family="binomial")
+summary(model3)
+```
+
+RA is a significant predictor!
+
+```{r}
+model4<-glm(WorldSeries~W, data=baseball, family="binomial")
+summary(model4)
+```
+
+W is not significant
+
+```{r}
+model5<-glm(WorldSeries~OBP, data=baseball, family="binomial")
+summary(model5)
+```
+
+OBP is not significant
+
+```{r}
+model6<-glm(WorldSeries~SLG, data=baseball, family="binomial")
+summary(model6)
+```
+
+SLG is not significant
+
+```{r}
+model7<-glm(WorldSeries~BA, data=baseball, family="binomial")
+summary(model7)
+```
+
+BA is not significant
+
+```{r}
+model8<-glm(WorldSeries~RankSeason, data=baseball, family="binomial")
+summary(model8) 
+```
+
+RankSeason is significant!
+
+```{r}
+model9<-glm(WorldSeries~OOBP, data=baseball, family="binomial")
+summary(model9)
+```
+
+OOBP is not significant
+
+```{r}
+model10<-glm(WorldSeries~OSLG, data=baseball, family="binomial")
+summary(model10)
+```
+
+OSLG is not significant
+
+```{r}
+model11<-glm(WorldSeries~NumCompetitors, data=baseball, family="binomial")
+summary(model11)
+```
+
+NumCompetitors is significant!
+
+```{r}
+model12<-glm(WorldSeries~League, data=baseball, family="binomial")
+summary(model12)
+```
+
+League is not significant
+
+In short, the significant predictors are Year, RA, and NumCompetitors.
+
+# Multivariate Models for Predicting World Series Winner
+
+In this section, we’ll consider multivariate models that combine the variables we found to be significant in bivariate models. Build a model using all of the variables that you found to be significant in the bivariate models. How many variables are significant in the combined model?
+
+```{r}
+#How many variables are significant in the combined model?
+LogModel = glm(WorldSeries ~ Year + RA + RankSeason + NumCompetitors, data=baseball, family=binomial)
+summary(LogModel)
+```
+
+Looking at summary(LogModel), we can see that none of the variables are significant in the multivariate model. Often, variables that were significant in bivariate models are no longer significant in multivariate analysis due to correlation between the variables. Which of the following variable pairs have a high degree of correlation (a correlation greater than 0.8 or less than -0.8)?
+
+```{r}
+#We can compute all pair-wise correlations between these variables with:
+cor(baseball[c("Year", "RA", "RankSeason", "NumCompetitors")])
+```
+
+While every pair was at least moderately correlated, the only strongly correlated pair was Year/NumCompetitors, with correlation coefficient 0.914.
+
+Let us build all six of the two variable models listed in the previous problem. Together with the four bivariate models that were significant, we should have 10 different logistic regression models to analyze. Which model has the best AIC value (the minimum AIC value)?
+
+```{r}
+#The two-variable models can be built with the following commands:
+
+model13 = glm(WorldSeries ~ Year + RA, data=baseball, family=binomial)
+summary(model13)
+```
+
+```{r}
+model14 = glm(WorldSeries ~ Year + RankSeason, data=baseball, family=binomial)
+summary(model14)
+```
+
+
+```{r}
+model15 = glm(WorldSeries ~ Year + NumCompetitors, data=baseball, family=binomial)
+summary(model15)
+```
+
+```{r}
+model16 = glm(WorldSeries ~ RA + RankSeason, data=baseball, family=binomial)
+summary(model16)
+```
+
+```{r}
+model17 = glm(WorldSeries ~ RA + NumCompetitors, data=baseball, family=binomial)
+summary(model17)
+```
+
+```{r}
+model18 = glm(WorldSeries ~ RankSeason + NumCompetitors, data=baseball, family=binomial)
+summary(model18)
+```
+
+None of the models with two independent variables had both variables significant, so none seem promising as compared to a simple bivariate model. Indeed the model with the lowest AIC value is the model with just NumCompetitors as the independent variable. This seems to confirm the claim made by Billy Beane in Moneyball that all that matters in the Playoffs is luck, since NumCompetitors has nothing to do with the quality of the teams!

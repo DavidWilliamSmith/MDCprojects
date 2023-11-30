@@ -1,0 +1,50 @@
+---
+title: "Exam 2.2"
+output: html_notebook
+---
+
+Consider the following dataset representing the performance of baseball players in a season. It includes the following variables: PlayerID, Hits, At-Bats, Home Runs (HR), Walks (BB), and Strikeouts (SO).
+
+PlayerID     Hits    At-Bats  HR  BB SO
+
+    1        120       400    15   4080
+
+    2        140       450          12          50     75
+
+    3        110       380     8            30    60
+
+    4        160       500     20          60     90
+
+    5        130       420     10          45     70
+
+Compute the on-base percentage (OBP) for each player and select the player with the highest OBP.
+
+a) Player 1 b) Player 2 c) Player 3 d) Player 4 e) Player 5
+
+To calculate OBP, you can use the following formula:
+
+OBP = (Hits + Walks) / (At-Bats + Walks).
+
+```{r}
+# Define the dataset
+dataset <- data.frame(
+  PlayerID = c(1, 2, 3, 4, 5),
+  Hits = c(120, 140, 110, 160, 130),
+  At_Bats = c(400, 450, 380, 500, 420),
+  HR = c(15, 12, 8, 20, 10),
+  BB = c(40, 50, 30, 60, 45),
+  SO = c(80, 75, 60, 90, 70)
+)
+
+# Calculate OBP for each player
+dataset$OBP <- (dataset$Hits + dataset$BB) / (dataset$At_Bats + dataset$BB)
+
+# Find the player with the highest OBP
+player_with_highest_OBP <- dataset$PlayerID[which.max(dataset$OBP)]
+
+# Print the result
+print(player_with_highest_OBP)
+
+
+```
+

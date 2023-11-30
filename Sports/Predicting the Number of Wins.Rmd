@@ -1,0 +1,163 @@
+---
+title: "Predicting the Number of Wins"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# Read in data from csv
+baseball = read.csv("baseball.csv")
+str(baseball)
+```
+```{r}
+# Subset to only include moneyball years
+moneyball = subset(baseball, Year < 2002)
+str(moneyball)
+```
+```{r}
+# Compute Run Difference
+moneyball$RD = moneyball$RS - moneyball$RA
+str(moneyball)
+```
+
+```{r}
+# Scatterplot to check for linear relationship
+plot(moneyball$RD, moneyball$W)
+```
+```{r}
+# Regression model to predict wins
+WinsReg = lm(W ~ RD, data=moneyball)
+summary(WinsReg)
+```
+
+```{r}
+str(moneyball)
+```
+
+```{r}
+# Regression model to predict runs scored
+RunsReg = lm(RS ~ OBP + SLG + BA, data=moneyball)
+summary(RunsReg)
+```
+
+```{r}
+# Regression model to predict runs scored again but removing the batting average
+RunsReg = lm(RS ~ OBP + SLG, data=moneyball)
+summary(RunsReg)
+```
+
+```{r}
+str(moneyball)
+```
+
+```{r}
+# Regression model to predict runs allowed
+RunsAllowedReg = lm(RA ~ OOBP + OSLG, data=moneyball)
+summary(RunsAllowedReg)
+```
+
+# predicting the number of wins
+
+If a baseball team scores 763 runs and allows 614 runs, how many games do we expect the team to win?
+Using the linear regression model constructed during the lecture, enter the number of games we expect the team to win:
+   
+
+```{r}
+# create run difference for team runs_scored and runs_allowed
+runs_scored <- 763
+runs_allowed <- 614
+run_difference <- runs_scored - runs_allowed
+run_difference
+```
+
+   
+(Intercept) 80.881375   
+RD           0.105766
+
+```{r}
+intercept <- 80.881375
+RD <- 0.105766
+wins <- intercept + RD * (run_difference)
+wins
+```
+# Answer
+
+based on the run difference of 149, a team can be predicted to win 97 games.
+
+# predicting the number of runs
+
+# 
+
+If a baseball team’s OBP is 0.361, SLG is 0.409, and BA is 0.257, how many runs do we expect the team to score?
+Using the linear regression model constructed during the lecture (the one that uses OBP, SLG, and BA as independent variables), find the number of runs we expect the team to score:
+
+(Intercept)  -788.46      
+OBP          2917.42        
+SLG          1637.93      
+BA           -368.97      
+
+```{r}
+intercept_runs <- -788.46      
+OBP <- 2917.42
+SLG <- 1637.93 
+BA <- -368.97
+
+new_OBP <- 0.361
+new_SLG <- 0.409
+new_BA <- 0.257
+
+runs_scored <- intercept_runs + OBP * (new_OBP) + SLG * (new_SLG) + BA * (new_BA)
+runs_scored
+
+runs_scored2 <- -788.46 + 2917.42 * (0.361) + 1637.93 * (0.409) - 368.97 * (0.257)
+runs_scored2
+```
+# Answer  
+
+the team is expected to make 840 runs based on metrics given
+
+#
+
+If a baseball team’s opponents OBP (OOBP) is 0.267 and opponents SLG (OSLG) is 0.392, how many runs do we expect the team to allow?
+Using the linear regression model discussed during the lecture (the one on the last slide of the previous video), find the number of runs we expect the team to allow.
+
+(Intercept)  -837.38      
+OOBP         2913.60     
+OSLG         1514.29    
+```{r}
+intercept_allowed <-  -837.38      
+OOBP <-  2913.60     
+OSLG <-  1514.29
+
+new_OOBP <- 0.267
+new_OSLG <- 0.392
+```
+
+```{r}
+runs_allowed <- intercept_allowed + OOBP * (new_OOBP) + OSLG * (new_OSLG)
+runs_allowed
+```
+# Answer
+
+534 runs allowed is predicted for this team
+
+# choosing among different players
+
+Suppose you are the General Manager of a baseball team, and you are selecting two players for your team. You have a budget of $10,500,000, and you have the choice between the following players:
+
+Player Name   OBP   SLG   Salary
+Yandy Diaz    0.403 0.511 $8,000,000
+Joey Meneses  0.320 0.366 $723,600
+Jose Abreu    0.292 0.358 $19,500,000
+Ryan Noda     0.384 0.400 $720,000
+Nate Lowe     0.365 0.426 $4,050,000
+
+Given your budget and the player statistics, which two players would you select?
+
+# Answer
+
+I would pick Yandy Diaz And Ryan Noda. 
+Yandy Diaz would be pick number 1 because he has the highest OBP and SLG of all the players and his salary is below 10mil. To keep the salary cap below 10mil and keep Yandy Diaz, I can choose between Joey Meneses ($724k) and Ryan Noda (720k). Even though the isn't much a difference in the salary between the 2, but their OBP and SLG are noticably different at Joey with OBP = 0.320 and SLG = 0.366 vs Ryan at OBP = 0.384.
+
+

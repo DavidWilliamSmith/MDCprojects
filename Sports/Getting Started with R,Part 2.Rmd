@@ -1,0 +1,326 @@
+---
+title: "Getting Started with R,Part 2"
+output:
+  html_document:
+    df_print: paged
+---
+
+Let us continue getting started with R as we start discussing important statistical concepts in Sports Analytics.
+
+# Case-scenario 1
+
+This is the fourth season of outfielder Luis Robert with the Chicago White Socks. If during the first three seasons he hit 11, 13, and 12 home runs, how many does he need on this season for his overall average to be at least 20?
+
+# Solution
+
+Given that x1=11,x2=13,x3=12 we want to find x4 such that the mean (average) number of home-runs is x¯>=20
+
+Notice that in this case n=4.
+
+According to the information above: 20×4=11+13+12+x4 so when x4=61, the home-runs average will be 20.
+```{r}
+# Home-runs so far
+HR_before <- c(11, 13, 12)
+# Average Number of Home-runs per season wanted
+wanted_HR <- 20
+# Number of seasons
+n_seasons <- 4
+# Needed Home-runs on season 4
+x_4 <- n_seasons*wanted_HR - sum(HR_before)
+# Minimum number of Home-runs needed by Robert
+x_4
+```
+
+According to the calculations above, Robert must hit 44 home-runs or better on this season to get an average number of home-runs per season of at least 20.
+
+We could confirm this, by using the function mean() in R
+```{r}
+# Robert's performance
+Robert_HRs <- c(11, 13, 12,44)
+# Mean
+mean(Robert_HRs)
+```
+```{r}
+# Standard Deviation
+sd(Robert_HRs)
+```
+```{r}
+# Maximum number of home-runs during the four seasons period
+max(Robert_HRs)
+```
+```{r}
+# Minimum number of home-runs during the four seasons period
+min(Robert_HRs)
+```
+```{r}
+# Summary 
+summary(Robert_HRs)
+```
+
+# Question 1
+
+Now, you must complete the problem below which represents a similar case scenario. You may use the steps that we executed in Case-scenario 1 as a template for your solution.
+
+This is the sixth season of outfielder Juan Soto in the majors. If during the first five seasons he received 79, 108,41,145, and 135 walks, how many does he need on this season for his overall number of walks per season to be at least 100?
+
+```{r}
+# walks per season so far
+walks_per_season <- c(79,108,41,145,135)
+# Average Number of Home-runs per season wanted
+wanted_walks <- 100
+# Number of seasons
+n_seasons <- 6
+# Needed Home-runs on season 4
+x_6 <- n_seasons*wanted_walks - sum(walks_per_season)
+# Minimum number of Home-runs needed by Robert
+x_6
+```
+According to the calculations above, Juan must walk 92 times to average 100 walks per season for six seasons
+
+We could confirm this, by using the function mean() in R
+
+```{r}
+# Robert's performance
+Juans_walks_per_season <- c(79,108,41,145,135,92)
+# Mean
+mean(Juans_walks_per_season)
+```
+```{r}
+# Standard Deviation
+sd(Juans_walks_per_season)
+```
+
+```{r}
+# Maximum number of home-runs during the four seasons period
+max(Juans_walks_per_season)
+```
+
+```{r}
+# Minimum number of home-runs during the four seasons period
+min(Juans_walks_per_season)
+```
+
+```{r}
+# Summary 
+summary(Juans_walks_per_season)
+```
+# Case-scenario 2
+
+The average salary of 10 baseball players is 72,000 dollars a week and the average salary of 4 soccer players is 84,000. Find the mean salary of all 14 professional players.
+
+# Solution
+
+We can easily find the joined mean by adding both mean and dividing by the total number of people.
+
+Let n1=10 denote the number of baseball players, and y1=72000 their mean salary. 
+Let n2=4 the number of soccer players and y2=84000 their mean salary. 
+Then the mean salary of all 16 individuals is: n1x1+n2x2n1+n2
+
+We can compute this in R as follows:
+```{r}
+n_1 <- 10
+n_2 <- 4
+y_1 <- 72000
+y_2 <- 84000
+# Mean salary overall
+salary_ave <-  (n_1*y_1 + n_2*y_2)/(n_1+n_2)
+salary_ave
+```
+
+# Question 2
+
+The average salary of 7 basketball players is 102,000 dollars a week and the average salary of 9 NFL players is 91,000. Find the mean salary of all 16 professional players.
+
+# Solution
+
+We can easily find the joined mean by adding both mean and dividing by the total number of people.
+
+Let n1=7 denote the number of baseball players, and y1=102000 their mean salary. 
+Let n2=9 the number of soccer players and y2=91000 their mean salary. 
+Then the mean salary of all 16 individuals is: n1x1+n2x2n1+n2
+
+We can compute this in R as follows:
+```{r}
+n_1 <- 7
+n_2 <- 9
+y_1 <- 102000
+y_2 <- 91000
+# Mean salary overall
+salary_ave <-  (n_1*y_1 + n_2*y_2)/(n_1+n_2)
+salary_ave
+```
+
+# Case-scenario 3
+
+The frequency distribution below lists the number of active players in the Barclays Premier League and the time left in their contract.
+
+Years	Number of players
+6	28
+5	72
+4	201
+3	109
+2	56
+1	34
+
+Find the mean,the median and the standard deviation.
+
+What percentage of the data lies within one standard deviation of the mean?
+
+What percentage of the data lies within two standard deviations of the mean?
+
+What percent of the data lies within three standard deviations of the mean?
+
+Draw a histogram to illustrate the data.
+
+
+# Solution
+
+The allcontracts.csv file contains all the players’ contracts length. We can read this file in R using the read.csv() function.
+```{r}
+contract_length <- read.table("allcontracts.csv", header = TRUE, sep = ",")
+contract_years <- contract_length$years
+```
+
+Make comments about the code we just ran above.
+
+1.To find the mean and the standard deviation
+```{r}
+# Mean 
+contracts_mean  <- mean(contract_years)
+contracts_mean
+```
+```{r}
+# Median
+contracts_median <- median(contract_years)
+contracts_median
+```
+```{r}
+# Find number of observations
+contracts_n <- length(contract_years)
+# Find standard deviation
+contracts_sd <- sd(contract_years)
+
+contracts_n
+contracts_sd
+```
+
+2.What percentage of the data lies within one standard deviation of the mean?
+```{r}
+contracts_w1sd <- sum((contract_years - contracts_mean)/contracts_sd < 1)/ contracts_n
+# Percentage of observation within one standard deviation of the mean
+contracts_w1sd
+```
+```{r}
+## Difference from empirical 
+difference_w1sd <- contracts_w1sd - 0.68
+difference_w1sd
+```
+
+3. What percentage of the data lies within two standard deviations of the mean?
+```{r}
+## Within 2 sd
+contracts_w2sd <- sum((contract_years - contracts_mean)/ contracts_sd < 2)/contracts_n
+contracts_w2sd
+```
+```{r}
+## Difference from empirical 
+difference_w2sd <- contracts_w2sd - 0.95
+difference_w2sd
+```
+
+4. What percent of the data lies within three standard deviations of the mean?
+```{r}
+## Within 3 sd 
+contracts_w3sd <- sum((contract_years - contracts_mean)/ contracts_sd < 3)/contracts_n
+contracts_w3sd
+```
+```{r}
+## Difference from empirical 
+difference_w3sd <- contracts_w3sd - 0.9973
+difference_w3sd 
+```
+
+5. Draw a histogram
+```{r}
+# Create histogram
+hist(contract_years,xlab = "Years Left in Contract",col = "green",border = "red", xlim = c(0,8), ylim = c(0,225),  breaks = 5)
+```
+
+# Question 3
+
+Use the skills learned in case scenario number 3 on one the following data sets. You may choose only one dataset. They are both available in Canvas.
+
+doubles_hit.csv and triples_hit.csv
+
+Make comments about the code we just ran above.
+
+1.To find the mean and the standard deviation
+
+```{r}
+triples_hit <- read.table("triples_hit.csv", header = TRUE, sep = ",")
+triples_hit <- triples_hit$triples_hit
+```
+
+```{r}
+# Mean 
+triples_hit_mean  <- mean(triples_hit)
+triples_hit_mean
+```
+
+```{r}
+# Median
+triples_hit_median <- median(triples_hit)
+triples_hit_median
+```
+
+```{r}
+# Number of observations
+triples_hit_n <- length(triples_hit)
+# Standard deviation
+triples_hit_sd <- sd(triples_hit)
+
+triples_hit_n
+triples_hit_sd
+```
+
+2.What percentage of the data lies within one standard deviation of the mean?
+```{r}
+triples_hit_w1sd <- sum((triples_hit - triples_hit_mean)/triples_hit_sd < 1)/ triples_hit_n
+# Percentage of observation within one standard deviation of the mean
+triples_hit_w1sd
+```
+```{r}
+## Difference from empirical 
+triples_hit_w1sd <- triples_hit_w1sd - 0.68
+triples_hit_w1sd
+```
+
+3. What percentage of the data lies within two standard deviations of the mean?
+```{r}
+## Within 2 sd
+triples_hit_w2sd <- sum((triples_hit - triples_hit_mean)/ triples_hit_sd < 2)/triples_hit_n
+triples_hit_w2sd
+```
+```{r}
+## Difference from empirical 
+triples_hit_w2sd <- triples_hit_w2sd - 0.95
+triples_hit_w2sd
+```
+
+4. What percent of the data lies within three standard deviations of the mean?
+```{r}
+## Within 3 sd 
+triples_hit_w3sd <- sum((triples_hit - triples_hit_mean)/ triples_hit_sd < 3)/triples_hit_n
+triples_hit_w3sd
+```
+```{r}
+## Difference from empirical 
+triples_hit_w3sd <- triples_hit_w3sd - 0.9973
+triples_hit_w3sd 
+```
+
+5. Draw a histogram
+```{r}
+# Create histogram
+hist(triples_hit,xlab = "Triples Hit",col = "black",border = "red", xlim = c(0,10), ylim = c(0,50),  breaks = 5)
+```

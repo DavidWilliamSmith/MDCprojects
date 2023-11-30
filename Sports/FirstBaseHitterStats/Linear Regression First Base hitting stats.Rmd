@@ -1,0 +1,332 @@
+---
+title: 'Linear Regression: First Base hitting stats'
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# Read in data from csv
+firstbase = read.csv("firstbasestats.csv")
+str(firstbase)
+```
+The information describes a data frame with 23 observations (rows) and 15 variables (columns). Here is a brief description of the variables:
+
+- Player: Represents the names of the players. It is of character data type.
+- Pos: Indicates the positions played by the players. It is also of character data type.
+- Team: Represents the teams to which the players belong. It is of character data type.
+- GP: Stands for "Games Played." It represents the number of games in which each player participated. It is an integer variable.
+- AB: Stands for "At Bats." It represents the number of times a player has appeared at the plate to bat. It is an integer variable.
+- H: Represents the total number of hits obtained by each player. It is an integer variable.
+- X2B: Indicates the number of doubles hit by each player. It is an integer variable.
+- HR: Represents the number of home runs hit by each player. It is an integer variable.
+- RBI: Stands for "Runs Batted In." It represents the number of runs scored due to a player's actions. It is an integer variable.
+- AVG: Represents the batting average, which is the ratio of hits to at-bats. It is a numeric variable.
+- OBP: Stands for "On-Base Percentage." It represents the proportion of plate appearances in which a player reaches base. It is a numeric variable.
+- SLG: Stands for "Slugging Percentage." It represents the average number of bases earned per at-bat. It is a numeric variable.
+- OPS: Stands for "On-Base Plus Slugging." It is a combination of OBP and SLG, providing an overall measure of a player's offensive performance. It is a numeric variable.
+- WAR: Stands for "Wins Above Replacement." It is a metric that quantifies a player's total contribution to their team. It is a numeric variable.
+- Payroll.Salary2023: Represents the salary or payroll amount for the year 2023. It is a numeric variable.
+
+Overall, this data frame contains player statistics, including performance metrics such as games played, at-bats, hits, home runs, batting average, on-base percentage, slugging percentage, and salary information. Each row corresponds to a different player, and each column represents a specific variable related to the player's performance and characteristics.
+
+```{r}
+# get summary for the df
+summary(firstbase)
+```
+
+Here is a brief description of the variables:
+
+Player: Represents the names of the players. It is of character data type.
+Pos: Indicates the positions played by the players. It is also of character data type.
+Team: Represents the teams to which the players belong. It is of character data type.
+GP: Stands for "Games Played." It represents the number of games in which each player participated. It is a numerical variable.
+AB: Stands for "At Bats." It represents the number of times a player has appeared at the plate to bat. It is a numerical variable.
+H: Represents the total number of hits obtained by each player. It is a numerical variable.
+The subsequent columns include additional statistical measures for each variable, such as minimum, maximum, mean, median, and quartiles.
+
+X2B: Indicates the number of doubles hit by each player.
+HR: Represents the number of home runs hit by each player.
+RBI: Stands for "Runs Batted In." It represents the number of runs scored due to a player's actions.
+AVG: Represents the batting average, which is the ratio of hits to at-bats.
+OBP: Stands for "On-Base Percentage." It represents the proportion of plate appearances in which a player reaches base.
+SLG: Stands for "Slugging Percentage." It represents the average number of bases earned per at-bat.
+OPS: Stands for "On-Base Plus Slugging." It is a combination of OBP and SLG, providing an overall measure of a player's offensive performance.
+WAR: Stands for "Wins Above Replacement." It is a metric that quantifies a player's total contribution to their team.
+Payroll.Salary2023: Represents the salary or payroll amount for the year 2023.
+Overall, this dataset appears to contain player statistics, including performance metrics, team information, and salary data.
+
+```{r}
+# Linear Regression (one variable)
+model1 = lm(Payroll.Salary2023 ~ RBI, data=firstbase)
+summary(model1)
+```
+
+The information describes the output of a linear regression model in R. Here is a brief description of the different components:
+
+- Call: Specifies the call made to the `lm()` function to fit the linear regression model. It shows the formula used (`Payroll.Salary2023 ~ RBI`) and the data used (`firstbase`).
+
+- Residuals: Represents the residuals or the differences between the observed values and the predicted values from the model. It shows the minimum, first quartile (1Q), median, third quartile (3Q), and maximum values of the residuals.
+
+- Coefficients: Provides the estimated coefficients for the intercept and the predictor variable (`RBI`). The estimate column displays the estimated values, and the std. error column represents the standard errors associated with the estimates. The t-value column shows the t-statistic for each coefficient, and the Pr(>|t|) column displays the corresponding p-values.
+
+- Residual standard error: Represents the residual standard error, which is an estimate of the standard deviation of the residuals. It measures the average amount by which the observed values deviate from the predicted values.
+
+- Multiple R-squared: Indicates the coefficient of determination, which measures the proportion of the variance in the dependent variable (`Payroll.Salary2023`) that can be explained by the predictor variable (`RBI`). In this case, the multiple R-squared is 0.3945, meaning that approximately 39.45% of the variability in the dependent variable can be explained by the predictor variable.
+
+- Adjusted R-squared: Represents the adjusted R-squared value, which adjusts the multiple R-squared value for the number of predictor variables and the sample size. It accounts for the degrees of freedom in the model and provides a more accurate measure of the model's goodness of fit. In this case, the adjusted R-squared is 0.3657.
+
+- F-statistic: Represents the F-statistic for the overall significance of the model. It assesses whether the linear regression model, as a whole, is statistically significant. The F-statistic has a value of 13.68, with 1 and 21 degrees of freedom.
+
+- p-value: Indicates the p-value associated with the F-statistic, testing the null hypothesis that all the regression coefficients (including the intercept) are zero. In this case, the p-value is 0.001331, suggesting strong evidence against the null hypothesis and indicating that the model is statistically significant.
+
+```{r}
+# Sum of Squared Errors
+model1$residuals
+```
+
+The code snippet calculates the sum of squared errors (residuals) for a linear regression model named model1. The resulting values are displayed as a vector. 
+
+Here is a brief description of the output:
+
+The numbers 1 to 23 represent the indices or identifiers of the observations (data points) in the model.
+Each value represents the residual or the difference between the observed value and the predicted value for a specific data point.
+Positive values indicate that the observed value is higher than the predicted value, while negative values indicate that the observed value is lower than the predicted value.
+The magnitude of the values represents the magnitude of the error or the degree to which the model's predictions deviate from the actual values.
+For example, the first value, 13654950.2, represents the squared error (residual) for the first observation, the second value, 10082148.6, represents the squared error for the second observation, and so on.
+The sum of squared errors is often used as a measure of the model's overall goodness of fit. It quantifies the total amount of variability in the dependent variable (response variable) that is not explained by the independent variable(s) (predictor variable(s)). Lower values indicate a better fit, as they suggest that the model's predictions are closer to the actual values.
+
+```{r}
+SSE = sum(model1$residuals^2)
+SSE
+```
+
+The code snippet calculates the sum of squared errors (SSE) for a linear regression model stored in `model1`. The resulting SSE value is approximately 8.914926e+14. Here's a brief description:
+
+- `model1$residuals` retrieves the residuals (errors) from the `model1` linear regression model.
+- `^2` squares each residual element-wise.
+- `sum()` calculates the sum of the squared residuals, resulting in the SSE.
+- The SSE value represents the sum of the squared differences between the observed values and the predicted values by the model.
+- SSE is a measure of the overall discrepancy between the model's predictions and the actual data.
+- The higher the SSE value, the larger the total squared errors, indicating a poorer fit of the model to the data.
+
+```{r}
+# Linear Regression (two variables)
+model2 = lm(Payroll.Salary2023 ~ AVG + RBI, data=firstbase)
+summary(model2)
+```
+
+The code snippet performs a linear regression analysis using two predictor variables, AVG (batting average) and RBI (runs batted in), to predict the response variable Payroll.Salary2023. 
+
+Here is a summary of the results:
+
+- The model equation is: Payroll.Salary2023 = -18083756 + 74374031 * AVG + 108850 * RBI.
+- The residuals represent the differences between the observed values and the predicted values by the model.
+- The coefficients section provides the estimated coefficients for the intercept and each predictor variable.
+  - The intercept coefficient is -18083756.
+  - The coefficient for AVG is 74374031, indicating that for each unit increase in AVG, the predicted Payroll.Salary2023 increases by approximately 74374031 units.
+  - The coefficient for RBI is 108850, suggesting that for each unit increase in RBI, the predicted Payroll.Salary2023 increases by approximately 108850 units.
+- The p-values associated with each coefficient indicate the statistical significance of the corresponding predictor variable.
+  - AVG has a p-value of 0.0986, which is greater than 0.05, suggesting that it is not statistically significant at a conventional significance level of 0.05.
+  - RBI has a p-value of 0.0388, which is less than 0.05, indicating that it is statistically significant at the 0.05 level.
+- The residual standard error is 6226000, representing the standard deviation of the residuals, which measures the average distance between the observed values and the predicted values by the model.
+- The multiple R-squared value is 0.4735, indicating that approximately 47.35% of the variability in Payroll.Salary2023 can be explained by the predictor variables AVG and RBI.
+- The adjusted R-squared value is 0.4209, which takes into account the number of predictor variables and degrees of freedom, providing a more accurate measure of the model's goodness of fit.
+- The F-statistic is 8.994 with a p-value of 0.001636, suggesting that the overall model is statistically significant, indicating that the predictor variables, as a group, have a significant effect on the response variable.
+
+```{r}
+# Sum of Squared Errors
+SSE = sum(model2$residuals^2)
+SSE
+```
+
+The code snippet calculates the sum of squared errors (SSE) for the linear regression model `model2`. The resulting SSE value is approximately 7.751841e+14. 
+
+Here's a brief description:
+
+- `model2$residuals` retrieves the residuals (errors) from the `model2` linear regression model.
+- `^2` squares each residual element-wise.
+- `sum()` calculates the sum of the squared residuals, resulting in the SSE.
+- The SSE value represents the sum of the squared differences between the observed values and the predicted values by the model.
+- SSE is a measure of the overall discrepancy between the model's predictions and the actual data.
+- The higher the SSE value, the larger the total squared errors, indicating a poorer fit of the model to the data.
+
+```{r}
+# Linear Regression (all variables)
+model3 = lm(Payroll.Salary2023 ~ HR + RBI + AVG + OBP+ OPS, data=firstbase)
+summary(model3)
+```
+
+The code snippet performs a multiple linear regression using all variables (`HR`, `RBI`, `AVG`, `OBP`, `OPS`) to predict `Payroll.Salary2023` in the `firstbase` data frame. 
+
+Here's a brief description of the output:
+
+- The model formula specifies the relationship between `Payroll.Salary2023` and the predictor variables `HR`, `RBI`, `AVG`, `OBP`, and `OPS`.
+- The summary output provides various statistics and information about the regression model.
+- The coefficients section presents the estimated coefficients for each predictor variable. The estimate represents the expected change in the dependent variable associated with a one-unit increase in the predictor, holding other variables constant.
+- The standard error indicates the variability of the coefficient estimate.
+- The t-value measures the significance of each coefficient, indicating the extent to which the estimated coefficient is different from zero.
+- The p-value assesses the statistical significance of each predictor. It represents the probability of observing a t-value as extreme as the one calculated if the null hypothesis (coefficient equals zero) were true. Smaller p-values indicate more significant predictors.
+- The residuals section provides information about the residuals (errors) of the model, including the minimum, first quartile, median, third quartile, and maximum values.
+- The residual standard error represents the standard deviation of the residuals, providing an estimate of the average distance between the observed values and the predicted values by the model.
+- The multiple R-squared value (0.5811) indicates the proportion of the variance in the dependent variable that can be explained by the predictor variables.
+- The adjusted R-squared value (0.4579) adjusts the R-squared value for the number of predictor variables and degrees of freedom.
+- The F-statistic tests the overall significance of the model by comparing the regression sum of squares to the residual sum of squares. The reported F-statistic is 4.717, with associated degrees of freedom and p-value.
+- The p-value for the F-statistic indicates whether there is significant evidence that the model as a whole is useful for predicting the dependent variable. In this case, the p-value is 0.006951, suggesting that the model is statistically significant.
+
+```{r}
+# Sum of Squared Errors
+SSE = sum(model3$residuals^2)
+SSE
+```
+
+The code snippet calculates the sum of squared errors (SSE) for the multiple linear regression model (model3) using all variables. The SSE represents the sum of the squared differences between the observed values of the dependent variable (Payroll.Salary2023) and the predicted values from the regression model. In this case, the SSE is approximately 6.167793e+14.
+
+```{r}
+# Remove HR
+model4 = lm(Payroll.Salary2023 ~ RBI + AVG + OBP+OPS, data=firstbase)
+summary(model4)
+```
+
+The code snippet fits a new linear regression model (`model4`) by removing the variable "HR" from the previous model. The new model is regressed on the variables RBI, AVG, OBP, and OPS. 
+
+The summary of `model4` shows the coefficients, standard errors, t-values, and p-values for each predictor variable. 
+
+The coefficients indicate the estimated effect of each predictor variable on the dependent variable (`Payroll.Salary2023`). The intercept is estimated to be -29466887. The coefficients for RBI, AVG, OBP, and OPS are 71495, -11035457, 86360720, and 9464546, respectively.
+
+The p-values associated with each predictor variable determine the statistical significance of their coefficients. In this case, none of the predictor variables (RBI, AVG, OBP, OPS) are statistically significant at conventional significance levels (p > 0.05), except for the intercept term. 
+
+The multiple R-squared value is 0.5717, indicating that approximately 57.17% of the variation in the dependent variable is explained by the independent variables in the model. The adjusted R-squared value is 0.4765, which takes into account the degrees of freedom and penalizes the inclusion of additional variables.
+
+The residual standard error is 5919000, representing the estimated standard deviation of the residuals, which measures the model's overall goodness of fit.
+
+Finally, the F-statistic tests the overall significance of the model and indicates whether the regression coefficients are jointly significant. In this case, the F-statistic is 6.007 with a p-value of 0.00298, suggesting that the model as a whole is statistically significant.
+
+```{r}
+firstbase<-firstbase[,-(1:3)]
+```
+
+The code snippet `firstbase <- firstbase[,-(1:3)]` removes the first three columns from the `firstbase` data frame in R. 
+
+The notation `[, -(1:3)]` is used to select all rows (`[,]`) and exclude the columns specified in the range 1 to 3 (`-(1:3)`). By using a negative sign before the range, it indicates the columns to be removed.
+
+After executing this code, the `firstbase` data frame will contain all the columns except the first three columns that were removed. The resulting `firstbase` data frame will have a different structure, with only the remaining columns retained.
+
+```{r}
+# Correlations
+cor(firstbase$RBI, firstbase$Payroll.Salary2023)
+```
+
+The code snippet `cor(firstbase$RBI, firstbase$Payroll.Salary2023)` calculates the correlation between the `RBI` (Runs Batted In) and `Payroll.Salary2023` variables in the `firstbase` data frame.
+
+The result of the correlation calculation is 0.6281239, which indicates a moderately positive correlation between the `RBI` and `Payroll.Salary2023` variables. A correlation coefficient of 0.6281239 suggests that there is a tendency for higher values of RBI to be associated with higher values of Payroll.Salary2023. However, it's important to note that correlation does not imply causation, and other factors may also contribute to the relationship between these variables.
+
+```{r}
+cor(firstbase$AVG, firstbase$OBP)
+```
+
+The code `cor(firstbase$AVG, firstbase$OBP)` calculates the correlation between the `AVG` (batting average) and `OBP` (on-base percentage) variables in the `firstbase` data frame.
+
+The result of the correlation calculation is 0.8028894, which indicates a strong positive correlation between the `AVG` and `OBP` variables. A correlation coefficient of 0.8028894 suggests a high degree of association between the two variables, indicating that as the batting average increases, the on-base percentage tends to increase as well. This correlation suggests that players with higher batting averages are more likely to have higher on-base percentages.
+
+```{r}
+cor(firstbase)
+```
+
+The code cor(firstbase) calculates the correlation matrix for all variables in the firstbase data frame.
+
+```{r}
+#Removing AVG
+model5 = lm(Payroll.Salary2023 ~ RBI + OBP+OPS, data=firstbase)
+summary(model5)
+```
+
+```{r}
+model6 = lm(Payroll.Salary2023 ~ RBI + OBP, data=firstbase)
+summary(model6)
+```
+
+The code model5 = lm(Payroll.Salary2023 ~ RBI + OBP + OPS, data=firstbase) fits a linear regression model to predict the Payroll.Salary2023 variable based on the RBI, OBP, and OPS variables in the firstbase data frame.
+
+The model shows the estimated coefficients for each predictor variable (RBI, OBP, and OPS). The intercept term is estimated to be -29,737,007. The p-values associated with each coefficient indicate the statistical significance of the predictors. In this case, the intercept is statistically significant at the 0.05 level. However, none of the individual predictor variables (RBI, OBP, and OPS) are statistically significant in predicting Payroll.Salary2023 based on their p-values. The R-squared value of 0.5709 suggests that the model explains approximately 57.09% of the variance in Payroll.Salary2023.
+
+```{r}
+# Read in test set
+firstbaseTest = read.csv("firstbasestats_test.csv")
+str(firstbaseTest)
+```
+
+The code `firstbaseTest = read.csv("firstbasestats_test.csv")` reads in a test dataset from a CSV file called "firstbasestats_test.csv" and assigns it to the `firstbaseTest` data frame.
+
+The `str(firstbaseTest)` function provides information about the structure of the `firstbaseTest` data frame. Based on the output you provided, it seems to contain the following variables:
+
+- Player: Character vector containing the names of the players.
+- Pos: Character vector indicating the position of the players.
+- Team: Character vector indicating the team names.
+- GP: Integer vector representing the number of games played.
+- AB: Integer vector representing the number of at-bats.
+- H: Integer vector representing the number of hits.
+- X2B: Integer vector representing the number of doubles.
+- HR: Integer vector representing the number of home runs.
+- RBI: Integer vector representing the number of runs batted in.
+- AVG: Numeric vector representing the batting average.
+- OBP: Numeric vector representing the on-base percentage.
+- SLG: Numeric vector representing the slugging percentage.
+- OPS: Numeric vector representing the on-base plus slugging percentage.
+- WAR: Numeric vector representing the wins above replacement.
+- Payroll.Salary2023: Numeric vector representing the payroll salary for 2023.
+
+```{r}
+# Make test set predictions
+predictTest = predict(model6, newdata=firstbaseTest)
+predictTest
+```
+
+The code predictTest = predict(model6, newdata=firstbaseTest) is used to make predictions on the test dataset (firstbaseTest) using the linear regression model (model6). The predicted values are stored in the predictTest variable.
+
+Based on the output, the predicted values for the test dataset are 10,723,186 for the first observation and 11,558,647 for the second observation. These values represent the predicted values of the Payroll.Salary2023 variable based on the predictor variables RBI, OBP, and OPS in the firstbaseTest dataset.
+
+```{r}
+# Compute R-squared
+SSE = sum((firstbaseTest$Payroll.Salary2023 - predictTest)^2)
+SST = sum((firstbaseTest$Payroll.Salary2023 - mean(firstbase$Payroll.Salary2023))^2)
+1 - SSE/SST
+```
+
+The code you calculates the R-squared value for the linear regression model. 
+
+In the code, `SSE` is the sum of squared errors, which is the sum of the squared differences between the actual `Payroll.Salary2023` values in the test dataset (`firstbaseTest$Payroll.Salary2023`) and the predicted values (`predictTest`). 
+
+`SST` is the total sum of squares, which is the sum of the squared differences between the actual `Payroll.Salary2023` values in the test dataset (`firstbaseTest$Payroll.Salary2023`) and the mean of `Payroll.Salary2023` from the training dataset (`mean(firstbase$Payroll.Salary2023)`).
+
+Finally, the R-squared value is calculated as `1 - SSE/SST`, which represents the proportion of the variance in the dependent variable (`Payroll.Salary2023`) that can be explained by the independent variables (RBI, OBP, OPS) in the model. In this case, the R-squared value is approximately 0.5478, indicating that around 54.78% of the variance in `Payroll.Salary2023` can be explained by the independent variables in the model.
+
+```{r}
+# Create scatter plot
+plot(firstbaseTest$Payroll.Salary2023, predictTest, 
+     xlab = "Actual Salary", ylab = "Predicted Salary", 
+     main = "Actual vs. Predicted Salary",
+     pch = 16, col = "blue")
+     
+# Add a red dashed line representing perfect prediction
+abline(a = 0, b = 1, col = "red", lty = 2)
+```
+
+In this code, the plot() function is used to create a scatter plot. The first argument specifies the x-axis values (firstbaseTest$Payroll.Salary2023 - actual values) and the second argument specifies the y-axis values (predictTest - predicted values). The xlab, ylab, and main arguments are used to set the x and y axis labels and the plot title, respectively.
+
+The pch argument sets the plotting character to a solid circle (16), and the col argument sets the color of the points to blue. The abline() function adds a red dashed line to the plot, representing the ideal scenario where the predicted values perfectly match the actual values. The a and b arguments of abline() are set to 0 and 1, respectively, to create a line with a 1:1 slope.
+
+```{r}
+# Get predictor names
+predictor_names <- names(coef(model6)[-1])
+
+# Create a bar chart
+barplot(coef(model6)[-1], names.arg = predictor_names,
+        xlab = "Predictors", ylab = "Coefficient",
+        main = "Regression Coefficients")
+
+```
+
+In this code, we use the barplot() function to create a bar chart. The coef(model6)[-1] expression extracts the coefficients from the model6 object (excluding the intercept). The names.arg argument sets the names of the predictors (RBI, OBP, OPS) on the x-axis. The xlab and ylab arguments set the x and y axis labels, respectively. The main argument sets the plot title.
+
+

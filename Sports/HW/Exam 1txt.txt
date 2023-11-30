@@ -1,0 +1,13 @@
+Question 16: https://rpubs.com/dsmith/1060655
+
+
+Question 20: https://public.tableau.com/views/HomeTeam_16886882626580/Sheet1?:language=en-US&:display_count=n&:origin=viz_share_link
+
+Do you see a trend in the number of goals scored over time?
+Explain.
+ - By creating a line chart in Tableau, we can visually analyze the trend in the number of goals scored over time. From the chart, we can observe that the number of goals scored appears to increase initially and then fluctuates with some spikes and dips
+Did the number of goals scored per match increase or decrease over the course of this time period?Identify any significant spikes or dips in the trend of goals scored.
+- Without the information about the number of matches played within each date, it is difficult to determine whether the number of goals scored per match increased or decreased over the course of the time period. To determine this, we would need to know the number of matches played on each date and calculate the average goals per match.
+What factors could have contributed to these changes?
+- From the line chart, we can identify a few significant spikes and dips in the trend of goals scored. These spikes and dips may indicate exceptional performances or unusual circumstances that affected the number of goals scored on those particular dates. Some possible factors contributing to these changes could include:
+Strong offensive performances by specific teams or playersDefensive weaknesses or injuries in certain matchesChanges in team strategies or formationsExternal factors like weather conditions affecting gameplay

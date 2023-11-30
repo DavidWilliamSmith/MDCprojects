@@ -1,0 +1,35 @@
+---
+title: "Choosing among Different Players"
+output: html_notebook
+---
+
+Suppose you are the General Manager of a baseball team, and you are selecting two players for your team. You have a budget of $10,500,000, and you have the choice between the following players:
+
+Player Name
+OBP
+SLG
+Salary
+Yandy Diaz
+0.403
+0.511
+$8,000,000
+Joey Meneses
+0.320
+0.366
+$723,600
+Jose Abreu
+0.292
+0.358
+$19,500,000
+Ryan Noda
+0.384
+0.400
+$720,000
+Nate Lowe
+0.365
+0.426
+$4,050,000
+
+
+
+Given your budget and the player statistics, which two players would you select?
